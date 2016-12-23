@@ -2,6 +2,7 @@ package to.us.tf.CapturePointClaims;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -78,14 +79,19 @@ public class CapturingManager implements Listener
 
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    private boolean startOrContinueCapture(Player player, RegionCoordinates regionCoordinates, )
+    {
+        Clan clan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
+    }
+
+    @EventHandler(ignoreCancelled = true)
     void onBlockBreak(BlockBreakEvent event)
     {
         Player player = event.getPlayer();
 
         Block block = event.getBlock();
 
-        //if the player is not in managed world, do nothing (let vanilla code and other plugins do whatever)
+        //if the player is not in managed world, do nothing
         if(!instance.claimWorlds.contains(player.getWorld())) return;
 
         //whitelist for blocks which can always be broken (grass cutting, tree chopping)
@@ -103,22 +109,47 @@ public class CapturingManager implements Listener
             //If player's clan already claimed this, do nothing more
             if (!isEnemyClaim(blockRegion, player))
                 return;
-            //Else start claiming process
+            //TODO: Else handoff to captureManager to start/continue claiming process
             else
         }
         //Otherwise, just general region claim check stuff
         else if (isEnemyClaim(blockRegion, player))
         {
-            //Cancel if item is not a tool, otherwise reduce durability of tool
-            if (player.getInventory().getItemInMainHand().getDurability() > 0)
-            {}
+            short durability = player.getInventory().getItemInMainHand().getDurability();
+            //TODO: Cancel if item is not a tool
+            if (durability > 0)
+            {
+                event.setCancelled(true);
+                player.sendActionBar(ChatColor.RED + "Use a tool to damage blocks in an enemy claim.");
+                return;
+            }
+            //TODO: otherwise reduce durability of tool
         }
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     void onBlockPlace(BlockPlaceEvent event)
     {
-        Location location = event.getBlock().getLocation();
+        Location blockLocation = event.getBlock().getLocation();
+        Player player = event.getPlayer();
 
+        //if the player is not in managed world, do nothing
+        if(!instance.claimWorlds.contains(player.getWorld())) return;
+
+        RegionCoordinates blockRegion = regionCoordinates.fromLocation(blockLocation);
+
+        if (isEnemyClaim(blockRegion, player))
+        {
+            event.setCancelled(true);
+            player.sendActionBar(ChatColor.RED + "First capture this area before building here.");
+            return;
+        }
+
+        //if too close to (or above) region post,
+        if(this.nearRegionPost(blockLocation, blockRegion, 2))
+        {
+            event.setCancelled(true);
+        }
     }
 
 }
