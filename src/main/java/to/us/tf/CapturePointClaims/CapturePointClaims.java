@@ -1,5 +1,7 @@
 package to.us.tf.CapturePointClaims;
 
+import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
+import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -18,16 +20,19 @@ import java.util.Set;
 public class CapturePointClaims extends JavaPlugin implements Listener
 {
     RegionCoordinates regionCoordinates = new RegionCoordinates();
-    Set<World> claimWorlds = new HashSet<>();
+    protected Set<World> claimWorlds = new HashSet<>();
+    ClanManager clanManager;
 
     public void onEnable()
     {
         getServer().getPluginManager().registerEvents(this, this);
         claimWorlds.add(getServer().getWorld("world"));
         claimWorlds.add(getServer().getWorld("cityworld"));
+        claimWorlds.add(getServer().getWorld("cityworld_nether"));
         claimWorlds.add(getServer().getWorld("world_nether"));
+        SimpleClans sc = (SimpleClans)getServer().getPluginManager().getPlugin("SimpleClans");
+        this.clanManager = sc.getClanManager();
     }
-
 
     @EventHandler
     void onChunkLoad(ChunkLoadEvent event)
