@@ -30,16 +30,41 @@ public class RegionCoordinates
     public int x;
     public int z;
     final int REGION_SIZE = 400;
+    private World world;
+    private String owningClanTag; //Although clan names aren't mutable(?), there's only a method to get clans by tag.
 
     public RegionCoordinates()
     {
 
     }
     //basic boring stuff (yawn)
-    public RegionCoordinates(int x, int z)
+    public RegionCoordinates(int x, int z, World world)
     {
         this.x = x;
         this.z = z;
+        this.world = world;
+    }
+
+    public World getWorld()
+    {
+        return this.world;
+    }
+
+    public String getOwningClanTag() //Must be converted to a clan
+    {
+        if (this.owningClanTag == null)
+        {
+            //Attempt to load and cache result from disk
+            //TODO: various data storage stuff to set owningClanTag
+        }
+
+        return this.owningClanTag;
+    }
+
+    public void setOwningClanTag(String clan)
+    {
+        this.owningClanTag = clan;
+        //TODO: various data storage stuff
     }
 
     //given a location, returns the coordinates of the region containing that location
@@ -55,7 +80,7 @@ public class RegionCoordinates
         int z = location.getBlockZ() / REGION_SIZE;
         if(location.getZ() < 0) z--;
 
-        return new RegionCoordinates(x, z);
+        return new RegionCoordinates(x, z, location.getWorld());
     }
 
     //converts a string representing region coordinates to a proper region coordinates object
@@ -117,8 +142,10 @@ public class RegionCoordinates
 
     //determines the center of a region (as a Location) given its region coordinates
     //keeping all regions the same size and aligning them in a grid keeps this calculation simple and fast
-    public Location getRegionCenter(RegionCoordinates region, boolean computeY, World world)
+    public Location getRegionCenter(RegionCoordinates region, boolean computeY)
     {
+        World world = region.getWorld();
+
         int x, z;
         x = region.x * REGION_SIZE + REGION_SIZE / 2;
         z = region.z * REGION_SIZE + REGION_SIZE / 2;
@@ -132,10 +159,11 @@ public class RegionCoordinates
 
     //actually edits the world to create a region post at the center of the specified region
     @SuppressWarnings("deprecation")
-    public void AddRegionPost(RegionCoordinates region, World world)
+    public void AddRegionPost(RegionCoordinates region)
     {
+        World world = region.getWorld();
         //find the center
-        Location regionCenter = getRegionCenter(region, false, world);
+        Location regionCenter = getRegionCenter(region, false);
         int x = regionCenter.getBlockX();
         int z = regionCenter.getBlockZ();
         int y;
@@ -275,8 +303,8 @@ public class RegionCoordinates
 
         sign = (org.bukkit.block.Sign)block.getState();
 
-        sign.setLine(0, "Click to");
-        sign.setLine(1, "start the");
+        sign.setLine(0, "Break redstone");
+        sign.setLine(1, "to start");
         sign.setLine(2, "capture process");
 
         sign.update();

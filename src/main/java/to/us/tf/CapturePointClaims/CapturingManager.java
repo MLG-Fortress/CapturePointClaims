@@ -48,7 +48,7 @@ public class CapturingManager implements Listener
 
     private boolean nearRegionPost(Location location, RegionCoordinates region, int howClose)
     {
-        Location postLocation = PopulationDensity.getRegionCenter(region, false);
+        Location postLocation = regionCoordinates.getRegionCenter(region, false);
 
         //NOTE!  Why not use distance?  Because I want a box to the sky, not a sphere.
         //Why not round?  Below calculation is cheaper than distance (needed for a cylinder or sphere).
@@ -67,21 +67,50 @@ public class CapturingManager implements Listener
     /**
      *
      * @param regionCoordinates
-     * @return clan that claims region, otherwise null
+     * @return clan that owns region, otherwise null
      */
-    private Clan getClaimedClan(RegionCoordinates regionCoordinates)
+    private Clan getOwningClan(RegionCoordinates regionCoordinates)
     {
-
+        return clanManager.getClan(regionCoordinates.getOwningClanTag());
     }
 
     private boolean isEnemyClaim(RegionCoordinates regionCoordinates, Player player)
     {
-
+        Clan clan = getOwningClan(regionCoordinates);
+        if (clan == null) //Unclaimed
+            return false;
     }
 
-    private boolean startOrContinueCapture(Player player, RegionCoordinates regionCoordinates, )
+    private void startOrContinueCapture(Player player, RegionCoordinates regionCoordinates)
     {
+        //If null, no clan is currently capturing
+        CapturePoint capturePoint = pointsBeingCaptured.get(regionCoordinates);
         Clan clan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
+
+        if (capturePoint == null) //TODO: Start a capture
+        {
+            capturePoint = new CapturePoint(clan, getOwningClan(regionCoordinates));
+            pointsBeingCaptured.put(regionCoordinates, capturePoint);
+            if (capturePoint.owningClan != null)
+            {
+                //TODO: notify defenders with location
+                //TODO: make claim appear in red or some color no clan uses
+                //TODO: offer a "click to drop in to area"
+            }
+
+            //TODO: Broadcast globally (small chat message)
+        }
+        else if (capturePoint.attackingClan != clan) //TODO: Another clan is already capturing
+        {
+
+        }
+        else if (capturePoint.attackingClan == clan) //TODO: Continue capture
+        {
+
+        }
+        else
+            instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");
+
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -106,11 +135,11 @@ public class CapturingManager implements Listener
         if(this.nearRegionPost(blockLocation, blockRegion, 2))
         {
             event.setCancelled(true);
-            //If player's clan already claimed this, do nothing more
-            if (!isEnemyClaim(blockRegion, player))
+            if (!isEnemyClaim(blockRegion, player)) //player's clan already claimed this, do nothing more
                 return;
-            //TODO: Else handoff to captureManager to start/continue claiming process
+            //Otherwise start/continue claiming process
             else
+                startOrContinueCapture(player, regionCoordinates);
         }
         //Otherwise, just general region claim check stuff
         else if (isEnemyClaim(blockRegion, player))
@@ -158,7 +187,7 @@ class CapturePoint
 {
     //capturingClan
     Clan attackingClan;
-    //defendingClan (owning clan to notify, generally)
+    //defendingClan (owning clan to notify, generally. Null if unclaimed)
     Clan owningClan;
     //captureProgress
 

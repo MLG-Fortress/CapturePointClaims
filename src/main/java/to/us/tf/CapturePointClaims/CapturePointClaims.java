@@ -48,7 +48,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
 
         //find the center of this chunk's region
         RegionCoordinates region = regionCoordinates.fromLocation(lesserCorner);
-        Location regionCenter = regionCoordinates.getRegionCenter(region, false, world);
+        Location regionCenter = regionCoordinates.getRegionCenter(region, false);
 
         //if the chunk contains the region center
         if(	regionCenter.getBlockX() >= lesserCorner.getBlockX() && regionCenter.getBlockX() <= greaterCorner.getBlockX() &&
@@ -58,7 +58,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
             {
                 public void run()
                 {
-                    regionCoordinates.AddRegionPost(region, world);
+                    regionCoordinates.AddRegionPost(region);
                 }
             }.runTaskLater(this, 200L);
 
