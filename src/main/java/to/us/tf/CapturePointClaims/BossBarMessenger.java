@@ -89,6 +89,7 @@ public class BossBarMessenger
             cachedRegions.put(region, instance.getServer().createBossBar("Owned by " + owner, BarColor.BLUE, BarStyle.SOLID));
         }
 
+        lastSeenRegion.put(player, region);
         cachedRegions.get(region).addPlayer(player);
     }
 
