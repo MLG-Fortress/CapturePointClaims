@@ -11,8 +11,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
@@ -77,36 +77,77 @@ public class CapturingManager implements Listener
     private boolean isEnemyClaim(RegionCoordinates regionCoordinates, Player player)
     {
         Clan clan = getOwningClan(regionCoordinates);
+        Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
+
         if (clan == null) //Unclaimed
             return false;
+
+        return playerClan != clan;
     }
 
+    private CapturePoint startNewCapture(Clan attackingClan, RegionCoordinates regionCoordinates)
+    {
+        CapturePoint capturePoint = new CapturePoint(attackingClan, getOwningClan(regionCoordinates));
+        pointsBeingCaptured.put(regionCoordinates, capturePoint);
+        new BukkitRunnable()
+        {
+            public void run()
+            {
+                if (capturePoint.setTicksToEndGame(20))
+                    this.cancel();
+            }
+        }.runTaskTimer(instance, 0L, 20L);
+        return capturePoint;
+    }
+
+    //Oh wowe dat b a lot of ifs dere!!!!
     private void startOrContinueCapture(Player player, RegionCoordinates regionCoordinates)
     {
         //If null, no clan is currently capturing
         CapturePoint capturePoint = pointsBeingCaptured.get(regionCoordinates);
         Clan clan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
 
-        if (capturePoint == null) //TODO: Start a capture
+        if (clan == null)
         {
-            capturePoint = new CapturePoint(clan, getOwningClan(regionCoordinates));
-            pointsBeingCaptured.put(regionCoordinates, capturePoint);
-            if (capturePoint.owningClan != null)
+            player.sendMessage(ChatColor.RED + "You need to be part of a clan to capture a point.");
+            return;
+        }
+
+        if (capturePoint == null) //Start a capture
+        {
+            capturePoint = startNewCapture(clan, regionCoordinates);
+
+            if (capturePoint.getOwningClan() != null) //notify defenders
             {
-                //TODO: notify defenders with location
-                //TODO: make claim appear in red or some color no clan uses
-                //TODO: offer a "click to drop in to area"
+                Clan defendingClan = capturePoint.getOwningClan();
+                Messenger.alertMembersOfAttack(clan, capturePoint.getOwningClan(), regionCoordinates);
+                //TODO: Dynmap: make claim appear in red or some color no clan uses
             }
 
+            //TODO: Fire event
             //TODO: Broadcast globally (small chat message)
         }
-        else if (capturePoint.attackingClan != clan) //TODO: Another clan is already capturing
-        {
 
+        else if (capturePoint.isEnded()) //Point was already captured/defended before
+        {
+            if (capturePoint.getTimeCaptured() < System.currentTimeMillis() - 1440000) //Over a day
+            {
+                //Start a new capture
+                pointsBeingCaptured.remove(regionCoordinates);
+                startOrContinueCapture(player, regionCoordinates);
+            }
+            else
+            {
+                player.sendMessage("Point is locked, please wait " + Messenger.formatTime(capturePoint.getTimeCaptured() - (System.currentTimeMillis() - 1440000)));
+            }
         }
-        else if (capturePoint.attackingClan == clan) //TODO: Continue capture
+        else if (capturePoint.getAttackingClan() != clan) //Another clan is already capturing
         {
-
+            player.sendMessage("Point is already being captured by " + capturePoint.getAttackingClan().getColorTag());
+        }
+        else if (capturePoint.getOwningClan() == clan) //Continue capture
+        {
+            player.sendActionBar("Capture point health: " + capturePoint.addCaptureProgress(1) + "/100");
         }
         else
             instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");
@@ -185,16 +226,88 @@ public class CapturingManager implements Listener
 
 class CapturePoint
 {
+    /**
+     * Contains information about a point in the process of being captured
+     * Automatically manages and performs end-game (times runs out or point being captured)
+     */
     //capturingClan
-    Clan attackingClan;
+    private Clan attackingClan;
     //defendingClan (owning clan to notify, generally. Null if unclaimed)
-    Clan owningClan;
-    //captureProgress
+    private Clan owningClan;
+    //captureProgress (decrements to 0)
+    private int captureProgress = 100;
+    //Maximum amount of time to capture point, in ticks
+    private int ticksToEndGame = 6000; //5 minutes
+    //Used to determine end game, and when point should be unlocked
+    private Long timeCaptured = 0L;
 
     //Capturing a new point
     public CapturePoint(Clan attackingClan, Clan owningClan)
     {
         this.attackingClan = attackingClan;
         this.owningClan = owningClan;
+    }
+
+    public Clan getAttackingClan()
+    {
+        return this.attackingClan;
+    }
+
+    public Clan getOwningClan()
+    {
+        return this.owningClan;
+    }
+
+    public String getOwningClanTag()
+    {
+        if (getOwningClan() == null)
+            return "Wilderness";
+        return getOwningClan().getColorTag();
+    }
+
+    public boolean isEnded()
+    {
+        return this.timeCaptured > 0L;
+    }
+
+    public Long getTimeCaptured()
+    {
+        return this.timeCaptured;
+    }
+
+    public int getCaptureProgress()
+    {
+        return this.captureProgress;
+    }
+
+    public int getTicksToEndGame()
+    {
+        return this.ticksToEndGame;
+    }
+
+    public int getSecondsToEndGame()
+    {
+        return this.ticksToEndGame / 20;
+    }
+
+    /**
+     * @param ticksToTick
+     * @return if capture time is up
+     */
+    public boolean setTicksToEndGame(int ticksToTick)
+    {
+        this.ticksToEndGame = this.ticksToEndGame - ticksToTick;
+        if (this.ticksToEndGame <= 0 || this.captureProgress <= 0)
+        {
+            this.timeCaptured = System.currentTimeMillis();
+            return true;
+        }
+        return false;
+    }
+
+    public int addCaptureProgress(int captureProgress)
+    {
+        this.captureProgress += captureProgress;
+        return this.captureProgress;
     }
 }

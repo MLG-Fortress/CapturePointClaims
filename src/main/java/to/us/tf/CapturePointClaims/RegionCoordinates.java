@@ -157,6 +157,11 @@ public class RegionCoordinates
         return center;
     }
 
+    public Location getRegionCenter()
+    {
+        return this.getRegionCenter(this, true);
+    }
+
     //actually edits the world to create a region post at the center of the specified region
     @SuppressWarnings("deprecation")
     public void AddRegionPost(RegionCoordinates region)
