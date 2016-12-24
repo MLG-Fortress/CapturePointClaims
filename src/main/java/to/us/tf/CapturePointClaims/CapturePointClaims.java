@@ -33,7 +33,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         SimpleClans sc = (SimpleClans)getServer().getPluginManager().getPlugin("SimpleClans");
         this.clanManager = sc.getClanManager();
         new BossBarMessenger(this, regionCoordinates);
-        new CapturingManager(this, sc.getClanManager(), regionCoordinates);
+        getServer().getPluginManager().registerEvents(new CapturingManager(this, sc.getClanManager(), regionCoordinates), this);
     }
 
     @EventHandler

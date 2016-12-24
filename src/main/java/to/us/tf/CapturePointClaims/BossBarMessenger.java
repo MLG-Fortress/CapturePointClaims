@@ -30,20 +30,25 @@ public class BossBarMessenger
             public void run()
             {
                 updateBossBar();
-
-                for (Player player : instance.getServer().getOnlinePlayers())
-                {
-                    if (!instance.claimWorlds.contains(player.getWorld()))
-                    {
-                        removePlayerFromBossBar(player);
-                        continue;
-                    }
-
-                    RegionCoordinates region = regionCoordinates.fromLocation(player.getLocation());
-                    addPlayerToBossBar(player, region);
-                }
             }
-        }.runTaskTimer(this.instance, 200L, 20L);
+        }.runTaskTimer(instance, 200L, 20L);
+        new BukkitRunnable()
+        {
+            public void run()
+            {
+            for (Player player : instance.getServer().getOnlinePlayers())
+            {
+                if (!instance.claimWorlds.contains(player.getWorld()))
+                {
+                    removePlayerFromBossBar(player);
+                    continue;
+                }
+
+                RegionCoordinates region = regionCoordinates.fromLocation(player.getLocation());
+                addPlayerToBossBar(player, region);
+            }
+            }
+        }.runTaskTimer(this.instance, 200L, 100L);
     }
 
     public void addRegionUnderAttack(RegionCoordinates regionCoordinates, CapturePoint capturePoint)
