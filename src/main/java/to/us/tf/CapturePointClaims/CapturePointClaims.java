@@ -32,6 +32,8 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         claimWorlds.add(getServer().getWorld("world_nether"));
         SimpleClans sc = (SimpleClans)getServer().getPluginManager().getPlugin("SimpleClans");
         this.clanManager = sc.getClanManager();
+        new BossBarMessenger(this, regionCoordinates);
+        new CapturingManager(this, sc.getClanManager(), regionCoordinates);
     }
 
     @EventHandler
