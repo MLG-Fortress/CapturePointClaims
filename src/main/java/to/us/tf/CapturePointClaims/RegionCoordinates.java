@@ -282,7 +282,7 @@ public class RegionCoordinates
 
         //build lower center blocks
         int y1 = y;
-        world.getBlockAt(x, y1, z).setType(Material.BARRIER);
+        world.getBlockAt(x, y1, z).setType(Material.EMERALD_BLOCK);
         world.getBlockAt(x, ++y1, z).setType(Material.BEACON);
 
         //build a sign on top with region name (or wilderness if no name)
@@ -308,7 +308,7 @@ public class RegionCoordinates
 
         sign = (org.bukkit.block.Sign)block.getState();
 
-        sign.setLine(0, "Break redstone");
+        sign.setLine(0, "Break this");
         sign.setLine(1, "to start");
         sign.setLine(2, "capture process");
 

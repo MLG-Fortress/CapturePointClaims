@@ -74,13 +74,15 @@ public class CapturingManager implements Listener
         return clanManager.getClan(regionCoordinates.getOwningClanTag());
     }
 
-    private boolean isEnemyClaim(RegionCoordinates regionCoordinates, Player player)
+    private boolean isEnemyClaim(RegionCoordinates regionCoordinates, Player player, boolean includeWildernessAsEnemy)
     {
         Clan clan = getOwningClan(regionCoordinates);
         Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
 
         if (clan == null) //Unclaimed
-            return false;
+        {
+            return includeWildernessAsEnemy;
+        }
 
         return playerClan != clan;
     }
@@ -176,14 +178,14 @@ public class CapturingManager implements Listener
         if(this.nearRegionPost(blockLocation, blockRegion, 2))
         {
             event.setCancelled(true);
-            if (!isEnemyClaim(blockRegion, player)) //player's clan already claimed this, do nothing more
+            if (!isEnemyClaim(blockRegion, player, true)) //player's clan already claimed this, do nothing more
                 return;
             //Otherwise start/continue claiming process
             else
                 startOrContinueCapture(player, regionCoordinates);
         }
         //Otherwise, just general region claim check stuff
-        else if (isEnemyClaim(blockRegion, player))
+        else if (isEnemyClaim(blockRegion, player, false))
         {
             short durability = player.getInventory().getItemInMainHand().getDurability();
             //TODO: Cancel if item is not a tool
@@ -208,7 +210,7 @@ public class CapturingManager implements Listener
 
         RegionCoordinates blockRegion = regionCoordinates.fromLocation(blockLocation);
 
-        if (isEnemyClaim(blockRegion, player))
+        if (isEnemyClaim(blockRegion, player, false))
         {
             event.setCancelled(true);
             player.sendActionBar(ChatColor.RED + "First capture this area before building here.");
