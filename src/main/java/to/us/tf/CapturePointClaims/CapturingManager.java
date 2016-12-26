@@ -149,7 +149,7 @@ public class CapturingManager implements Listener
         }
         else if (capturePoint.getOwningClan() == clan) //Continue capture
         {
-            player.sendActionBar("Capture point health: " + capturePoint.addCaptureProgress(1) + "/100");
+            player.sendActionBar("Capture point health: " + capturePoint.decrementCaptureProgress(1) + "/100");
         }
         else
             instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");
@@ -307,9 +307,9 @@ class CapturePoint
         return false;
     }
 
-    public int addCaptureProgress(int captureProgress)
+    public int decrementCaptureProgress(int captureProgress)
     {
-        this.captureProgress += captureProgress;
+        this.captureProgress -= captureProgress;
         return this.captureProgress;
     }
 }
