@@ -286,15 +286,14 @@ public class RegionCoordinates
         world.getBlockAt(x, ++y1, z).setType(Material.BEACON);
 
         //build a sign on top with region name (or wilderness if no name)
-        //TODO: get clan tag
-        String regionName = null;
+        String regionName = getOwningClanTag();
         if(regionName == null) regionName = "Nobody";
         Block block = world.getBlockAt(x, y + 4, z);
         block.setType(Material.SIGN_POST);
 
         org.bukkit.block.Sign sign = (org.bukkit.block.Sign)block.getState();
-        sign.setLine(1, regionName);
-        sign.setLine(2, "Region");
+        sign.setLine(1, "Owned by");
+        sign.setLine(2, regionName);
         sign.update();
 
         //custom signs
