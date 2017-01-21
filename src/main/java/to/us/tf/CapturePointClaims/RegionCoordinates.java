@@ -24,6 +24,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class RegionCoordinates
 {
@@ -164,7 +165,7 @@ public class RegionCoordinates
 
     //actually edits the world to create a region post at the center of the specified region
     @SuppressWarnings("deprecation")
-    public void AddRegionPost(RegionCoordinates region)
+    public void AddRegionPost(RegionCoordinates region, CapturePointClaims instance)
     {
         World world = region.getWorld();
         //find the center
@@ -291,27 +292,37 @@ public class RegionCoordinates
         Block block = world.getBlockAt(x, y + 4, z);
         block.setType(Material.SIGN_POST);
 
-        org.bukkit.block.Sign sign = (org.bukkit.block.Sign)block.getState();
-        sign.setLine(1, "Owned by");
-        sign.setLine(2, regionName);
-        sign.update();
+        final String finalRegionName = regionName;
+        final Block finalBlock = block;
+        final int finalY = y;
+        new BukkitRunnable()
+        {
+            Block block1 = finalBlock;
+            public void run()
+            {
+                org.bukkit.block.Sign sign = (org.bukkit.block.Sign)block1.getState(); //Reason why we're making this a task
+                sign.setLine(1, "Owned by");
+                sign.setLine(2, finalRegionName);
+                sign.update();
 
-        //custom signs
+                //custom signs
 
-        block = world.getBlockAt(x, y + 3, z - 1);
+                block1 = world.getBlockAt(x, finalY + 3, z - 1);
 
-        org.bukkit.material.Sign signData = new org.bukkit.material.Sign(Material.WALL_SIGN);
-        signData.setFacingDirection(BlockFace.NORTH);
+                org.bukkit.material.Sign signData = new org.bukkit.material.Sign(Material.WALL_SIGN);
+                signData.setFacingDirection(BlockFace.NORTH);
 
-        block.setTypeIdAndData(Material.WALL_SIGN.getId(), signData.getData(), false);
+                block1.setTypeIdAndData(Material.WALL_SIGN.getId(), signData.getData(), false);
 
-        sign = (org.bukkit.block.Sign)block.getState();
+                sign = (org.bukkit.block.Sign)block.getState();
 
-        sign.setLine(0, "Break this");
-        sign.setLine(1, "to start");
-        sign.setLine(2, "capture process");
+                sign.setLine(0, "Break this");
+                sign.setLine(1, "to start");
+                sign.setLine(2, "capture process");
 
-        sign.update();
+                sign.update();
+            }
+        }.runTaskLater(instance, 2L);
     }
 }
 

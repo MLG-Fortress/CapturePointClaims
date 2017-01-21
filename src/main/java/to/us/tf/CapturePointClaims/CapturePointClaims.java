@@ -56,11 +56,12 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         if(	regionCenter.getBlockX() >= lesserCorner.getBlockX() && regionCenter.getBlockX() <= greaterCorner.getBlockX() &&
                 regionCenter.getBlockZ() >= lesserCorner.getBlockZ() && regionCenter.getBlockZ() <= greaterCorner.getBlockZ())
         {
+            CapturePointClaims instance = this;
             new BukkitRunnable()
             {
                 public void run()
                 {
-                    regionCoordinates.AddRegionPost(region);
+                    regionCoordinates.AddRegionPost(region, instance);
                 }
             }.runTaskLater(this, 200L);
 
