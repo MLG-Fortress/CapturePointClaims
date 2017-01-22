@@ -21,7 +21,7 @@ public class BossBarMessenger
     Map<Player, Region> lastSeenRegion = new HashMap<>();
     CaptureManager captureManager;
 
-    public BossBarMessenger(CapturePointClaims capturePointClaims, CaptureManager captureManager)
+    public BossBarMessenger(CapturePointClaims capturePointClaims, CaptureManager captureManager, RegionManager regionManager)
     {
         this.instance = capturePointClaims;
         this.captureManager = captureManager;
@@ -34,7 +34,6 @@ public class BossBarMessenger
         }.runTaskTimer(instance, 200L, 10L);
         new BukkitRunnable()
         {
-            RegionManager regionManager = new RegionManager();
             public void run()
             {
             for (Player player : instance.getServer().getOnlinePlayers())
@@ -56,12 +55,15 @@ public class BossBarMessenger
     {
         for (Region region : cachedRegions.keySet())
         {
-            if (!captureManager.pointsBeingCaptured.containsKey(region))
+            BossBar bar = cachedRegions.get(region);
+            if (!captureManager.pointsBeingCaptured.containsKey(region)) //TODO: replace with event listener
+            {
+                bar.setTitle("Owned by " + instance.getOwningClanString(region));
                 continue;
+            }
 
             CapturePoint capturePoint = captureManager.pointsBeingCaptured.get(region);
-            BossBar bar = cachedRegions.get(region);
-            if (capturePoint.isEnded())
+            if (capturePoint.isEnded()) //Locked point
             {
                 bar.setStyle(BarStyle.SOLID);
                 bar.setColor(BarColor.BLUE);
@@ -107,6 +109,4 @@ public class BossBarMessenger
         if (lastRegion != null)
             cachedRegions.get(lastRegion).removePlayer(player);
     }
-
-
 }
