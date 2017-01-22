@@ -12,9 +12,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import to.us.tf.CapturePointClaims.CapturePointClaims;
-import to.us.tf.CapturePointClaims.CaptureManager;
-import to.us.tf.CapturePointClaims.RegionManager;
 
 import java.util.Arrays;
 import java.util.HashSet;

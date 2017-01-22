@@ -16,22 +16,21 @@ public class CaptureManager
 {
     ClanManager clanManager;
     //Set of CapturePoints being captured
-    Map<RegionManager, CapturePoint> pointsBeingCaptured = new HashMap<>();
+    Map<Region, CapturePoint> pointsBeingCaptured = new HashMap<>();
     CapturePointClaims instance;
     RegionManager regionManager;
 
-
-
-    public CaptureManager(CapturePointClaims capturePointClaims, ClanManager clanManager)
+    public CaptureManager(CapturePointClaims capturePointClaims, ClanManager clanManager, RegionManager regionManager)
     {
         this.clanManager = clanManager;
         this.instance = capturePointClaims;
+        this.regionManager = regionManager;
     }
 
     private CapturePoint startNewCapture(Clan attackingClan, Region region)
     {
         CapturePoint capturePoint = new CapturePoint(attackingClan, instance.getOwningClan(region), region);
-        pointsBeingCaptured.put(regionManager, capturePoint);
+        pointsBeingCaptured.put(region, capturePoint);
         new BukkitRunnable()
         {
             public void run()
