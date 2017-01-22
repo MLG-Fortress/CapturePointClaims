@@ -33,11 +33,12 @@ public class Messenger {
 
     /**
      * Thanks Lax
-     * @param seconds
+     * @param milliseconds
      * @return
      */
-    public static String formatTime(Long seconds)
+    public static String formatTime(Long milliseconds)
     {
+        Long seconds = milliseconds / 1000;
         return formatTime(seconds, 1);
     }
     private static String formatTime(Long seconds, int depth)

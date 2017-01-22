@@ -19,7 +19,6 @@ import java.util.Set;
  */
 public class CapturePointClaims extends JavaPlugin implements Listener
 {
-    RegionCoordinates regionCoordinates = new RegionCoordinates();
     protected Set<World> claimWorlds = new HashSet<>();
     ClanManager clanManager;
 
@@ -32,8 +31,9 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         claimWorlds.add(getServer().getWorld("world_nether"));
         SimpleClans sc = (SimpleClans)getServer().getPluginManager().getPlugin("SimpleClans");
         this.clanManager = sc.getClanManager();
-        new BossBarMessenger(this, regionCoordinates);
-        getServer().getPluginManager().registerEvents(new CapturingManager(this, sc.getClanManager(), regionCoordinates), this);
+        CapturingManager capturingManager = new CapturingManager(this, sc.getClanManager());
+        new BossBarMessenger(this, capturingManager);
+        getServer().getPluginManager().registerEvents(capturingManager, this);
     }
 
     @EventHandler
@@ -49,8 +49,8 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         Location greaterCorner = chunk.getBlock(15, 0, 15).getLocation();
 
         //find the center of this chunk's region
-        RegionCoordinates region = regionCoordinates.fromLocation(lesserCorner);
-        Location regionCenter = regionCoordinates.getRegionCenter(region, false);
+        RegionCoordinates region = new RegionCoordinates().fromLocation(lesserCorner);
+        Location regionCenter = region.getRegionCenter(region, false);
 
         //if the chunk contains the region center
         if(	regionCenter.getBlockX() >= lesserCorner.getBlockX() && regionCenter.getBlockX() <= greaterCorner.getBlockX() &&
@@ -61,7 +61,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
             {
                 public void run()
                 {
-                    regionCoordinates.AddRegionPost(region, instance);
+                    region.AddRegionPost(region, instance);
                 }
             }.runTaskLater(this, 200L);
 

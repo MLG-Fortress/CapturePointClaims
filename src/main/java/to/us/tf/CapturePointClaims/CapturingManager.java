@@ -25,7 +25,7 @@ public class CapturingManager implements Listener
     //Set of CapturePoints being captured
     Map<RegionCoordinates, CapturePoint> pointsBeingCaptured = new HashMap<>();
     CapturePointClaims instance;
-    RegionCoordinates regionCoordinates;
+    RegionCoordinates regionCoordinates = new RegionCoordinates();
 
     private Set<Material> alwaysBreakableMaterials = new HashSet<Material>(Arrays.asList(
             Material.LONG_GRASS,
@@ -39,16 +39,15 @@ public class CapturingManager implements Listener
             Material.SNOW_BLOCK
     ));
 
-    public CapturingManager(CapturePointClaims capturePointClaims, ClanManager clanManager, RegionCoordinates regionCoordinates)
+    public CapturingManager(CapturePointClaims capturePointClaims, ClanManager clanManager)
     {
         this.clanManager = clanManager;
         this.instance = capturePointClaims;
-        this.regionCoordinates = regionCoordinates;
     }
 
     private boolean nearRegionPost(Location location, RegionCoordinates region, int howClose)
     {
-        Location postLocation = regionCoordinates.getRegionCenter(region, false);
+        Location postLocation = region.getRegionCenter(region, false);
 
         //NOTE!  Why not use distance?  Because I want a box to the sky, not a sphere.
         //Why not round?  Below calculation is cheaper than distance (needed for a cylinder or sphere).

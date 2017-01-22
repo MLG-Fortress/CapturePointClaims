@@ -18,13 +18,14 @@ import java.util.Map;
 public class BossBarMessenger
 {
     CapturePointClaims instance;
-    Map<RegionCoordinates, CapturePoint> regionsUnderAttack = new HashMap<>();
     Map<RegionCoordinates, BossBar> cachedRegions = new HashMap<>();
     Map<Player, RegionCoordinates> lastSeenRegion = new HashMap<>();
+    CapturingManager capturingManager;
 
-    public BossBarMessenger(CapturePointClaims capturePointClaims, RegionCoordinates regionCoordinates)
+    public BossBarMessenger(CapturePointClaims capturePointClaims, CapturingManager capturingManager)
     {
         this.instance = capturePointClaims;
+        this.capturingManager = capturingManager;
         new BukkitRunnable()
         {
             public void run()
@@ -34,6 +35,7 @@ public class BossBarMessenger
         }.runTaskTimer(instance, 200L, 20L);
         new BukkitRunnable()
         {
+            RegionCoordinates regionCoordinates = new RegionCoordinates();
             public void run()
             {
             for (Player player : instance.getServer().getOnlinePlayers())
@@ -51,19 +53,15 @@ public class BossBarMessenger
         }.runTaskTimer(this.instance, 200L, 100L);
     }
 
-    public void addRegionUnderAttack(RegionCoordinates regionCoordinates, CapturePoint capturePoint)
-    {
-
-    }
-
     private void updateBossBar()
     {
         for (RegionCoordinates region : cachedRegions.keySet())
         {
-            if (!regionsUnderAttack.containsKey(region))
+            if (!capturingManager.pointsBeingCaptured.containsKey(region))
                 continue;
 
-            CapturePoint capturePoint = regionsUnderAttack.get(region);
+            CapturePoint capturePoint = capturingManager.pointsBeingCaptured.get(region);
+            //TODO: ignore when capture is ended
             BossBar bar = cachedRegions.get(region);
             bar.setStyle(BarStyle.SEGMENTED_20);
             bar.setColor(BarColor.RED);
