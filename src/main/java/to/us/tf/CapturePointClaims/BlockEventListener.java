@@ -1,4 +1,4 @@
-package to.us.tf.CapturePointClaims.listeners;
+package to.us.tf.CapturePointClaims;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
@@ -14,7 +14,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import to.us.tf.CapturePointClaims.CapturePointClaims;
 import to.us.tf.CapturePointClaims.CaptureManager;
-import to.us.tf.CapturePointClaims.RegionCoordinates;
+import to.us.tf.CapturePointClaims.RegionManager;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -28,6 +28,7 @@ public class BlockEventListener implements Listener
     CapturePointClaims instance;
     CaptureManager captureManager;
     ClanManager clanManager;
+    RegionManager regionManager;
     private Set<Material> alwaysBreakableMaterials = new HashSet<Material>(Arrays.asList(
             Material.LONG_GRASS,
             Material.DOUBLE_PLANT,
@@ -47,16 +48,15 @@ public class BlockEventListener implements Listener
         this.clanManager = clanManager;
     }
 
-    private boolean isEnemyClaim(RegionCoordinates regionCoordinates, Player player, boolean includeWildernessAsEnemy)
+    private boolean isEnemyClaim(Region region, Player player, boolean includeWildernessAsEnemy)
     {
-        Clan clan = instance.getOwningClan(regionCoordinates);
+        Clan clan = instance.getOwningClan(region);
         Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
 
         if (clan == null) //Unclaimed
         {
             return includeWildernessAsEnemy;
         }
-
         return playerClan != clan;
     }
 
@@ -64,29 +64,26 @@ public class BlockEventListener implements Listener
     void onBlockBreak(BlockBreakEvent event)
     {
         Player player = event.getPlayer();
-
         Block block = event.getBlock();
 
         //if the player is not in managed world, do nothing
         if(!instance.claimWorlds.contains(player.getWorld())) return;
-
         //whitelist for blocks which can always be broken (grass cutting, tree chopping)
         if(this.alwaysBreakableMaterials.contains(block.getType())) return;
 
         //otherwise figure out which region that block is in
         Location blockLocation = block.getLocation();
-
-        RegionCoordinates blockRegion = regionCoordinates.fromLocation(blockLocation);
+        Region blockRegion = regionManager.fromLocation(blockLocation);
 
         //if too close to (or above) region post,
-        if(this.nearRegionPost(blockLocation, blockRegion, 2))
+        if(blockRegion.nearRegionPost(blockLocation, 2))
         {
             event.setCancelled(true);
             if (!isEnemyClaim(blockRegion, player, true)) //player's clan already claimed this, do nothing more
                 return;
                 //Otherwise start/continue claiming process
             else
-                startOrContinueCapture(player, regionCoordinates);
+                captureManager.startOrContinueCapture(player, blockRegion);
         }
         //Otherwise, just general region claim check stuff
         else if (isEnemyClaim(blockRegion, player, false))
@@ -112,7 +109,7 @@ public class BlockEventListener implements Listener
         //if the player is not in managed world, do nothing
         if(!instance.claimWorlds.contains(player.getWorld())) return;
 
-        RegionCoordinates blockRegion = regionCoordinates.fromLocation(blockLocation);
+        Region blockRegion = regionManager.fromLocation(blockLocation);
 
         if (isEnemyClaim(blockRegion, player, false))
         {
@@ -122,7 +119,7 @@ public class BlockEventListener implements Listener
         }
 
         //if too close to (or above) region post,
-        if(this.nearRegionPost(blockLocation, blockRegion, 2))
+        if(blockRegion.nearRegionPost(blockLocation, 2))
         {
             event.setCancelled(true);
         }

@@ -11,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import to.us.tf.CapturePointClaims.listeners.BlockEventListener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +22,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
 {
     public Set<World> claimWorlds = new HashSet<>();
     ClanManager clanManager;
+    RegionManager regionManager;
 
     public void onEnable()
     {
@@ -38,13 +38,6 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         new BossBarMessenger(this, captureManager);
     }
 
-    public String getOwningClanString(RegionCoordinates region)
-    {
-        if (region.getOwningClanTag() == null)
-            return "Wilderness";
-        return clanManager.getClan(region.getOwningClanTag()).getName();
-    }
-
     @EventHandler
     void onChunkLoad(ChunkLoadEvent event)
     {
@@ -58,8 +51,8 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         Location greaterCorner = chunk.getBlock(15, 0, 15).getLocation();
 
         //find the center of this chunk's region
-        RegionCoordinates region = new RegionCoordinates().fromLocation(lesserCorner);
-        Location regionCenter = region.getRegionCenter(region, false);
+        Region region = regionManager.fromLocation(lesserCorner);
+        Location regionCenter = region.getRegionCenter(false);
 
         //if the chunk contains the region center
         if(	regionCenter.getBlockX() >= lesserCorner.getBlockX() && regionCenter.getBlockX() <= greaterCorner.getBlockX() &&
@@ -70,7 +63,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
             {
                 public void run()
                 {
-                    region.AddRegionPost(region, instance);
+                    region.AddRegionPost(instance);
                 }
             }.runTaskLater(this, 200L);
         }
@@ -81,13 +74,21 @@ public class CapturePointClaims extends JavaPlugin implements Listener
      */
 
     /**
-     * @param regionCoordinates
+     * @param region
      * @return clan that owns region, otherwise null
      */
-    public Clan getOwningClan(RegionCoordinates regionCoordinates)
+    public Clan getOwningClan(Region region)
     {
-        if (regionCoordinates.getOwningClanTag() == null)
+        if (region.getOwningClanTag() == null)
             return null;
-        return clanManager.getClan(regionCoordinates.getOwningClanTag());
+        return clanManager.getClan(region.getOwningClanTag());
+    }
+
+    public String getOwningClanString(Region region)
+    {
+        Clan clan = getOwningClan(region);
+        if (clan == null)
+            return "Wilderness";
+        return clan.getName();
     }
 }

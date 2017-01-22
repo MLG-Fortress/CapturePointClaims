@@ -5,7 +5,6 @@ import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import org.bukkit.Location;
 
 import javax.annotation.Nullable;
-import java.text.DecimalFormat;
 
 /**
  * Created by RoboMWM on 12/23/2016.
@@ -115,9 +114,9 @@ public class Messenger {
      * @param attackingClan
      * @param defendingClan
      */
-    public static void alertMembersOfAttack(Clan attackingClan, @Nullable Clan defendingClan, RegionCoordinates regionCoordinates)
+    public static void alertMembersOfAttack(Clan attackingClan, @Nullable Clan defendingClan, Region region)
     {
-        String coordinates = cleanCoords(regionCoordinates.getRegionCenter());
+        String coordinates = cleanCoords(region.getRegionCenter(false));
         String defendingClanTag = "Nobody";
         if (defendingClan != null)
         {

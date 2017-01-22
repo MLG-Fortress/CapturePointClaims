@@ -18,6 +18,8 @@ package to.us.tf.CapturePointClaims;
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,12 +29,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class RegionCoordinates
+public class RegionManager
 {
-    public int x;
-    public int z;
     final int REGION_SIZE = 400;
 
+    Table<Integer, Integer, Region> cachedRegions = HashBasedTable.create();
     //given a location, returns the coordinates of the region containing that location
     //returns NULL when the location is not in the managed world
     //TRIVIA!  despite the simplicity of this method, I got it badly wrong like 5 times before it was finally fixed
@@ -46,12 +47,35 @@ public class RegionCoordinates
         int z = location.getBlockZ() / REGION_SIZE;
         if(location.getZ() < 0) z--;
 
-        return new Region(x, z, location.getWorld());
+        Region region = cachedRegions.get(x, z); //Get the cached Region object
+        if (region == null) //create a new one if such doesn't exist
+        {
+            cachedRegions.put(x, z, new Region(x, z, location.getWorld(), REGION_SIZE));
+            region = cachedRegions.get(x, z);
+        }
+        return region;
+    }
+}
+
+class Region
+{
+    private int regionX;
+    private int regionZ;
+    private World world;
+    private String owningClanTag; //Although clan names aren't mutable(?), there's only a method to get clans by tag.
+    private int REGION_SIZE;
+
+    public Region(int regionX, int regionZ, World world, int regionSize)
+    {
+        this.regionX = regionX;
+        this.regionZ = regionZ;
+        this.world = world;
+        this.REGION_SIZE = regionSize;
     }
 
     //converts a string representing region coordinates to a proper region coordinates object
     //used in reading data from files and converting filenames themselves in some cases
-    public RegionCoordinates(String string)
+    public Region(String string)
     {
         //split the input string on the space
         String [] elements = string.split(" ");
@@ -61,14 +85,14 @@ public class RegionCoordinates
         String zString = elements[1];
 
         //convert those to integer values
-        this.x = Integer.parseInt(xString);
-        this.z = Integer.parseInt(zString);
+        this.regionX = Integer.parseInt(xString);
+        this.regionZ = Integer.parseInt(zString);
     }
 
     //opposite of above - converts region coordinates to a handy string
     public String toString()
     {
-        return Integer.toString(this.x) + " " + Integer.toString(this.z);
+        return Integer.toString(this.regionX) + " " + Integer.toString(this.regionZ);
     }
 
     //compares two region coordinates to see if they match
@@ -77,17 +101,72 @@ public class RegionCoordinates
     {
         if(coordinatesToCompare == null) return false;
 
-        if(!(coordinatesToCompare instanceof RegionCoordinates)) return false;
+        if(!(coordinatesToCompare instanceof RegionManager)) return false;
 
-        RegionCoordinates coords = (RegionCoordinates)coordinatesToCompare;
+        Region coords = (Region)coordinatesToCompare;
 
-        return this.x == coords.x && this.z == coords.z;
+        return this.regionX == coords.regionX && this.regionZ == coords.regionZ;
     }
 
     @Override
     public int hashCode()
     {
         return this.toString().hashCode();
+    }
+
+    public World getWorld()
+    {
+        return this.world;
+    }
+
+    public String getOwningClanTag() //Must be converted to a clan
+    {
+        if (this.owningClanTag == null)
+        {
+            //Attempt to load and cache result from disk
+            //TODO: various data storage stuff to set owningClanTag
+        }
+
+        return this.owningClanTag;
+    }
+
+    public void setOwningClanTag(String clan)
+    {
+        this.owningClanTag = clan;
+        //TODO: various data storage stuff
+    }
+
+    //determines the center of a region (as a Location) given its region coordinates
+    //keeping all regions the same size and aligning them in a grid keeps this calculation simple and fast
+    public Location getRegionCenter(boolean computeY)
+    {
+        int x1, z1;
+        x1 = this.regionX * REGION_SIZE + REGION_SIZE / 2;
+        z1 = this.regionZ * REGION_SIZE + REGION_SIZE / 2;
+
+        Location center = new Location(world, x1, 62, z1);
+
+        if(computeY) center = world.getHighestBlockAt(center).getLocation();
+
+        return center;
+    }
+
+    public boolean nearRegionPost(Location location, int howClose)
+    {
+        Location postLocation = getRegionCenter(false);
+
+        //NOTE!  Why not use distance?  Because I want a box to the sky, not a sphere.
+        //Why not round?  Below calculation is cheaper than distance (needed for a cylinder or sphere).
+        //Why to the sky?  Because if somebody builds a platform above the post, folks will teleport onto that platform by mistake.
+        //Also...  lava from above would be bad.
+        //Why not below?  Because I can't imagine mining beneath a post as an avenue for griefing.
+
+        return (	location.getBlockX() >= postLocation.getBlockX() - howClose &&
+                location.getBlockX() <= postLocation.getBlockX() + howClose &&
+                location.getBlockZ() >= postLocation.getBlockZ() - howClose &&
+                location.getBlockZ() <= postLocation.getBlockZ() + howClose &&
+                location.getBlockY() >= location.getWorld().getHighestBlockYAt(postLocation) - 4
+        );
     }
 
     //ensures a piece of the managed world is loaded into server memory
@@ -106,30 +185,12 @@ public class RegionCoordinates
         return true;
     }
 
-    //determines the center of a region (as a Location) given its region coordinates
-    //keeping all regions the same size and aligning them in a grid keeps this calculation simple and fast
-    public Location getRegionCenter(Region region, boolean computeY)
-    {
-        World world = region.getWorld();
-
-        int x, z;
-        x = region.x * REGION_SIZE + REGION_SIZE / 2;
-        z = region.z * REGION_SIZE + REGION_SIZE / 2;
-
-        Location center = new Location(world, x, 62, z);
-
-        if(computeY) center = world.getHighestBlockAt(center).getLocation();
-
-        return center;
-    }
-
     //actually edits the world to create a region post at the center of the specified region
     @SuppressWarnings("deprecation")
-    public void AddRegionPost(Region region, CapturePointClaims instance)
+    public void AddRegionPost(CapturePointClaims instance)
     {
-        World world = region.getWorld();
         //find the center
-        Location regionCenter = getRegionCenter(region, false);
+        Location regionCenter = getRegionCenter(false);
         int x = regionCenter.getBlockX();
         int z = regionCenter.getBlockZ();
         int y;
@@ -249,7 +310,7 @@ public class RegionCoordinates
         //build a sign on top with region name (or wilderness if no name)
 //        String regionName = region.getOwningClanTag();
 //        if(regionName == null) regionName = "Nobody";
-//        Block block = world.getBlockAt(x, y + 4, z);
+//        Block block = world.getBlockAt(regionX, y + 4, regionZ);
 //        block.setType(Material.SIGN_POST);
 
         //final String finalRegionName = regionName;
@@ -283,43 +344,6 @@ public class RegionCoordinates
                 sign.update();
             }
         }.runTaskLater(instance, 2L);
-    }
-}
-
-class Region
-{
-    public int x;
-    public int z;
-    private World world;
-    private String owningClanTag; //Although clan names aren't mutable(?), there's only a method to get clans by tag.
-
-    public Region(int x, int z, World world)
-    {
-        this.x = x;
-        this.z = z;
-        this.world = world;
-    }
-
-    public World getWorld()
-    {
-        return this.world;
-    }
-
-    public String getOwningClanTag() //Must be converted to a clan
-    {
-        if (this.owningClanTag == null)
-        {
-            //Attempt to load and cache result from disk
-            //TODO: various data storage stuff to set owningClanTag
-        }
-
-        return this.owningClanTag;
-    }
-
-    public void setOwningClanTag(String clan)
-    {
-        this.owningClanTag = clan;
-        //TODO: various data storage stuff
     }
 }
 

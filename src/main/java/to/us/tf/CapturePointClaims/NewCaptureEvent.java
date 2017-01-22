@@ -18,9 +18,9 @@ public class NewCaptureEvent extends Event
         return handlers;
     }
 
-    private RegionCoordinates region;
+    private RegionManager region;
 
-    public NewCaptureEvent(RegionCoordinates region)
+    public NewCaptureEvent(RegionManager region)
     {
 
     }

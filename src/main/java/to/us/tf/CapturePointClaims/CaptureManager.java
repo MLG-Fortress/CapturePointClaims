@@ -4,14 +4,7 @@ import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -23,9 +16,9 @@ public class CaptureManager
 {
     ClanManager clanManager;
     //Set of CapturePoints being captured
-    Map<RegionCoordinates, CapturePoint> pointsBeingCaptured = new HashMap<>();
+    Map<RegionManager, CapturePoint> pointsBeingCaptured = new HashMap<>();
     CapturePointClaims instance;
-    RegionCoordinates regionCoordinates = new RegionCoordinates();
+    RegionManager regionManager;
 
 
 
@@ -35,30 +28,10 @@ public class CaptureManager
         this.instance = capturePointClaims;
     }
 
-    private boolean nearRegionPost(Location location, RegionCoordinates region, int howClose)
+    private CapturePoint startNewCapture(Clan attackingClan, Region region)
     {
-        Location postLocation = region.getRegionCenter(region, false);
-
-        //NOTE!  Why not use distance?  Because I want a box to the sky, not a sphere.
-        //Why not round?  Below calculation is cheaper than distance (needed for a cylinder or sphere).
-        //Why to the sky?  Because if somebody builds a platform above the post, folks will teleport onto that platform by mistake.
-        //Also...  lava from above would be bad.
-        //Why not below?  Because I can't imagine mining beneath a post as an avenue for griefing.
-
-        return (	location.getBlockX() >= postLocation.getBlockX() - howClose &&
-                location.getBlockX() <= postLocation.getBlockX() + howClose &&
-                location.getBlockZ() >= postLocation.getBlockZ() - howClose &&
-                location.getBlockZ() <= postLocation.getBlockZ() + howClose &&
-                location.getBlockY() >= location.getWorld().getHighestBlockYAt(postLocation) - 4
-        );
-    }
-
-
-
-    private CapturePoint startNewCapture(Clan attackingClan, RegionCoordinates regionCoordinates)
-    {
-        CapturePoint capturePoint = new CapturePoint(attackingClan, instance.getOwningClan(regionCoordinates), regionCoordinates);
-        pointsBeingCaptured.put(regionCoordinates, capturePoint);
+        CapturePoint capturePoint = new CapturePoint(attackingClan, instance.getOwningClan(region), region);
+        pointsBeingCaptured.put(regionManager, capturePoint);
         new BukkitRunnable()
         {
             public void run()
@@ -72,9 +45,9 @@ public class CaptureManager
     }
 
     //Oh wowe dat b a lot of ifs dere!!!!
-    private void startOrContinueCapture(Player player, RegionCoordinates regionCoordinates)
+    public void startOrContinueCapture(Player player, Region region)
     {
-        CapturePoint capturePoint = pointsBeingCaptured.get(regionCoordinates); //If null, no clan is currently capturing
+        CapturePoint capturePoint = pointsBeingCaptured.get(regionManager); //If null, no clan is currently capturing
         Clan clan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
 
         if (clan == null)
@@ -85,12 +58,12 @@ public class CaptureManager
 
         if (capturePoint == null) //Start a capture
         {
-            capturePoint = startNewCapture(clan, regionCoordinates);
+            capturePoint = startNewCapture(clan, region);
 
             if (capturePoint.getOwningClan() != null) //notify defenders
             {
                 Clan defendingClan = capturePoint.getOwningClan();
-                Messenger.alertMembersOfAttack(clan, capturePoint.getOwningClan(), regionCoordinates);
+                Messenger.alertMembersOfAttack(clan, capturePoint.getOwningClan(), region);
                 //TODO: Dynmap: make claim appear in red or some color no clan uses
             }
 
@@ -103,12 +76,12 @@ public class CaptureManager
             if (capturePoint.isExpired())
             {
                 //Start a new capture
-                pointsBeingCaptured.remove(regionCoordinates);
-                startOrContinueCapture(player, regionCoordinates);
+                pointsBeingCaptured.remove(regionManager);
+                startOrContinueCapture(player, region);
             }
             else
             {
-                player.sendMessage("Point is locked, please wait " + Messenger.formatTime(capturePoint.getExpirationTime());
+                player.sendMessage("Point is locked, please wait " + Messenger.formatTime(capturePoint.getExpirationTime()));
             }
         }
         else if (capturePoint.getAttackingClan() != clan) //Another clan is already capturing
@@ -142,10 +115,10 @@ class CapturePoint
     private Long timeCaptured = 0L;
     //Determines who won
     private boolean defended = true;
-    RegionCoordinates region;
+    Region region;
 
     //Capturing a new point
-    public CapturePoint(Clan attackingClan, Clan owningClan, RegionCoordinates region)
+    public CapturePoint(Clan attackingClan, Clan owningClan, Region region)
     {
         this.attackingClan = attackingClan;
         this.owningClan = owningClan;
@@ -174,7 +147,7 @@ class CapturePoint
         return this.timeCaptured > 0L;
     }
 
-    public Long getTimeCaptured()
+    private Long getTimeCaptured()
     {
         return this.timeCaptured;
     }
@@ -196,12 +169,20 @@ class CapturePoint
 
     public boolean isExpired()
     {
-        return this.getTimeCaptured() < (System.currentTimeMillis() - 1440000); //This is 24 minutes, we want 24 hours
+        return this.getTimeCaptured() < (System.currentTimeMillis() - 86400000); //This is 24 minutes, we want 24 hours
     }
 
     public Long getExpirationTime()
     {
-        return (this.getTimeCaptured() - (System.currentTimeMillis() - 1440000)) / 1000;
+        return ((this.getTimeCaptured() + 86400000) - System.currentTimeMillis() / 1000);
+    }
+
+    /**
+     * @return 1.0 - 0.0, decreasing to 0.0
+     */
+    public Double getExpirationTimeAsPercentage()
+    {
+        return 1D / (getExpirationTime() / 86400D);
     }
 
 

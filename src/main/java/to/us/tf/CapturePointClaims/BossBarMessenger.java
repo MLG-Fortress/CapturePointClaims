@@ -17,8 +17,8 @@ import java.util.Map;
 public class BossBarMessenger
 {
     CapturePointClaims instance;
-    Map<RegionCoordinates, BossBar> cachedRegions = new HashMap<>();
-    Map<Player, RegionCoordinates> lastSeenRegion = new HashMap<>();
+    Map<Region, BossBar> cachedRegions = new HashMap<>();
+    Map<Player, Region> lastSeenRegion = new HashMap<>();
     CaptureManager captureManager;
 
     public BossBarMessenger(CapturePointClaims capturePointClaims, CaptureManager captureManager)
@@ -34,7 +34,7 @@ public class BossBarMessenger
         }.runTaskTimer(instance, 200L, 10L);
         new BukkitRunnable()
         {
-            RegionCoordinates regionCoordinates = new RegionCoordinates();
+            RegionManager regionManager = new RegionManager();
             public void run()
             {
             for (Player player : instance.getServer().getOnlinePlayers())
@@ -45,7 +45,7 @@ public class BossBarMessenger
                     continue;
                 }
 
-                RegionCoordinates region = regionCoordinates.fromLocation(player.getLocation());
+                Region region = regionManager.fromLocation(player.getLocation());
                 addPlayerToBossBar(player, region);
             }
             }
@@ -54,7 +54,7 @@ public class BossBarMessenger
 
     private void updateBossBar()
     {
-        for (RegionCoordinates region : cachedRegions.keySet())
+        for (Region region : cachedRegions.keySet())
         {
             if (!captureManager.pointsBeingCaptured.containsKey(region))
                 continue;
@@ -66,7 +66,7 @@ public class BossBarMessenger
                 bar.setStyle(BarStyle.SOLID);
                 bar.setColor(BarColor.BLUE);
                 bar.setTitle("Locked by " + instance.getOwningClanString(region));
-                bar.setProgress();
+                bar.setProgress(capturePoint.getExpirationTimeAsPercentage());
                 continue;
             }
             bar.setStyle(BarStyle.SEGMENTED_20);
@@ -78,9 +78,9 @@ public class BossBarMessenger
         }
     }
 
-    public void addPlayerToBossBar(Player player, RegionCoordinates region)
+    public void addPlayerToBossBar(Player player, Region region)
     {
-        RegionCoordinates lastRegion = this.lastSeenRegion.get(player);
+        Region lastRegion = this.lastSeenRegion.get(player);
         if (lastRegion == region)
             return; //Nothing to do if the player hasn't moved regions
 
@@ -103,7 +103,7 @@ public class BossBarMessenger
 
     public void removePlayerFromBossBar(Player player)
     {
-        RegionCoordinates lastRegion = this.lastSeenRegion.remove(player);
+        Region lastRegion = this.lastSeenRegion.remove(player);
         if (lastRegion != null)
             cachedRegions.get(lastRegion).removePlayer(player);
     }
