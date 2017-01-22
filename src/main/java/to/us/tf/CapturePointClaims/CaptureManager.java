@@ -19,7 +19,7 @@ import java.util.*;
 /**
  * Created by robom on 12/20/2016.
  */
-public class CapturingManager implements Listener
+public class CaptureManager
 {
     ClanManager clanManager;
     //Set of CapturePoints being captured
@@ -27,19 +27,9 @@ public class CapturingManager implements Listener
     CapturePointClaims instance;
     RegionCoordinates regionCoordinates = new RegionCoordinates();
 
-    private Set<Material> alwaysBreakableMaterials = new HashSet<Material>(Arrays.asList(
-            Material.LONG_GRASS,
-            Material.DOUBLE_PLANT,
-            Material.LOG,
-            Material.LOG_2,
-            Material.LEAVES,
-            Material.LEAVES_2,
-            Material.RED_ROSE,
-            Material.YELLOW_FLOWER,
-            Material.SNOW_BLOCK
-    ));
 
-    public CapturingManager(CapturePointClaims capturePointClaims, ClanManager clanManager)
+
+    public CaptureManager(CapturePointClaims capturePointClaims, ClanManager clanManager)
     {
         this.clanManager = clanManager;
         this.instance = capturePointClaims;
@@ -63,34 +53,11 @@ public class CapturingManager implements Listener
         );
     }
 
-    /**
-     *
-     * @param regionCoordinates
-     * @return clan that owns region, otherwise null
-     */
-    private Clan getOwningClan(RegionCoordinates regionCoordinates)
-    {
-        if (regionCoordinates.getOwningClanTag() == null)
-            return null;
-        return clanManager.getClan(regionCoordinates.getOwningClanTag());
-    }
 
-    private boolean isEnemyClaim(RegionCoordinates regionCoordinates, Player player, boolean includeWildernessAsEnemy)
-    {
-        Clan clan = getOwningClan(regionCoordinates);
-        Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
-
-        if (clan == null) //Unclaimed
-        {
-            return includeWildernessAsEnemy;
-        }
-
-        return playerClan != clan;
-    }
 
     private CapturePoint startNewCapture(Clan attackingClan, RegionCoordinates regionCoordinates)
     {
-        CapturePoint capturePoint = new CapturePoint(attackingClan, getOwningClan(regionCoordinates), regionCoordinates);
+        CapturePoint capturePoint = new CapturePoint(attackingClan, instance.getOwningClan(regionCoordinates), regionCoordinates);
         pointsBeingCaptured.put(regionCoordinates, capturePoint);
         new BukkitRunnable()
         {
@@ -133,7 +100,7 @@ public class CapturingManager implements Listener
 
         else if (capturePoint.isEnded()) //Point was already captured/defended before
         {
-            if (capturePoint.getTimeCaptured() < System.currentTimeMillis() - 1440000) //Over a day
+            if (capturePoint.isExpired())
             {
                 //Start a new capture
                 pointsBeingCaptured.remove(regionCoordinates);
@@ -141,7 +108,7 @@ public class CapturingManager implements Listener
             }
             else
             {
-                player.sendMessage("Point is locked, please wait " + Messenger.formatTime(capturePoint.getTimeCaptured() - (System.currentTimeMillis() - 1440000)));
+                player.sendMessage("Point is locked, please wait " + Messenger.formatTime(capturePoint.getExpirationTime());
             }
         }
         else if (capturePoint.getAttackingClan() != clan) //Another clan is already capturing
@@ -155,75 +122,6 @@ public class CapturingManager implements Listener
         else
             instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");
     }
-
-    @EventHandler(ignoreCancelled = true)
-    void onBlockBreak(BlockBreakEvent event)
-    {
-        Player player = event.getPlayer();
-
-        Block block = event.getBlock();
-
-        //if the player is not in managed world, do nothing
-        if(!instance.claimWorlds.contains(player.getWorld())) return;
-
-        //whitelist for blocks which can always be broken (grass cutting, tree chopping)
-        if(this.alwaysBreakableMaterials.contains(block.getType())) return;
-
-        //otherwise figure out which region that block is in
-        Location blockLocation = block.getLocation();
-
-        RegionCoordinates blockRegion = regionCoordinates.fromLocation(blockLocation);
-
-        //if too close to (or above) region post,
-        if(this.nearRegionPost(blockLocation, blockRegion, 2))
-        {
-            event.setCancelled(true);
-            if (!isEnemyClaim(blockRegion, player, true)) //player's clan already claimed this, do nothing more
-                return;
-            //Otherwise start/continue claiming process
-            else
-                startOrContinueCapture(player, regionCoordinates);
-        }
-        //Otherwise, just general region claim check stuff
-        else if (isEnemyClaim(blockRegion, player, false))
-        {
-            short durability = player.getInventory().getItemInMainHand().getDurability();
-            //TODO: Cancel if item is not a tool
-            if (durability > 0)
-            {
-                event.setCancelled(true);
-                player.sendActionBar(ChatColor.RED + "Use a tool to break blocks in an enemy claim.");
-                return;
-            }
-            //TODO: otherwise reduce durability of tool
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    void onBlockPlace(BlockPlaceEvent event)
-    {
-        Location blockLocation = event.getBlock().getLocation();
-        Player player = event.getPlayer();
-
-        //if the player is not in managed world, do nothing
-        if(!instance.claimWorlds.contains(player.getWorld())) return;
-
-        RegionCoordinates blockRegion = regionCoordinates.fromLocation(blockLocation);
-
-        if (isEnemyClaim(blockRegion, player, false))
-        {
-            event.setCancelled(true);
-            player.sendActionBar(ChatColor.RED + "First capture this area before building here.");
-            return;
-        }
-
-        //if too close to (or above) region post,
-        if(this.nearRegionPost(blockLocation, blockRegion, 2))
-        {
-            event.setCancelled(true);
-        }
-    }
-
 }
 
 class CapturePoint
@@ -296,6 +194,16 @@ class CapturePoint
         return this.ticksToEndGame / 20;
     }
 
+    public boolean isExpired()
+    {
+        return this.getTimeCaptured() < (System.currentTimeMillis() - 1440000); //This is 24 minutes, we want 24 hours
+    }
+
+    public Long getExpirationTime()
+    {
+        return (this.getTimeCaptured() - (System.currentTimeMillis() - 1440000)) / 1000;
+    }
+
 
     public void setTicksToEndGame(int ticksToTick)
     {
@@ -313,7 +221,6 @@ class CapturePoint
         checkEndGame(false);
         return this.captureProgress;
     }
-
 
     private boolean checkEndGame(boolean defenderWin)
     {

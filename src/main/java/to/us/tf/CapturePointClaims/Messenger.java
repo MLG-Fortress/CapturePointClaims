@@ -33,12 +33,11 @@ public class Messenger {
 
     /**
      * Thanks Lax
-     * @param milliseconds
+     * @param seconds
      * @return
      */
-    public static String formatTime(Long milliseconds)
+    public static String formatTime(Long seconds)
     {
-        Long seconds = milliseconds / 1000;
         return formatTime(seconds, 1);
     }
     private static String formatTime(Long seconds, int depth)
@@ -98,7 +97,7 @@ public class Messenger {
         }
 
         if (seconds < 60) {
-            return ":" + new DecimalFormat("##").format(seconds);
+            return ":" + String.format("%02d", seconds); //http://stackoverflow.com/questions/275711/add-leading-zeroes-to-number-in-java
         }
 
         Long count = (long) Math.ceil(seconds / 60);
@@ -106,7 +105,7 @@ public class Messenger {
 
         int remaining = seconds % 60;
         if (depth > 0 && remaining >= 0) {
-            return res + ":" + formatTimeDifferently(remaining, --depth);
+            return res + formatTimeDifferently(remaining, --depth);
         }
         return res + ":00";
     }

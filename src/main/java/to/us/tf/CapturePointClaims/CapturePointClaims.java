@@ -1,5 +1,6 @@
 package to.us.tf.CapturePointClaims;
 
+import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.Chunk;
@@ -10,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import to.us.tf.CapturePointClaims.listeners.BlockEventListener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +21,7 @@ import java.util.Set;
  */
 public class CapturePointClaims extends JavaPlugin implements Listener
 {
-    protected Set<World> claimWorlds = new HashSet<>();
+    public Set<World> claimWorlds = new HashSet<>();
     ClanManager clanManager;
 
     public void onEnable()
@@ -31,9 +33,9 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         claimWorlds.add(getServer().getWorld("world_nether"));
         SimpleClans sc = (SimpleClans)getServer().getPluginManager().getPlugin("SimpleClans");
         this.clanManager = sc.getClanManager();
-        CapturingManager capturingManager = new CapturingManager(this, sc.getClanManager());
-        new BossBarMessenger(this, capturingManager);
-        getServer().getPluginManager().registerEvents(capturingManager, this);
+        CaptureManager captureManager = new CaptureManager(this, clanManager);
+        getServer().getPluginManager().registerEvents(new BlockEventListener(this, captureManager, clanManager), this);
+        new BossBarMessenger(this, captureManager);
     }
 
     public String getOwningClanString(RegionCoordinates region)
@@ -71,7 +73,21 @@ public class CapturePointClaims extends JavaPlugin implements Listener
                     region.AddRegionPost(region, instance);
                 }
             }.runTaskLater(this, 200L);
-
         }
+    }
+
+    /**
+     * Utils (should be in a static class of its own????)
+     */
+
+    /**
+     * @param regionCoordinates
+     * @return clan that owns region, otherwise null
+     */
+    public Clan getOwningClan(RegionCoordinates regionCoordinates)
+    {
+        if (regionCoordinates.getOwningClanTag() == null)
+            return null;
+        return clanManager.getClan(regionCoordinates.getOwningClanTag());
     }
 }
