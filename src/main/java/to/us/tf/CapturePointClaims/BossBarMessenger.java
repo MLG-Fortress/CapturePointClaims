@@ -61,11 +61,17 @@ public class BossBarMessenger
                 continue;
 
             CapturePoint capturePoint = capturingManager.pointsBeingCaptured.get(region);
-            //TODO: ignore when capture is ended
             BossBar bar = cachedRegions.get(region);
+            if (capturePoint.isEnded())
+            {
+                bar.setStyle(BarStyle.SOLID);
+                bar.setColor(BarColor.BLUE);
+                bar.setTitle("Locked by " + region.getOwningClanTag());
+                continue;
+            }
             bar.setStyle(BarStyle.SEGMENTED_20);
             bar.setColor(BarColor.RED);
-            bar.setProgress(capturePoint.getCaptureProgress() / 100);
+            bar.setProgress(capturePoint.getCaptureProgress() / 100D);
             String info = capturePoint.getAttackingClan().getColorTag() + ChatColor.RESET + " attacking " + capturePoint.getOwningClanTag() + ChatColor.RESET;
             String time = Messenger.formatTimeDifferently(capturePoint.getSecondsToEndGame(), 1);
             bar.setTitle(info + " " + time);
