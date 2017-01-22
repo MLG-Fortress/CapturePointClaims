@@ -71,6 +71,8 @@ public class CapturingManager implements Listener
      */
     private Clan getOwningClan(RegionCoordinates regionCoordinates)
     {
+        if (regionCoordinates.getOwningClanTag() == null)
+            return null;
         return clanManager.getClan(regionCoordinates.getOwningClanTag());
     }
 
