@@ -107,8 +107,7 @@ public class CapturingManager implements Listener
     //Oh wowe dat b a lot of ifs dere!!!!
     private void startOrContinueCapture(Player player, RegionCoordinates regionCoordinates)
     {
-        //If null, no clan is currently capturing
-        CapturePoint capturePoint = pointsBeingCaptured.get(regionCoordinates);
+        CapturePoint capturePoint = pointsBeingCaptured.get(regionCoordinates); //If null, no clan is currently capturing
         Clan clan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
 
         if (clan == null)
@@ -147,15 +146,14 @@ public class CapturingManager implements Listener
         }
         else if (capturePoint.getAttackingClan() != clan) //Another clan is already capturing
         {
-            player.sendMessage("Point is already being captured by " + capturePoint.getAttackingClan().getColorTag());
+            player.sendMessage("Point is being captured by " + capturePoint.getAttackingClan().getColorTag());
         }
-        else if (capturePoint.getOwningClan() == clan) //Continue capture
+        else if (capturePoint.getAttackingClan() == clan) //Continue capture
         {
             player.sendActionBar("Capture point health: " + capturePoint.decrementCaptureProgress(1) + "/100");
         }
         else
             instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");
-
     }
 
     @EventHandler(ignoreCancelled = true)
