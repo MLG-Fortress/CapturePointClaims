@@ -46,7 +46,7 @@ public class CaptureManager
     //Oh wowe dat b a lot of ifs dere!!!!
     public void startOrContinueCapture(Player player, Region region)
     {
-        CapturePoint capturePoint = pointsBeingCaptured.get(regionManager); //If null, no clan is currently capturing
+        CapturePoint capturePoint = pointsBeingCaptured.get(region); //If null, no clan is currently capturing
         Clan clan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
 
         if (clan == null)
@@ -75,7 +75,7 @@ public class CaptureManager
             if (capturePoint.isExpired())
             {
                 //Start a new capture
-                pointsBeingCaptured.remove(regionManager);
+                pointsBeingCaptured.remove(region);
                 startOrContinueCapture(player, region);
             }
             else

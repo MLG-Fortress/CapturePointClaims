@@ -77,11 +77,10 @@ public class BlockEventListener implements Listener
         if(blockRegion.nearRegionPost(blockLocation, 2))
         {
             event.setCancelled(true);
-            if (!isEnemyClaim(blockRegion, player, true)) //player's clan already claimed this, do nothing more
-                return;
-                //Otherwise start/continue claiming process
-            else
-                captureManager.startOrContinueCapture(player, blockRegion);
+            if (isEnemyClaim(blockRegion, player, true))
+                captureManager.startOrContinueCapture(player, blockRegion); //start/continue claiming process
+            else //player's clan already claimed this, do nothing more
+                player.sendActionBar("Your clan already captured this point");
         }
         //Otherwise, just general region claim check stuff
         else if (isEnemyClaim(blockRegion, player, false))
