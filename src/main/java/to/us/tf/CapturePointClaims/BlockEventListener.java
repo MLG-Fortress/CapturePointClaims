@@ -38,11 +38,12 @@ public class BlockEventListener implements Listener
             Material.SNOW_BLOCK
     ));
 
-    public BlockEventListener(CapturePointClaims capturePointClaims, CaptureManager captureManager, ClanManager clanManager)
+    public BlockEventListener(CapturePointClaims capturePointClaims, CaptureManager captureManager, ClanManager clanManager, RegionManager regionManager)
     {
         this.instance = capturePointClaims;
         this.captureManager = captureManager;
         this.clanManager = clanManager;
+        this.regionManager = regionManager;
     }
 
     private boolean isEnemyClaim(Region region, Player player, boolean includeWildernessAsEnemy)

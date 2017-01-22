@@ -226,7 +226,7 @@ class Region
         {
             y -= 4;
         }
-        else if(blockType == Material.GLOWSTONE || blockType == Material.BARRIER)
+        else if(blockType == Material.BEACON || blockType == Material.BARRIER)
         {
             y -= 3;
         }
