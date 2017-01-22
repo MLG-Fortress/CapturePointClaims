@@ -314,7 +314,7 @@ public class RegionCoordinates
 
                 block1.setTypeIdAndData(Material.WALL_SIGN.getId(), signData.getData(), false);
 
-                sign = (org.bukkit.block.Sign)block.getState();
+                sign = (org.bukkit.block.Sign)block1.getState();
 
                 sign.setLine(0, "Break this");
                 sign.setLine(1, "to start");
