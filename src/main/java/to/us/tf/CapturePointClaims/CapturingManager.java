@@ -90,13 +90,14 @@ public class CapturingManager implements Listener
 
     private CapturePoint startNewCapture(Clan attackingClan, RegionCoordinates regionCoordinates)
     {
-        CapturePoint capturePoint = new CapturePoint(attackingClan, getOwningClan(regionCoordinates));
+        CapturePoint capturePoint = new CapturePoint(attackingClan, getOwningClan(regionCoordinates), regionCoordinates);
         pointsBeingCaptured.put(regionCoordinates, capturePoint);
         new BukkitRunnable()
         {
             public void run()
             {
-                if (capturePoint.setTicksToEndGame(20))
+                capturePoint.setTicksToEndGame(20);
+                if (capturePoint.isEnded())
                     this.cancel();
             }
         }.runTaskTimer(instance, 0L, 20L);
@@ -191,7 +192,7 @@ public class CapturingManager implements Listener
             if (durability > 0)
             {
                 event.setCancelled(true);
-                player.sendActionBar(ChatColor.RED + "Use a tool to damage blocks in an enemy claim.");
+                player.sendActionBar(ChatColor.RED + "Use a tool to break blocks in an enemy claim.");
                 return;
             }
             //TODO: otherwise reduce durability of tool
@@ -241,12 +242,16 @@ class CapturePoint
     private int ticksToEndGame = 6000; //5 minutes
     //Used to determine end game, and when point should be unlocked
     private Long timeCaptured = 0L;
+    //Determines who won
+    private boolean defended = true;
+    RegionCoordinates region;
 
     //Capturing a new point
-    public CapturePoint(Clan attackingClan, Clan owningClan)
+    public CapturePoint(Clan attackingClan, Clan owningClan, RegionCoordinates region)
     {
         this.attackingClan = attackingClan;
         this.owningClan = owningClan;
+        this.region = region;
     }
 
     public Clan getAttackingClan()
@@ -259,7 +264,7 @@ class CapturePoint
         return this.owningClan;
     }
 
-    public String getOwningClanTag()
+    public String getOwningClanColorTag()
     {
         if (getOwningClan() == null)
             return "Wilderness";
@@ -291,24 +296,36 @@ class CapturePoint
         return this.ticksToEndGame / 20;
     }
 
-    /**
-     * @param ticksToTick
-     * @return if capture time is up
-     */
-    public boolean setTicksToEndGame(int ticksToTick)
+
+    public void setTicksToEndGame(int ticksToTick)
     {
+        if (isEnded())
+            return;
         this.ticksToEndGame = this.ticksToEndGame - ticksToTick;
-        if (this.ticksToEndGame <= 0 || this.captureProgress <= 0)
-        {
-            this.timeCaptured = System.currentTimeMillis();
-            return true;
-        }
-        return false;
+        checkEndGame(true);
     }
 
     public int decrementCaptureProgress(int captureProgress)
     {
+        if (isEnded())
+            return this.captureProgress;
         this.captureProgress -= captureProgress;
+        checkEndGame(false);
         return this.captureProgress;
+    }
+
+
+    private boolean checkEndGame(boolean defenderWin)
+    {
+        if (this.ticksToEndGame <= 0 || this.captureProgress <= 0)
+        {
+            //TODO: Fire EndCaptureEvent
+            this.timeCaptured = System.currentTimeMillis();
+            this.defended = defenderWin;
+            if (!defenderWin)
+                region.setOwningClanTag(attackingClan.getTag());
+            return true;
+        }
+        return false;
     }
 }

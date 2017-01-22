@@ -7,7 +7,6 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,13 +65,13 @@ public class BossBarMessenger
             {
                 bar.setStyle(BarStyle.SOLID);
                 bar.setColor(BarColor.BLUE);
-                bar.setTitle("Locked by " + region.getOwningClanTag());
+                bar.setTitle("Locked by " + instance.getOwningClanString(region));
                 continue;
             }
             bar.setStyle(BarStyle.SEGMENTED_20);
             bar.setColor(BarColor.RED);
             bar.setProgress(capturePoint.getCaptureProgress() / 100D);
-            String info = capturePoint.getAttackingClan().getColorTag() + ChatColor.RESET + " attacking " + capturePoint.getOwningClanTag() + ChatColor.RESET;
+            String info = capturePoint.getAttackingClan().getColorTag() + ChatColor.RESET + " attacking " + capturePoint.getOwningClanColorTag() + ChatColor.RESET;
             String time = Messenger.formatTimeDifferently(capturePoint.getSecondsToEndGame(), 1);
             bar.setTitle(info + " " + time);
         }
@@ -93,8 +92,7 @@ public class BossBarMessenger
         if (!cachedRegions.containsKey(region))
         {
             //Create bossbar and cache it
-            String owner = region.getOwningClanTag();
-            if (owner == null) owner = "Wilderness";
+            String owner = instance.getOwningClanString(region);
             cachedRegions.put(region, instance.getServer().createBossBar("Owned by " + owner, BarColor.BLUE, BarStyle.SOLID));
         }
 

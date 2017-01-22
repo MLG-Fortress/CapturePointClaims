@@ -36,6 +36,13 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(capturingManager, this);
     }
 
+    public String getOwningClanString(RegionCoordinates region)
+    {
+        if (region.getOwningClanTag() == null)
+            return "Wilderness";
+        return clanManager.getClan(region.getOwningClanTag()).getName();
+    }
+
     @EventHandler
     void onChunkLoad(ChunkLoadEvent event)
     {
