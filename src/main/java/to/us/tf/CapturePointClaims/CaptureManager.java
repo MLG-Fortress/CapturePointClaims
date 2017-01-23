@@ -34,9 +34,13 @@ public class CaptureManager
         {
             public void run()
             {
-                capturePoint.setTicksToEndGame(20);
                 if (capturePoint.isEnded())
                     this.cancel();
+                else
+                {
+                    capturePoint.setTicksToEndGame(20);
+                    checkOrEndGame(capturePoint);
+                }
             }
         }.runTaskTimer(instance, 0L, 20L);
         return capturePoint;
@@ -92,6 +96,31 @@ public class CaptureManager
         }
         else
             instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");
+    }
+
+    private void checkOrEndGame(CapturePoint capturePoint)
+    {
+        if (capturePoint.isEnded())
+            return;
+        int remainingTime = capturePoint.getTicksToEndGame();
+        int remainingCapture = capturePoint.getCaptureProgress();
+        boolean defenderWin;
+
+        if (remainingTime <= 0)
+        {
+            defenderWin = true;
+        }
+        else if (capturePoint.getCaptureProgress() <= 0)
+        {
+            defenderWin = false;
+        }
+        else
+            return;
+
+        //TODO: Fire EndCaptureEvent
+        if (!defenderWin)
+            capturePoint.getRegion().changeOwner(capturePoint.getAttackingClan(), instance);
+
     }
 }
 
@@ -165,6 +194,11 @@ class CapturePoint
         return this.ticksToEndGame / 20;
     }
 
+    public Region getRegion()
+    {
+        return this.getRegion();
+    }
+
     public boolean isExpired()
     {
         return this.getTimeCaptured() < (System.currentTimeMillis() - 86400000); //24 hours
@@ -189,7 +223,6 @@ class CapturePoint
         if (isEnded())
             return;
         this.ticksToEndGame = this.ticksToEndGame - ticksToTick;
-        checkEndGame(true);
     }
 
     public int decrementCaptureProgress(int captureProgress)
@@ -197,21 +230,19 @@ class CapturePoint
         if (isEnded())
             return this.captureProgress;
         this.captureProgress -= captureProgress;
-        checkEndGame(false);
         return this.captureProgress;
     }
 
-    private boolean checkEndGame(boolean defenderWin)
+    public boolean endGame()
     {
-        if (this.ticksToEndGame <= 0 || this.captureProgress <= 0)
-        {
-            //TODO: Fire EndCaptureEvent
-            this.timeCaptured = System.currentTimeMillis();
-            this.defended = defenderWin;
-            if (!defenderWin)
-                region.changeOwner(attackingClan);
-            return true;
-        }
-        return false;
+        if (this.timeCaptured > 0L)
+            return this.defended;
+        this.timeCaptured = System.currentTimeMillis();
+        if (this.ticksToEndGame > 0)
+            this.defended = false;
+        else
+            this.defended = true;
+        return this.defended;
     }
+
 }

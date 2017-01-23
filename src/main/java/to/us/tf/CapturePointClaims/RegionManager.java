@@ -154,7 +154,7 @@ class Region
         return this.clanColorValue;
     }
 
-    public void changeOwner(Clan clan)
+    public void changeOwner(Clan clan, CapturePointClaims instance)
     {
         DyeColor dyeColor = DyeColor.SILVER;
         if (clan == null)
@@ -183,6 +183,7 @@ class Region
                 break;
         }
         this.setClanColorValue(dyeColor.getDyeData());
+        this.AddRegionPost(instance);
     }
 
     //determines the center of a region (as a Location) given its region coordinates
