@@ -20,7 +20,9 @@ package to.us.tf.CapturePointClaims;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.Chunk;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -64,6 +66,7 @@ class Region
     private World world;
     private String owningClanTag; //Although clan names aren't mutable(?), there's only a method to get clans by tag.
     private int REGION_SIZE;
+    private Byte clanColorValue;
 
     public Region(int regionX, int regionZ, World world, int regionSize)
     {
@@ -123,17 +126,63 @@ class Region
     {
         if (this.owningClanTag == null)
         {
-            //Attempt to load and cache result from disk
             //TODO: various data storage stuff to set owningClanTag
         }
-
         return this.owningClanTag;
     }
 
-    public void setOwningClanTag(String clan)
+    private void setOwningClanTag(String clan)
     {
         this.owningClanTag = clan;
         //TODO: various data storage stuff
+    }
+
+    private void setClanColorValue(byte value)
+    {
+        this.clanColorValue = value;
+    }
+
+    private byte getClanColorValue()
+    {
+        if (this.clanColorValue == null)
+        {
+            //TODO: various data retrieval
+        }
+
+        if (this.clanColorValue == null)
+            return DyeColor.WHITE.getDyeData();
+        return this.clanColorValue;
+    }
+
+    public void changeOwner(Clan clan)
+    {
+        DyeColor dyeColor = DyeColor.WHITE;
+        if (clan == null)
+        {
+            this.setOwningClanTag(null);
+            this.setClanColorValue(dyeColor.getDyeData());
+        }
+        this.setOwningClanTag(clan.getTag());
+        char clanTagChar = clan.getTag().charAt(1);
+        switch (clanTagChar)
+        {
+            case 'a':
+                dyeColor = DyeColor.GREEN;
+                break;
+            case 'b':
+                dyeColor = DyeColor.LIGHT_BLUE;
+                break;
+            case 'd':
+                dyeColor = DyeColor.PURPLE;
+                break;
+            case 'e':
+                dyeColor = DyeColor.YELLOW;
+                break;
+            case 'c':
+                dyeColor = DyeColor.RED;
+                break;
+        }
+        this.setClanColorValue(dyeColor.getDyeData());
     }
 
     //determines the center of a region (as a Location) given its region coordinates
@@ -228,7 +277,7 @@ class Region
         }
         else if(blockType == Material.BEACON || blockType == Material.BARRIER)
         {
-            y -= 3;
+            y -= 1;
         }
         else if(blockType == Material.BEDROCK)
         {
@@ -277,12 +326,15 @@ class Region
         {
             Block block = world.getBlockAt(x, highestBlockY, z);
             if(block.getType() != Material.AIR)
-                block.setType(Material.AIR);
+                block.setType(Material.BARRIER);
             highestBlockY--;
         }
 
         //build top block
         world.getBlockAt(x, y + 3, z).setType(Material.BARRIER);
+        Block glass = world.getBlockAt(x, y + 2, z);
+        glass.setType(Material.STAINED_GLASS);
+        glass.setData(getClanColorValue());
 
         //build outer platform
         for(int x1 = x - 2; x1 <= x + 2; x1++)

@@ -3,7 +3,6 @@ package to.us.tf.CapturePointClaims;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -80,7 +79,7 @@ public class CaptureManager
             }
             else
             {
-                player.sendMessage("Point is locked, please wait " + Messenger.formatTime(capturePoint.getExpirationTime()));
+                player.sendMessage("Point is locked, please wait " + Messenger.formatTime(capturePoint.getExpirationTimeRemaining()));
             }
         }
         else if (capturePoint.getAttackingClan() != clan) //Another clan is already capturing
@@ -168,20 +167,20 @@ class CapturePoint
 
     public boolean isExpired()
     {
-        return this.getTimeCaptured() < (System.currentTimeMillis() - 86400000); //This is 24 minutes, we want 24 hours
+        return this.getTimeCaptured() < (System.currentTimeMillis() - 86400000); //24 hours
     }
 
-    public Long getExpirationTime()
+    public Long getExpirationTimeRemaining()
     {
         return ((this.getTimeCaptured() + 86400000) - System.currentTimeMillis() / 1000);
     }
 
     /**
-     * @return 1.0 - 0.0, decreasing to 0.0
+     * @return 0.0 - 1.0, increasing to 1.0
      */
     public Double getExpirationTimeAsPercentage()
     {
-        return 1D / (getExpirationTime() / 86400D);
+        return 1D / getExpirationTimeRemaining();
     }
 
 
@@ -210,7 +209,7 @@ class CapturePoint
             this.timeCaptured = System.currentTimeMillis();
             this.defended = defenderWin;
             if (!defenderWin)
-                region.setOwningClanTag(attackingClan.getTag());
+                region.changeOwner(attackingClan);
             return true;
         }
         return false;
