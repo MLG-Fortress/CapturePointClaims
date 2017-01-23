@@ -156,7 +156,7 @@ class Region
 
     public void changeOwner(Clan clan)
     {
-        DyeColor dyeColor = DyeColor.WHITE;
+        DyeColor dyeColor = DyeColor.SILVER;
         if (clan == null)
         {
             this.setOwningClanTag(null);
