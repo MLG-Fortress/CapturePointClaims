@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by robom on 12/20/2016.
@@ -180,9 +181,12 @@ class CapturePoint
         return this.getTimeCaptured() < (System.currentTimeMillis() - 86400000); //24 hours
     }
 
+    /**
+     * @return Seconds remaining
+     */
     public Long getExpirationTimeRemaining()
     {
-        return ((this.getTimeCaptured() + 86400000) - System.currentTimeMillis() / 1000);
+        return (((this.getTimeCaptured() + TimeUnit.DAYS.toMillis(1L)) - System.currentTimeMillis()) / 1000);
     }
 
     /**
