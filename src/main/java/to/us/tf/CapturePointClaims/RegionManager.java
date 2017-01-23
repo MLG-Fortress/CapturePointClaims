@@ -321,7 +321,7 @@ class Region
         //Sometimes we don't clear high enough thanks to new ultra tall trees in jungle biomes
         //Instead of attempting to clear up to nearly 110 * 4 blocks more, we'll just see what getHighestBlockYAt returns
         //If it doesn't return our post's y location, we're setting it and all blocks below to air.
-        int highestBlockY = world.getHighestBlockYAt(x, z);
+        int highestBlockY = 256;
         while (highestBlockY > y)
         {
             Block block = world.getBlockAt(x, highestBlockY, z);
