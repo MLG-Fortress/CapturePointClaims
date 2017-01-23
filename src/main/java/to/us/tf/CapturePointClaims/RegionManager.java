@@ -66,7 +66,7 @@ class Region
     private World world;
     private String owningClanTag; //Although clan names aren't mutable(?), there's only a method to get clans by tag.
     private int REGION_SIZE;
-    private Byte clanColorValue;
+    private Byte clanColorValue = DyeColor.WHITE.getDyeData();
 
     public Region(int regionX, int regionZ, World world, int regionSize)
     {
