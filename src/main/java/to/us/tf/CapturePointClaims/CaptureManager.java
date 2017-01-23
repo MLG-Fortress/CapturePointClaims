@@ -39,7 +39,7 @@ public class CaptureManager
                 else
                 {
                     capturePoint.setTicksToEndGame(20);
-                    checkOrEndGame(capturePoint);
+                    capturePoint.checkOrEndGame(instance);
                 }
             }
         }.runTaskTimer(instance, 0L, 20L);
@@ -93,35 +93,10 @@ public class CaptureManager
         else if (capturePoint.getAttackingClan() == clan) //Continue capture
         {
             player.sendActionBar("Capture point health: " + capturePoint.decrementCaptureProgress(1) + "/100");
-            checkOrEndGame(capturePoint);
+            capturePoint.checkOrEndGame(instance);
         }
         else
             instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");
-    }
-
-    private void checkOrEndGame(CapturePoint capturePoint)
-    {
-        if (capturePoint.isEnded())
-            return;
-        int remainingTime = capturePoint.getTicksToEndGame();
-        int remainingCapture = capturePoint.getCaptureProgress();
-        boolean defenderWin;
-
-        if (remainingTime <= 0)
-        {
-            defenderWin = true;
-        }
-        else if (remainingCapture <= 0)
-        {
-            defenderWin = false;
-        }
-        else
-            return;
-
-        //TODO: Fire EndCaptureEvent
-        if (!defenderWin)
-            capturePoint.getRegion().changeOwner(capturePoint.getAttackingClan(), instance);
-
     }
 }
 
@@ -234,15 +209,20 @@ class CapturePoint
         return this.captureProgress;
     }
 
-    public boolean endGame()
+    public Boolean checkOrEndGame(CapturePointClaims instance)
     {
-        if (this.timeCaptured > 0L)
+        if (this.isEnded())
             return this.defended;
-        this.timeCaptured = System.currentTimeMillis();
-        if (this.ticksToEndGame > 0)
+        if (this.ticksToEndGame <= 0)
+            this.defended = true;
+        else if (this.getCaptureProgress() <= 0)
             this.defended = false;
         else
-            this.defended = true;
+            return null;
+        //TODO: fire event
+        this.timeCaptured = System.currentTimeMillis();
+        if (!this.defended)
+            region.changeOwner(attackingClan, instance);
         return this.defended;
     }
 
