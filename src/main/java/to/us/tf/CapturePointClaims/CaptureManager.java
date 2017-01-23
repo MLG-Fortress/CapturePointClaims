@@ -93,6 +93,7 @@ public class CaptureManager
         else if (capturePoint.getAttackingClan() == clan) //Continue capture
         {
             player.sendActionBar("Capture point health: " + capturePoint.decrementCaptureProgress(1) + "/100");
+            checkOrEndGame(capturePoint);
         }
         else
             instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");
@@ -110,7 +111,7 @@ public class CaptureManager
         {
             defenderWin = true;
         }
-        else if (capturePoint.getCaptureProgress() <= 0)
+        else if (remainingCapture <= 0)
         {
             defenderWin = false;
         }
@@ -196,7 +197,7 @@ class CapturePoint
 
     public Region getRegion()
     {
-        return this.getRegion();
+        return this.region;
     }
 
     public boolean isExpired()
