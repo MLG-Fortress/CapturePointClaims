@@ -111,6 +111,7 @@ class Region
     private String owningClanTag; //Although clan names aren't mutable(?), there's only a method to get clans by tag.
     private int REGION_SIZE;
     private YamlConfiguration storage;
+    String path;
 
     public Region(int regionX, int regionZ, World world, int regionSize, YamlConfiguration storage)
     {
@@ -119,11 +120,11 @@ class Region
         this.world = world;
         this.REGION_SIZE = regionSize;
         this.storage = storage;
+        path = this.world.toString() + String.valueOf(regionX) + String.valueOf(regionZ);
     }
 
     private void saveData(String key, String value)
     {
-        String path = this.world.toString() + String.valueOf(regionX) + String.valueOf(regionZ);
         ConfigurationSection regionSection = storage.getConfigurationSection(path);
         if (regionSection == null)
         {
@@ -140,7 +141,7 @@ class Region
 
     private String getData(String key)
     {
-        ConfigurationSection regionSection = storage.getConfigurationSection(String.valueOf(regionX) + String.valueOf(regionZ));
+        ConfigurationSection regionSection = storage.getConfigurationSection(path);
         if (regionSection == null)
             return null;
         return regionSection.getString(key);
