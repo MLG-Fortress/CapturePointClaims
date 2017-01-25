@@ -20,6 +20,7 @@ package to.us.tf.CapturePointClaims;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.sun.istack.internal.NotNull;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
@@ -122,7 +123,7 @@ class Region
 
     private void saveData(String key, String value)
     {
-        String path = String.valueOf(regionX) + String.valueOf(regionZ);
+        String path = this.world.toString() + String.valueOf(regionX) + String.valueOf(regionZ);
         ConfigurationSection regionSection = storage.getConfigurationSection(path);
         if (regionSection == null)
         {
@@ -131,7 +132,10 @@ class Region
             storage.set(path, uhHi);
         }
         else
+        {
             regionSection.set(key, value);
+            storage.set(path, regionSection);
+        }
     }
 
     private String getData(String key)
@@ -210,18 +214,13 @@ class Region
     {
         String colorValue = getData("clanColor");
         if (colorValue == null)
-            return DyeColor.WHITE.getDyeData();
+            return DyeColor.BLACK.getDyeData();
         return Byte.valueOf(colorValue);
     }
 
-    public void changeOwner(Clan clan, CapturePointClaims instance)
+    public void changeOwner(@NotNull Clan clan, CapturePointClaims instance)
     {
-        DyeColor dyeColor = DyeColor.BLACK;
-        if (clan == null)
-        {
-            this.setOwningClanTag(null);
-            this.setClanColorValue(dyeColor.getDyeData());
-        }
+        DyeColor dyeColor = DyeColor.WHITE;
         this.setOwningClanTag(clan.getTag());
         char clanTagChar = clan.getColorTag().charAt(1);
         switch (clanTagChar)
