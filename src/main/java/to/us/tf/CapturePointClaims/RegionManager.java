@@ -29,11 +29,52 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.io.File;
+import java.io.IOException;
 
 public class RegionManager
 {
     final int REGION_SIZE = 400;
+    YamlConfiguration regionStorage;
+
+    public RegionManager(CapturePointClaims capturePointClaims)
+    {
+        File storageFile = new File(capturePointClaims.getDataFolder(), "regionStorage.data");
+        if (!storageFile.exists())
+        {
+            try
+            {
+                storageFile.createNewFile();
+            }
+            catch (IOException e)
+            {
+                capturePointClaims.getLogger().severe("Could not create storage.yml! Since I'm lazy, there currently is no \"in memory\" option. Will now disable along with a nice stack trace for you to bother me with:");
+                e.printStackTrace();
+                return;
+            }
+        }
+        regionStorage = YamlConfiguration.loadConfiguration(storageFile);
+    }
+
+    public void saveData(CapturePointClaims capturePointClaims)
+    {
+        File storageFile = new File(capturePointClaims.getDataFolder(), "regionStorage.data");
+        if (regionStorage != null)
+        {
+            try
+            {
+                regionStorage.save(storageFile);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 
     Table<Integer, Integer, Region> cachedRegions = HashBasedTable.create();
     //given a location, returns the coordinates of the region containing that location
@@ -52,7 +93,7 @@ public class RegionManager
         Region region = cachedRegions.get(x, z); //Get the cached Region object
         if (region == null) //create a new one if such doesn't exist
         {
-            cachedRegions.put(x, z, new Region(x, z, location.getWorld(), REGION_SIZE));
+            cachedRegions.put(x, z, new Region(x, z, location.getWorld(), REGION_SIZE, regionStorage));
             region = cachedRegions.get(x, z);
         }
         return region;
@@ -66,14 +107,29 @@ class Region
     private World world;
     private String owningClanTag; //Although clan names aren't mutable(?), there's only a method to get clans by tag.
     private int REGION_SIZE;
-    private Byte clanColorValue = DyeColor.WHITE.getDyeData();
+    private YamlConfiguration storage;
 
-    public Region(int regionX, int regionZ, World world, int regionSize)
+    public Region(int regionX, int regionZ, World world, int regionSize, YamlConfiguration storage)
     {
         this.regionX = regionX;
         this.regionZ = regionZ;
         this.world = world;
         this.REGION_SIZE = regionSize;
+        this.storage = storage;
+    }
+
+    private void saveData(String key, String value)
+    {
+        ConfigurationSection regionSection = storage.getConfigurationSection(String.valueOf(regionX) + String.valueOf(regionZ));
+        regionSection.set(key, value);
+    }
+
+    private String getData(String key)
+    {
+        ConfigurationSection regionSection = storage.getConfigurationSection(String.valueOf(regionX) + String.valueOf(regionZ));
+        if (regionSection == null)
+            return null;
+        return regionSection.getString(key);
     }
 
     //converts a string representing region coordinates to a proper region coordinates object
@@ -125,38 +181,32 @@ class Region
     public String getOwningClanTag() //Must be converted to a clan
     {
         if (this.owningClanTag == null)
-        {
-            //TODO: various data storage stuff to set owningClanTag
-        }
+            this.owningClanTag = getData("clanTag");
         return this.owningClanTag;
     }
 
-    private void setOwningClanTag(String clan)
+    private void setOwningClanTag(String clanTag)
     {
-        this.owningClanTag = clan;
-        //TODO: various data storage stuff
+        this.owningClanTag = clanTag;
+        saveData("clanTag", this.owningClanTag);
     }
 
     private void setClanColorValue(byte value)
     {
-        this.clanColorValue = value;
+        saveData("clanColor", String.valueOf(value));
     }
 
     private byte getClanColorValue()
     {
-        if (this.clanColorValue == null)
-        {
-            //TODO: various data retrieval
-        }
-
-        if (this.clanColorValue == null)
+        String colorValue = getData("clanColor");
+        if (colorValue == null)
             return DyeColor.WHITE.getDyeData();
-        return this.clanColorValue;
+        return Byte.valueOf(colorValue);
     }
 
     public void changeOwner(Clan clan, CapturePointClaims instance)
     {
-        DyeColor dyeColor = DyeColor.SILVER;
+        DyeColor dyeColor = DyeColor.WHITE;
         if (clan == null)
         {
             this.setOwningClanTag(null);
@@ -176,6 +226,7 @@ class Region
                 dyeColor = DyeColor.PURPLE;
                 break;
             case 'e':
+            case '6':
                 dyeColor = DyeColor.YELLOW;
                 break;
             case 'c':

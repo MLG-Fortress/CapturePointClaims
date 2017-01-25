@@ -22,10 +22,12 @@ public class CapturePointClaims extends JavaPlugin implements Listener
 {
     public Set<World> claimWorlds = new HashSet<>();
     ClanManager clanManager;
-    final RegionManager regionManager = new RegionManager();
+    RegionManager regionManager;
 
     public void onEnable()
     {
+        saveConfig(); //Create data folder
+        regionManager = new RegionManager(this);
         SimpleClans sc = (SimpleClans)getServer().getPluginManager().getPlugin("SimpleClans");
         this.clanManager = sc.getClanManager();
         getServer().getPluginManager().registerEvents(this, this);
@@ -36,6 +38,11 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         CaptureManager captureManager = new CaptureManager(this, clanManager, regionManager);
         getServer().getPluginManager().registerEvents(new BlockEventListener(this, captureManager, clanManager, regionManager), this);
         new BossBarMessenger(this, captureManager, regionManager);
+    }
+
+    public void onDisable()
+    {
+        regionManager.saveData(this);
     }
 
     @EventHandler

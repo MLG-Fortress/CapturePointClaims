@@ -194,7 +194,7 @@ class CapturePoint
      */
     public Double getExpirationTimeAsPercentage()
     {
-        return 1D / getExpirationTimeRemaining();
+        return Double.valueOf(getExpirationTimeRemaining()) / TimeUnit.DAYS.toSeconds(1L);
     }
 
 
