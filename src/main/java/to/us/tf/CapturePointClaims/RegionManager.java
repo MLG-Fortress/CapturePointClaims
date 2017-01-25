@@ -35,6 +35,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class RegionManager
 {
@@ -120,8 +122,16 @@ class Region
 
     private void saveData(String key, String value)
     {
-        ConfigurationSection regionSection = storage.getConfigurationSection(String.valueOf(regionX) + String.valueOf(regionZ));
-        regionSection.set(key, value);
+        String path = String.valueOf(regionX) + String.valueOf(regionZ);
+        ConfigurationSection regionSection = storage.getConfigurationSection(path);
+        if (regionSection == null)
+        {
+            Map<String, String> uhHi = new LinkedHashMap<>();
+            uhHi.put(key, value);
+            storage.set(path, uhHi);
+        }
+        else
+            regionSection.set(key, value);
     }
 
     private String getData(String key)
@@ -206,14 +216,14 @@ class Region
 
     public void changeOwner(Clan clan, CapturePointClaims instance)
     {
-        DyeColor dyeColor = DyeColor.WHITE;
+        DyeColor dyeColor = DyeColor.BLACK;
         if (clan == null)
         {
             this.setOwningClanTag(null);
             this.setClanColorValue(dyeColor.getDyeData());
         }
         this.setOwningClanTag(clan.getTag());
-        char clanTagChar = clan.getTag().charAt(1);
+        char clanTagChar = clan.getColorTag().charAt(1);
         switch (clanTagChar)
         {
             case 'a':
