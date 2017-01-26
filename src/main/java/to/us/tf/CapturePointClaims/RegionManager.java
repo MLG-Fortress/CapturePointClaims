@@ -116,6 +116,7 @@ class Region
     private String owningClanTag; //Although clan names aren't mutable(?), there's only a method to get clans by tag.
     private int REGION_SIZE;
     private YamlConfiguration storage;
+    ConfigurationSection regionSection;
     String path;
 
     public Region(int regionX, int regionZ, World world, int regionSize, YamlConfiguration storage)
@@ -126,11 +127,11 @@ class Region
         this.REGION_SIZE = regionSize;
         this.storage = storage;
         path = this.world.getName() + String.valueOf(regionX) + String.valueOf(regionZ);
+        regionSection = storage.getConfigurationSection(path);
     }
 
     private void saveData(String key, String value)
     {
-        ConfigurationSection regionSection = storage.getConfigurationSection(path);
         if (regionSection == null)
         {
             Map<String, String> uhHi = new LinkedHashMap<>();
