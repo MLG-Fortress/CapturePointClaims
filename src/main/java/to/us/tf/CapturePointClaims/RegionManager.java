@@ -20,7 +20,6 @@ package to.us.tf.CapturePointClaims;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import com.sun.istack.internal.NotNull;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
@@ -225,8 +224,10 @@ class Region
         return Byte.valueOf(colorValue);
     }
 
-    public void changeOwner(@NotNull Clan clan, CapturePointClaims instance)
+    public void changeOwner(Clan clan, CapturePointClaims instance)
     {
+        if (clan == null)
+            return;
         DyeColor dyeColor = DyeColor.WHITE;
         this.setOwningClanTag(clan.getTag());
         char clanTagChar = clan.getColorTag().charAt(1);
