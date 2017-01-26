@@ -125,7 +125,7 @@ class Region
         this.world = world;
         this.REGION_SIZE = regionSize;
         this.storage = storage;
-        path = this.world.toString() + String.valueOf(regionX) + String.valueOf(regionZ);
+        path = this.world.getName() + String.valueOf(regionX) + String.valueOf(regionZ);
     }
 
     private void saveData(String key, String value)
