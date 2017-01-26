@@ -137,6 +137,7 @@ class Region
             Map<String, String> uhHi = new LinkedHashMap<>();
             uhHi.put(key, value);
             storage.set(path, uhHi);
+            regionSection = storage.getConfigurationSection(path);
         }
         else
         {
