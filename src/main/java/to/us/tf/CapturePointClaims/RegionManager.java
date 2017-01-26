@@ -36,6 +36,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -43,6 +44,7 @@ public class RegionManager
 {
     final int REGION_SIZE = 400;
     YamlConfiguration regionStorage;
+    Map<World, Table<Integer, Integer, Region>> worldCache = new HashMap<>();
 
     public RegionManager(CapturePointClaims capturePointClaims)
     {
@@ -61,6 +63,9 @@ public class RegionManager
             }
         }
         regionStorage = YamlConfiguration.loadConfiguration(storageFile);
+
+        for (World world : capturePointClaims.claimWorlds)
+            worldCache.put(world, HashBasedTable.create());
     }
 
     public void saveData(CapturePointClaims capturePointClaims)
@@ -79,12 +84,13 @@ public class RegionManager
         }
     }
 
-    Table<Integer, Integer, Region> cachedRegions = HashBasedTable.create();
     //given a location, returns the coordinates of the region containing that location
     //returns NULL when the location is not in the managed world
     //TRIVIA!  despite the simplicity of this method, I got it badly wrong like 5 times before it was finally fixed
     public Region fromLocation(Location location)
     {
+        if (!worldCache.containsKey(location.getWorld()))
+            return null;
         //keeping all regions the same size and arranging them in a strict grid makes this calculation supa-fast!
         //that's important because we do it A LOT as players move, build, break blocks, and more
         int x = location.getBlockX() / REGION_SIZE;
@@ -93,11 +99,11 @@ public class RegionManager
         int z = location.getBlockZ() / REGION_SIZE;
         if(location.getZ() < 0) z--;
 
-        Region region = cachedRegions.get(x, z); //Get the cached Region object
+        Region region = worldCache.get(location.getWorld()).get(x, z); //Get the cached Region object
         if (region == null) //create a new one if such doesn't exist
         {
-            cachedRegions.put(x, z, new Region(x, z, location.getWorld(), REGION_SIZE, regionStorage));
-            region = cachedRegions.get(x, z);
+            worldCache.get(location.getWorld()).put(x, z, new Region(x, z, location.getWorld(), REGION_SIZE, regionStorage));
+            region = worldCache.get(location.getWorld()).get(x, z);
         }
         return region;
     }
