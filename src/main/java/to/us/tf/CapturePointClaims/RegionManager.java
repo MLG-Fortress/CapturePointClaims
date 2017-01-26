@@ -65,6 +65,14 @@ public class RegionManager
 
         for (World world : capturePointClaims.claimWorlds)
             worldCache.put(world, HashBasedTable.create());
+
+        new BukkitRunnable()
+        {
+            public void run()
+            {
+                saveData(capturePointClaims);
+            }
+        }.runTaskTimer(capturePointClaims, 6000L, 6000L);
     }
 
     public void saveData(CapturePointClaims capturePointClaims)
@@ -134,16 +142,17 @@ class Region
     {
         if (regionSection == null)
         {
-            Map<String, String> uhHi = new LinkedHashMap<>();
-            uhHi.put(key, value);
-            storage.set(path, uhHi);
-            regionSection = storage.getConfigurationSection(path);
+            regionSection = storage.createSection(path);
+//            Map<String, String> uhHi = new LinkedHashMap<>();
+//            uhHi.put(key, value);
+//            storage.set(path, uhHi);
+//            regionSection = storage.getConfigurationSection(path);
         }
-        else
-        {
+//        else
+//        {
             regionSection.set(key, value);
             storage.set(path, regionSection);
-        }
+//        }
     }
 
     private String getData(String key)
