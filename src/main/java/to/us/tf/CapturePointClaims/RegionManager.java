@@ -125,6 +125,7 @@ class Region
     private int REGION_SIZE;
     private YamlConfiguration storage;
     ConfigurationSection regionSection;
+    ConfigurationSection worldSection;
     String path;
 
     public Region(int regionX, int regionZ, World world, int regionSize, YamlConfiguration storage)
@@ -134,24 +135,30 @@ class Region
         this.world = world;
         this.REGION_SIZE = regionSize;
         this.storage = storage;
-        path = this.world.getName() + String.valueOf(regionX) + String.valueOf(regionZ);
-        regionSection = storage.getConfigurationSection(path);
+        path = String.valueOf(regionX) + "," + String.valueOf(regionZ);
+        worldSection = storage.getConfigurationSection(world.getName());
+        if (worldSection == null)
+            worldSection = storage.createSection(world.getName());
+        regionSection = worldSection.getConfigurationSection(path);
+        if (regionSection == null)
+            regionSection = worldSection.createSection(path);
     }
 
     private void saveData(String key, String value)
     {
-        if (regionSection == null)
-        {
-            regionSection = storage.createSection(path);
-//            Map<String, String> uhHi = new LinkedHashMap<>();
-//            uhHi.put(key, value);
-//            storage.set(path, uhHi);
-//            regionSection = storage.getConfigurationSection(path);
-        }
+//        if (regionSection == null)
+//        {
+//            regionSection = storage.createSection(path);
+////            Map<String, String> uhHi = new LinkedHashMap<>();
+////            uhHi.put(key, value);
+////            storage.set(path, uhHi);
+////            regionSection = storage.getConfigurationSection(path);
+//        }
 //        else
 //        {
             regionSection.set(key, value);
-            storage.set(path, regionSection);
+            worldSection.set(world.getName(), regionSection); //TODO: necessary?
+            storage.set(path, regionSection); //TODO: necessary?
 //        }
     }
 
@@ -239,7 +246,7 @@ class Region
     {
         if (clan == null)
             return;
-        DyeColor dyeColor = DyeColor.WHITE;
+        DyeColor dyeColor = DyeColor.WHITE; //TODO: dyeColor is inaccurate for stained glass
         this.setOwningClanTag(clan.getTag());
         char clanTagChar = clan.getColorTag().charAt(1);
         switch (clanTagChar)
