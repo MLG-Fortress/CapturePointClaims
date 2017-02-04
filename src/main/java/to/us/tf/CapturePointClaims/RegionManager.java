@@ -412,7 +412,7 @@ class Region
         while (highestBlockY > y)
         {
             Block block = world.getBlockAt(x, highestBlockY, z);
-            if(block.getType() != Material.AIR)
+            if(block.getType() != Material.BARRIER)
                 block.setType(Material.BARRIER);
             highestBlockY--;
         }
