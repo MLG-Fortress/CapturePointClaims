@@ -1,0 +1,120 @@
+package to.us.tf.CapturePointClaims.managers;
+
+/*
+    PopulationDensity Server Plugin for Minecraft
+    Copyright (C) 2011 Ryan Hamshire
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import org.bukkit.Chunk;
+import org.bukkit.DyeColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
+import to.us.tf.CapturePointClaims.CapturePointClaims;
+import to.us.tf.CapturePointClaims.Region;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class RegionManager
+{
+    final int REGION_SIZE = 400;
+    YamlConfiguration regionStorage;
+    Map<World, Table<Integer, Integer, Region>> worldCache = new HashMap<>();
+
+    public RegionManager(CapturePointClaims capturePointClaims)
+    {
+        File storageFile = new File(capturePointClaims.getDataFolder(), "regionStorage.data");
+        if (!storageFile.exists())
+        {
+            try
+            {
+                storageFile.createNewFile();
+            }
+            catch (IOException e)
+            {
+                capturePointClaims.getLogger().severe("Could not create storage.yml! Since I'm lazy, there currently is no \"in memory\" option. Will now disable along with a nice stack trace for you to bother me with:");
+                e.printStackTrace();
+                return;
+            }
+        }
+        regionStorage = YamlConfiguration.loadConfiguration(storageFile);
+
+        for (World world : capturePointClaims.claimWorlds)
+            worldCache.put(world, HashBasedTable.create());
+
+        new BukkitRunnable()
+        {
+            public void run()
+            {
+                saveData(capturePointClaims);
+            }
+        }.runTaskTimer(capturePointClaims, 6000L, 6000L);
+    }
+
+    public void saveData(CapturePointClaims capturePointClaims)
+    {
+        File storageFile = new File(capturePointClaims.getDataFolder(), "regionStorage.data");
+        if (regionStorage != null)
+        {
+            try
+            {
+                regionStorage.save(storageFile);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //given a location, returns the coordinates of the region containing that location
+    //returns NULL when the location is not in the managed world
+    //TRIVIA!  despite the simplicity of this method, I got it badly wrong like 5 times before it was finally fixed
+    public Region fromLocation(Location location)
+    {
+        if (!worldCache.containsKey(location.getWorld()))
+            return null;
+        //keeping all regions the same size and arranging them in a strict grid makes this calculation supa-fast!
+        //that's important because we do it A LOT as players move, build, break blocks, and more
+        int x = location.getBlockX() / REGION_SIZE;
+        if(location.getX() < 0) x--;
+
+        int z = location.getBlockZ() / REGION_SIZE;
+        if(location.getZ() < 0) z--;
+
+        Region region = worldCache.get(location.getWorld()).get(x, z); //Get the cached Region object
+        if (region == null) //create a new one if such doesn't exist
+        {
+            worldCache.get(location.getWorld()).put(x, z, new Region(x, z, location.getWorld(), REGION_SIZE, regionStorage));
+            region = worldCache.get(location.getWorld()).get(x, z);
+        }
+        return region;
+    }
+}
+

@@ -1,4 +1,4 @@
-package to.us.tf.CapturePointClaims;
+package to.us.tf.CapturePointClaims.messengers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
@@ -6,6 +6,11 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import to.us.tf.CapturePointClaims.managers.CaptureManager;
+import to.us.tf.CapturePointClaims.CapturePoint;
+import to.us.tf.CapturePointClaims.CapturePointClaims;
+import to.us.tf.CapturePointClaims.Region;
+import to.us.tf.CapturePointClaims.managers.RegionManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,13 +61,14 @@ public class BossBarMessenger
         for (Region region : cachedRegions.keySet())
         {
             BossBar bar = cachedRegions.get(region);
-            if (!captureManager.pointsBeingCaptured.containsKey(region)) //TODO: replace with event listener
+            CapturePoint capturePoint = captureManager.getCapturePoint(region);
+
+            if (capturePoint == null) //TODO: replace with event listener
             {
                 bar.setTitle("Owned by " + instance.getOwningClanString(region));
                 continue;
             }
 
-            CapturePoint capturePoint = captureManager.pointsBeingCaptured.get(region);
             if (capturePoint.isEnded()) //Locked point
             {
                 bar.setStyle(BarStyle.SOLID);

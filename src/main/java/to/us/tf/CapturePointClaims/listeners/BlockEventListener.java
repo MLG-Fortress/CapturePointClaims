@@ -1,4 +1,4 @@
-package to.us.tf.CapturePointClaims;
+package to.us.tf.CapturePointClaims.listeners;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
@@ -12,6 +12,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import to.us.tf.CapturePointClaims.managers.CaptureManager;
+import to.us.tf.CapturePointClaims.CapturePointClaims;
+import to.us.tf.CapturePointClaims.Region;
+import to.us.tf.CapturePointClaims.managers.RegionManager;
 
 import java.util.Arrays;
 import java.util.HashSet;

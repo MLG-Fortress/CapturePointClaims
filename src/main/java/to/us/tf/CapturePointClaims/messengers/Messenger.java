@@ -1,8 +1,9 @@
-package to.us.tf.CapturePointClaims;
+package to.us.tf.CapturePointClaims.messengers;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import org.bukkit.Location;
+import to.us.tf.CapturePointClaims.Region;
 
 import javax.annotation.Nullable;
 
