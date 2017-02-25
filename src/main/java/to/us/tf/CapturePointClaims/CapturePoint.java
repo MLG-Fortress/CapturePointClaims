@@ -99,6 +99,8 @@ public class CapturePoint
      */
     public Double getExpirationTimeAsPercentage()
     {
+        if (!isExpired())
+            return null;
         return (TimeUnit.DAYS.toSeconds(1L) - Double.valueOf(getExpirationTimeRemaining())) / TimeUnit.DAYS.toSeconds(1L);
     }
 
