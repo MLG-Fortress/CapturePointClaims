@@ -89,7 +89,7 @@ public class CapturePoint
      */
     public Long getExpirationTimeRemaining()
     {
-        if (!isExpired())
+        if (!isEnded())
             return null;
         return (((this.getTimeCaptured() + TimeUnit.DAYS.toMillis(1L)) - System.currentTimeMillis()) / 1000);
     }
@@ -99,7 +99,7 @@ public class CapturePoint
      */
     public Double getExpirationTimeAsPercentage()
     {
-        if (!isExpired())
+        if (!isEnded())
             return null;
         return (TimeUnit.DAYS.toSeconds(1L) - Double.valueOf(getExpirationTimeRemaining())) / TimeUnit.DAYS.toSeconds(1L);
     }
