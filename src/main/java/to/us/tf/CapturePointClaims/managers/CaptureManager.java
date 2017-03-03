@@ -34,7 +34,7 @@ public class CaptureManager
     {
         //Remove expired capture points
         CapturePoint capturePoint = pointsBeingCaptured.get(region);
-        if (capturePoint != null && capturePoint.isExpired())
+        if (capturePoint != null && capturePoint.isLockExpired())
             pointsBeingCaptured.remove(region);
 
         return pointsBeingCaptured.get(region);
@@ -89,7 +89,7 @@ public class CaptureManager
 
         else if (capturePoint.isEnded()) //Point was already captured/defended before
         {
-            if (capturePoint.isExpired())
+            if (capturePoint.isLockExpired())
             {
                 //Start a new capture
                 pointsBeingCaptured.remove(region);

@@ -79,7 +79,7 @@ public class CapturePoint
         return this.region;
     }
 
-    public boolean isExpired()
+    public boolean isLockExpired()
     {
         return getTimeCaptured() != 0L && this.getTimeCaptured() < (System.currentTimeMillis() - 86400000);
     }
