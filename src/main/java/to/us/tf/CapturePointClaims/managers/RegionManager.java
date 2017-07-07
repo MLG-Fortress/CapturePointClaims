@@ -130,7 +130,7 @@ public class RegionManager
         {
             for (Region region : world.values())
             {
-                if (region.getOwningClanTag().equals(clanTag))
+                if (region.getOwningClanTag() != null && region.getOwningClanTag().equals(clanTag))
                     regionsToReturn.add(region);
             }
         }
