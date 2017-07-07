@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import to.us.tf.CapturePointClaims.command.TPPointCommand;
 import to.us.tf.CapturePointClaims.listeners.BlockEventListener;
 import to.us.tf.CapturePointClaims.managers.CaptureManager;
 import to.us.tf.CapturePointClaims.managers.RegionManager;
@@ -42,6 +43,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         CaptureManager captureManager = new CaptureManager(this, clanManager, regionManager);
         getServer().getPluginManager().registerEvents(new BlockEventListener(this, captureManager, clanManager, regionManager), this);
         new BossBarMessenger(this, captureManager, regionManager);
+        getCommand("tppoint").setExecutor(new TPPointCommand(this, clanManager, regionManager));
     }
 
     public void onDisable()
@@ -62,7 +64,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         Location greaterCorner = chunk.getBlock(15, 0, 15).getLocation();
 
         //find the center of this chunk's region
-        Region region = regionManager.fromLocation(lesserCorner);
+        Region region = regionManager.getRegion(lesserCorner);
         Location regionCenter = region.getRegionCenter(false);
 
         //if the chunk contains the region center

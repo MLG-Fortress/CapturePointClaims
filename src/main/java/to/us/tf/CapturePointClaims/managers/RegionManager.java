@@ -21,6 +21,7 @@ package to.us.tf.CapturePointClaims.managers;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -38,8 +39,10 @@ import to.us.tf.CapturePointClaims.Region;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class RegionManager
 {
@@ -95,13 +98,11 @@ public class RegionManager
 
     //given a location, returns the coordinates of the region containing that location
     //returns NULL when the location is not in the managed world
-    //TRIVIA!  despite the simplicity of this method, I got it badly wrong like 5 times before it was finally fixed
-    public Region fromLocation(Location location)
+    public Region getRegion(Location location)
     {
         if (!worldCache.containsKey(location.getWorld()))
             return null;
-        //keeping all regions the same size and arranging them in a strict grid makes this calculation supa-fast!
-        //that's important because we do it A LOT as players move, build, break blocks, and more
+        //keeping all regions the same size and arranging them in a strict grid makes this calculation supa-fast! //ses da bigscary
         int x = location.getBlockX() / REGION_SIZE;
         if(location.getX() < 0) x--;
 
@@ -116,5 +117,25 @@ public class RegionManager
         }
         return region;
     }
+
+    public Region getRegion(World world, int x, int z)
+    {
+        return worldCache.get(world).get(x, z); //Get the cached Region object
+    }
+
+    public Set<Region> getRegions(String clanTag)
+    {
+        Set<Region> regionsToReturn = new HashSet<>();
+        for (Table<Integer, Integer, Region> world : worldCache.values())
+        {
+            for (Region region : world.values())
+            {
+                if (region.getOwningClanTag().equals(clanTag))
+                    regionsToReturn.add(region);
+            }
+        }
+        return regionsToReturn;
+    }
+
 }
 

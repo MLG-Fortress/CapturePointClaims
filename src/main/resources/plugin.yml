@@ -6,3 +6,6 @@ main: to.us.tf.CapturePointClaims.CapturePointClaims
 softdepend:
 - Multiverse-Core
 - SimpleClans
+commands:
+  tppoint:
+    aliases: [tpclaim]

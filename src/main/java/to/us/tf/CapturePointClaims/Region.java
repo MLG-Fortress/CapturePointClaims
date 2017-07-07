@@ -26,6 +26,21 @@ public class Region
     ConfigurationSection worldSection;
     String path;
 
+    public String getName()
+    {
+        return getWorld().getName() + " " + getRegionX() + " " + getRegionX();
+    }
+
+    public int getRegionX()
+    {
+        return regionX;
+    }
+
+    public int getRegionZ()
+    {
+        return regionZ;
+    }
+
     public Region(int regionX, int regionZ, World world, int regionSize, YamlConfiguration storage)
     {
         this.regionX = regionX;
@@ -96,7 +111,7 @@ public class Region
     {
         if(coordinatesToCompare == null) return false;
 
-        if(!(coordinatesToCompare instanceof RegionManager)) return false;
+        if(!(coordinatesToCompare instanceof Region)) return false;
 
         Region coords = (Region)coordinatesToCompare;
 
@@ -374,9 +389,9 @@ public class Region
 
                 Sign sign = (Sign)block1.getState();
 
-                sign.setLine(0, "Break this");
-                sign.setLine(1, "to start");
-                sign.setLine(2, "capture process");
+                sign.setLine(0, world.getName() + " " + regionX + " " + regionZ);
+                sign.setLine(2, "Break to capture");
+                sign.setLine(3, "this point");
 
                 sign.update();
             }

@@ -75,7 +75,7 @@ public class BlockEventListener implements Listener
 
         //otherwise figure out which region that block is in
         Location blockLocation = block.getLocation();
-        Region blockRegion = regionManager.fromLocation(blockLocation);
+        Region blockRegion = regionManager.getRegion(blockLocation);
 
         //if too close to (or above) region post,
         if(blockRegion.nearRegionPost(blockLocation, 2))
@@ -110,7 +110,7 @@ public class BlockEventListener implements Listener
         //if the player is not in managed world, do nothing
         if(!instance.claimWorlds.contains(player.getWorld())) return;
 
-        Region blockRegion = regionManager.fromLocation(blockLocation);
+        Region blockRegion = regionManager.getRegion(blockLocation);
 
         if (isEnemyClaim(blockRegion, player, false))
         {
