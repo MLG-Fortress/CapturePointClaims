@@ -13,6 +13,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPistonEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import to.us.tf.CapturePointClaims.managers.CaptureManager;
@@ -159,8 +161,22 @@ public class BlockEventListener implements Listener
         }
     }
 
+    //Apparently I'm not allowed to listen to BlockPistonEvent... https://gist.github.com/RoboMWM/3b9c2799f6d16a66188aedb787966f9b
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    void onPistonStuff(BlockPistonEvent event)
+    void onPistonStuff1(BlockPistonExtendEvent event)
+    {
+        Block block = event.getBlock();
+        //if not in managed world, do nothing
+        if(!instance.claimWorlds.contains(event.getBlock().getWorld())) return;
+
+        Region region = regionManager.getRegion(block.getLocation());
+        if (region.nearRegionPost(block.getLocation(), 3))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    void onPistonStuff1(BlockPistonRetractEvent event)
     {
         Block block = event.getBlock();
         //if not in managed world, do nothing
