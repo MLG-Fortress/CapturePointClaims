@@ -51,9 +51,9 @@ public class RegionManager
     YamlConfiguration regionStorage;
     Map<World, Table<Integer, Integer, Region>> worldCache = new HashMap<>();
 
-    public RegionManager(CapturePointClaims capturePointClaims)
+    public RegionManager(CapturePointClaims plugin)
     {
-        File storageFile = new File(capturePointClaims.getDataFolder(), "regionStorage.data");
+        File storageFile = new File(plugin.getDataFolder(), "regionStorage.data");
         if (!storageFile.exists())
         {
             try
@@ -62,14 +62,14 @@ public class RegionManager
             }
             catch (IOException e)
             {
-                capturePointClaims.getLogger().severe("Could not create regionStorage.data! Since I'm lazy, there currently is no \"in memory\" option. Will now disable along with a nice stack trace for you to bother me with:");
+                plugin.getLogger().severe("Could not create regionStorage.data! Since I'm lazy, there currently is no \"in memory\" option. Will now disable along with a nice stack trace for you to bother me with:");
                 e.printStackTrace();
                 return;
             }
         }
         regionStorage = YamlConfiguration.loadConfiguration(storageFile);
 
-        for (World world : capturePointClaims.claimWorlds)
+        for (World world : plugin.claimWorlds)
             worldCache.put(world, HashBasedTable.create());
 
         //Load and cache data into worldCache from flatfile storage. Also purge unused entries
@@ -78,6 +78,8 @@ public class RegionManager
             Set<String> keysToDelete = new HashSet<>();
 
             ConfigurationSection worldSection = regionStorage.getConfigurationSection(world.getName());
+            if (worldSection == null)
+                continue;
             for (String regionKey : worldSection.getKeys(false))
             {
                 ConfigurationSection regionSection = regionStorage.getConfigurationSection(world.getName()).getConfigurationSection(regionKey);
@@ -96,7 +98,7 @@ public class RegionManager
                 catch (NumberFormatException e)
                 {
                     keysToDelete.add(regionKey);
-                    System.out.println("[CapturePointClaims] failed to load a region into cache, deleting it. " + e.getMessage());
+                    plugin.getLogger().warning("Failed to load a region into cache, deleting it. " + e.getMessage());
                 }
             }
 
@@ -110,9 +112,9 @@ public class RegionManager
         {
             public void run()
             {
-                saveData(capturePointClaims);
+                saveData(plugin);
             }
-        }.runTaskTimer(capturePointClaims, 6000L, 6000L);
+        }.runTaskTimer(plugin, 6000L, 6000L);
     }
 
     public void saveData(CapturePointClaims capturePointClaims)
