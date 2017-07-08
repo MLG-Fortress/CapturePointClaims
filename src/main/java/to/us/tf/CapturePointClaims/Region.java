@@ -1,6 +1,7 @@
 package to.us.tf.CapturePointClaims;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -12,7 +13,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import to.us.tf.CapturePointClaims.managers.RegionManager;
 
 public class Region
 {
@@ -149,29 +149,32 @@ public class Region
     {
         if (clan == null)
             return;
-        DyeColor dyeColor = DyeColor.WHITE; //TODO: dyeColor is inaccurate for stained glass
+
         this.setOwningClanTag(clan.getTag());
         char clanTagChar = clan.getColorTag().charAt(1);
-        switch (clanTagChar)
-        {
-            case 'a':
-                dyeColor = DyeColor.GREEN;
-                break;
-            case 'b':
-                dyeColor = DyeColor.LIGHT_BLUE;
-                break;
-            case 'd':
-                dyeColor = DyeColor.PURPLE;
-                break;
-            case 'e':
-            case '6':
-                dyeColor = DyeColor.YELLOW;
-                break;
-            case 'c':
-                dyeColor = DyeColor.RED;
-                break;
-        }
-        this.setClanColorValue(dyeColor.getDyeData());
+        ChatColor chatColor = ChatColor.getByChar(clanTagChar);
+        DyeColor dyeColor = DyeColor.valueOf(chatColor.name()); //TODO: dyeColor is inaccurate for stained glass(?)
+
+//        switch (clanTagChar)
+//        {
+//            case 'a':
+//                dyeColor = DyeColor.GREEN;
+//                break;
+//            case 'b':
+//                dyeColor = DyeColor.LIGHT_BLUE;
+//                break;
+//            case 'd':
+//                dyeColor = DyeColor.PURPLE;
+//                break;
+//            case 'e':
+//            case '6':
+//                dyeColor = DyeColor.YELLOW;
+//                break;
+//            case 'c':
+//                dyeColor = DyeColor.RED;
+//                break;
+//        }
+        this.setClanColorValue(dyeColor.getWoolData());
         this.AddRegionPost(instance);
     }
 

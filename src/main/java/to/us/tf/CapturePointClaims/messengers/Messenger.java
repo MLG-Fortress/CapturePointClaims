@@ -2,6 +2,7 @@ package to.us.tf.CapturePointClaims.messengers;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import to.us.tf.CapturePointClaims.Region;
 
@@ -122,10 +123,10 @@ public class Messenger {
         if (defendingClan != null)
         {
             defendingClanTag = defendingClan.getTag();
-            chatMessageToClan(defendingClan, "Our capture point at " + coordinates + " is under attack from " + attackingClan.getColorTag() + " - " + attackingClan.getName());
-            //TODO: ActionItem: offer a "click to drop in and help defend our point!"
+            chatMessageToClan(defendingClan, "Our capture point " + region.getName() + " is under attack by " + attackingClan.getColorTag() + " - " + attackingClan.getName()
+            + "\nHelp defend! Type " + ChatColor.GOLD + "/tppoint " + region.getName());
         }
 
-        chatMessageToClan(attackingClan, "We are attacking " + defendingClanTag + "'s capture point at " + coordinates);
+        chatMessageToClan(attackingClan, "We are attacking capture point " + region.getName() + " which is owned by " + defendingClanTag);
     }
 }
