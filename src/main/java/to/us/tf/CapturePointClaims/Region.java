@@ -153,27 +153,21 @@ public class Region
         this.setOwningClanTag(clan.getTag());
         char clanTagChar = clan.getColorTag().charAt(1);
         ChatColor chatColor = ChatColor.getByChar(clanTagChar);
-        DyeColor dyeColor = DyeColor.valueOf(chatColor.name()); //TODO: dyeColor is inaccurate for stained glass(?)
+        DyeColor dyeColor = DyeColor.WHITE; //TODO: dyeColor is inaccurate for stained glass(?)
 
-//        switch (clanTagChar)
-//        {
-//            case 'a':
-//                dyeColor = DyeColor.GREEN;
-//                break;
-//            case 'b':
-//                dyeColor = DyeColor.LIGHT_BLUE;
-//                break;
-//            case 'd':
-//                dyeColor = DyeColor.PURPLE;
-//                break;
-//            case 'e':
-//            case '6':
-//                dyeColor = DyeColor.YELLOW;
-//                break;
-//            case 'c':
-//                dyeColor = DyeColor.RED;
-//                break;
-//        }
+        switch (chatColor)
+        {
+            case DARK_PURPLE:
+                dyeColor = DyeColor.PURPLE;
+                break;
+            case GOLD:
+                dyeColor = DyeColor.YELLOW;
+                break;
+            case DARK_GREEN:
+            case GREEN:
+                dyeColor = DyeColor.GREEN;
+                break;
+        }
         this.setClanColorValue(dyeColor.getWoolData());
         this.AddRegionPost(instance);
     }

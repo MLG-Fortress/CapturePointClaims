@@ -164,7 +164,7 @@ public class BlockEventListener implements Listener
     //Apparently I'm not allowed to listen to BlockPistonEvent... https://gist.github.com/RoboMWM/3b9c2799f6d16a66188aedb787966f9b
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    void onPistonStuff1(BlockPistonExtendEvent event)
+    void onPistonStuff(BlockPistonExtendEvent event)
     {
         Block block = event.getBlock();
         //if not in managed world, do nothing
@@ -176,7 +176,7 @@ public class BlockEventListener implements Listener
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    void onPistonStuff1(BlockPistonRetractEvent event)
+    void onPistonStuff(BlockPistonRetractEvent event)
     {
         Block block = event.getBlock();
         //if not in managed world, do nothing
