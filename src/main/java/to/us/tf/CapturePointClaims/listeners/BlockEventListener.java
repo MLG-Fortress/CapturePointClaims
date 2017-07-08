@@ -50,18 +50,6 @@ public class BlockEventListener implements Listener
         this.regionManager = regionManager;
     }
 
-    private boolean isEnemyClaim(Region region, Player player, boolean includeWildernessAsEnemy)
-    {
-        Clan clan = instance.getOwningClan(region);
-        Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
-
-        if (clan == null) //Unclaimed
-        {
-            return includeWildernessAsEnemy;
-        }
-        return playerClan != clan;
-    }
-
     @EventHandler(ignoreCancelled = true)
     void onBlockBreak(BlockBreakEvent event)
     {
@@ -81,13 +69,13 @@ public class BlockEventListener implements Listener
         if(blockRegion.nearRegionPost(blockLocation, 2))
         {
             event.setCancelled(true);
-            if (isEnemyClaim(blockRegion, player, true))
+            if (instance.isEnemyClaim(blockRegion, player, true))
                 captureManager.startOrContinueCapture(player, blockRegion); //start/continue claiming process
             else //player's clan already claimed this, do nothing more
                 player.sendMessage("Your clan already captured this point");
         }
         //Otherwise, just general region claim check stuff
-        else if (isEnemyClaim(blockRegion, player, false))
+        else if (instance.isEnemyClaim(blockRegion, player, false))
         {
             short durability = player.getInventory().getItemInMainHand().getDurability();
             //TODO: Cancel if item is not a tool
@@ -112,7 +100,7 @@ public class BlockEventListener implements Listener
 
         Region blockRegion = regionManager.fromLocation(blockLocation);
 
-        if (isEnemyClaim(blockRegion, player, false))
+        if (instance.isEnemyClaim(blockRegion, player, false))
         {
             event.setCancelled(true);
             player.sendActionBar(ChatColor.RED + "First capture this area before building here.");

@@ -6,6 +6,7 @@ import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -101,5 +102,29 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         if (clan == null)
             return "Wilderness";
         return clan.getName();
+    }
+
+    public boolean isEnemyClaim(Region region, Player player, boolean includeWildernessAsEnemy)
+    {
+        Clan clan = getOwningClan(region);
+        Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
+
+        if (clan == null) //Unclaimed
+        {
+            return includeWildernessAsEnemy;
+        }
+        return playerClan != clan;
+    }
+
+    public boolean isEnemyClaim(Location targetLocation, Player player, boolean includeWildernessAsEnemy)
+    {
+        Clan clan = getOwningClan(regionManager.fromLocation(targetLocation));
+        Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
+
+        if (clan == null) //Unclaimed
+        {
+            return includeWildernessAsEnemy;
+        }
+        return playerClan != clan;
     }
 }

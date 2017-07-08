@@ -6,3 +6,4 @@ main: to.us.tf.CapturePointClaims.CapturePointClaims
 softdepend:
 - Multiverse-Core
 - SimpleClans
+- BetterTPA
