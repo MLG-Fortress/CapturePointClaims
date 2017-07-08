@@ -118,7 +118,6 @@ public class Messenger {
      */
     public static void alertMembersOfAttack(Clan attackingClan, @Nullable Clan defendingClan, Region region)
     {
-        String coordinates = cleanCoords(region.getRegionCenter(false));
         String defendingClanTag = "Nobody";
         if (defendingClan != null)
         {
