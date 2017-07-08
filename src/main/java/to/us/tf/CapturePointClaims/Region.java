@@ -141,7 +141,7 @@ public class Region
     {
         String colorValue = getData("clanColor");
         if (colorValue == null)
-            return DyeColor.BLACK.getDyeData();
+            return DyeColor.WHITE.getWoolData();
         return Byte.valueOf(colorValue);
     }
 
