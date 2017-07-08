@@ -1,6 +1,7 @@
 package to.us.tf.CapturePointClaims;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import to.us.tf.CapturePointClaims.events.CaptureFinishedEvent;
 
 import java.util.concurrent.TimeUnit;
 
@@ -130,10 +131,14 @@ public class CapturePoint
             this.defended = false;
         else
             return null;
-        //TODO: fire event
+
+        //"Game over"
         this.timeCaptured = System.currentTimeMillis();
         if (!this.defended)
             region.changeOwner(attackingClan, instance);
+
+        instance.getServer().getPluginManager().callEvent(new CaptureFinishedEvent(attackingClan, owningClan, defended));
+
         return this.defended;
     }
 

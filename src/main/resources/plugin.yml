@@ -7,3 +7,6 @@ softdepend:
 - Multiverse-Core
 - SimpleClans
 - BetterTPA
+commands:
+  tppoint:
+    aliases: [tpclaim]

@@ -49,7 +49,7 @@ public class BossBarMessenger
                     continue;
                 }
 
-                Region region = regionManager.fromLocation(player.getLocation());
+                Region region = regionManager.getRegion(player.getLocation());
                 addPlayerToBossBar(player, region);
             }
             }
@@ -65,7 +65,7 @@ public class BossBarMessenger
 
             if (capturePoint == null) //TODO: replace with event listener
             {
-                bar.setTitle("Owned by " + instance.getOwningClanString(region));
+                bar.setTitle("Point (" + region.getName() + ") Owned by " + instance.getOwningClanString(region));
                 continue;
             }
 
@@ -73,7 +73,7 @@ public class BossBarMessenger
             {
                 bar.setStyle(BarStyle.SOLID);
                 bar.setColor(BarColor.BLUE);
-                bar.setTitle("Locked by " + instance.getOwningClanString(region));
+                bar.setTitle("Point (" + region.getName() + ") Locked by " + instance.getOwningClanString(region));
                 bar.setProgress(capturePoint.getExpirationTimeAsPercentage());
                 continue;
             }

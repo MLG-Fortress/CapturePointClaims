@@ -6,7 +6,7 @@
 
     <groupId>to.us.tf</groupId>
     <artifactId>CapturePointClaims</artifactId>
-    <version>2.0</version>
+    <version>3.1</version>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -19,6 +19,10 @@
         <repository>
             <id>remote-repos</id>
             <url>http://104.236.246.108:8081/artifactory/remote-repos</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
     <build>
@@ -37,7 +41,7 @@
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.11.2-R0.1-SNAPSHOT</version>
+            <version>1.12-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -50,6 +54,12 @@
             <groupId>net.sacredlabyrinth.phaed.simpleclans</groupId>
             <artifactId>SimpleClans</artifactId>
             <version>2.6.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MLG-Fortress</groupId>
+            <artifactId>BetterTPA</artifactId>
+            <version>3.7</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

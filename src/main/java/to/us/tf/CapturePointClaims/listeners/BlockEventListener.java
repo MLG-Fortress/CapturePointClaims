@@ -11,14 +11,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPistonEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import to.us.tf.CapturePointClaims.managers.CaptureManager;
 import to.us.tf.CapturePointClaims.CapturePointClaims;
 import to.us.tf.CapturePointClaims.Region;
 import to.us.tf.CapturePointClaims.managers.RegionManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -63,7 +70,7 @@ public class BlockEventListener implements Listener
 
         //otherwise figure out which region that block is in
         Location blockLocation = block.getLocation();
-        Region blockRegion = regionManager.fromLocation(blockLocation);
+        Region blockRegion = regionManager.getRegion(blockLocation);
 
         //if too close to (or above) region post,
         if(blockRegion.nearRegionPost(blockLocation, 2))
@@ -72,7 +79,7 @@ public class BlockEventListener implements Listener
             if (instance.isEnemyClaim(blockRegion, player, true))
                 captureManager.startOrContinueCapture(player, blockRegion); //start/continue claiming process
             else //player's clan already claimed this, do nothing more
-                player.sendMessage("Your clan already captured this point");
+                player.sendMessage(ChatColor.RED + "Your clan already captured this point");
         }
         //Otherwise, just general region claim check stuff
         else if (instance.isEnemyClaim(blockRegion, player, false))
@@ -98,7 +105,7 @@ public class BlockEventListener implements Listener
         //if the player is not in managed world, do nothing
         if(!instance.claimWorlds.contains(player.getWorld())) return;
 
-        Region blockRegion = regionManager.fromLocation(blockLocation);
+        Region blockRegion = regionManager.getRegion(blockLocation);
 
         if (instance.isEnemyClaim(blockRegion, player, false))
         {
@@ -112,5 +119,59 @@ public class BlockEventListener implements Listener
         {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    void onEntityExplode(EntityExplodeEvent event)
+    {
+        //if not in managed world, do nothing
+        if(!instance.claimWorlds.contains(event.getEntity().getWorld())) return;
+
+        for (Block block : new ArrayList<>(event.blockList()))
+        {
+            Region region = regionManager.getRegion(block.getLocation());
+            if (region.nearRegionPost(block.getLocation(), 2))
+                event.blockList().remove(block);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    void onBlockExplode(BlockExplodeEvent event)
+    {
+        //if not in managed world, do nothing
+        if(!instance.claimWorlds.contains(event.getBlock().getWorld())) return;
+
+        for (Block block : new ArrayList<>(event.blockList()))
+        {
+            Region region = regionManager.getRegion(block.getLocation());
+            if (region.nearRegionPost(block.getLocation(), 2))
+                event.blockList().remove(block);
+        }
+    }
+
+    //Apparently I'm not allowed to listen to BlockPistonEvent... https://gist.github.com/RoboMWM/3b9c2799f6d16a66188aedb787966f9b
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    void onPistonStuff(BlockPistonExtendEvent event)
+    {
+        Block block = event.getBlock();
+        //if not in managed world, do nothing
+        if(!instance.claimWorlds.contains(event.getBlock().getWorld())) return;
+
+        Region region = regionManager.getRegion(block.getLocation());
+        if (region.nearRegionPost(block.getLocation(), 3))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    void onPistonStuff(BlockPistonRetractEvent event)
+    {
+        Block block = event.getBlock();
+        //if not in managed world, do nothing
+        if(!instance.claimWorlds.contains(event.getBlock().getWorld())) return;
+
+        Region region = regionManager.getRegion(block.getLocation());
+        if (region.nearRegionPost(block.getLocation(), 3))
+            event.setCancelled(true);
     }
 }

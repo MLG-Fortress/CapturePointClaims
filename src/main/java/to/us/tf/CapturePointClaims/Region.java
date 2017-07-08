@@ -1,6 +1,7 @@
 package to.us.tf.CapturePointClaims;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -12,7 +13,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import to.us.tf.CapturePointClaims.managers.RegionManager;
 
 public class Region
 {
@@ -25,6 +25,11 @@ public class Region
     ConfigurationSection regionSection;
     ConfigurationSection worldSection;
     String path;
+
+    public String getName()
+    {
+        return getWorld().getName() + " " + regionX + " " + regionZ;
+    }
 
     public Region(int regionX, int regionZ, World world, int regionSize, YamlConfiguration storage)
     {
@@ -96,7 +101,7 @@ public class Region
     {
         if(coordinatesToCompare == null) return false;
 
-        if(!(coordinatesToCompare instanceof RegionManager)) return false;
+        if(!(coordinatesToCompare instanceof Region)) return false;
 
         Region coords = (Region)coordinatesToCompare;
 
@@ -136,7 +141,7 @@ public class Region
     {
         String colorValue = getData("clanColor");
         if (colorValue == null)
-            return DyeColor.BLACK.getDyeData();
+            return DyeColor.WHITE.getWoolData();
         return Byte.valueOf(colorValue);
     }
 
@@ -144,29 +149,26 @@ public class Region
     {
         if (clan == null)
             return;
-        DyeColor dyeColor = DyeColor.WHITE; //TODO: dyeColor is inaccurate for stained glass
+
         this.setOwningClanTag(clan.getTag());
         char clanTagChar = clan.getColorTag().charAt(1);
-        switch (clanTagChar)
+        ChatColor chatColor = ChatColor.getByChar(clanTagChar);
+        DyeColor dyeColor = DyeColor.WHITE; //TODO: dyeColor is inaccurate for stained glass(?)
+
+        switch (chatColor)
         {
-            case 'a':
-                dyeColor = DyeColor.GREEN;
-                break;
-            case 'b':
-                dyeColor = DyeColor.LIGHT_BLUE;
-                break;
-            case 'd':
+            case DARK_PURPLE:
                 dyeColor = DyeColor.PURPLE;
                 break;
-            case 'e':
-            case '6':
+            case GOLD:
                 dyeColor = DyeColor.YELLOW;
                 break;
-            case 'c':
-                dyeColor = DyeColor.RED;
+            case DARK_GREEN:
+            case GREEN:
+                dyeColor = DyeColor.GREEN;
                 break;
         }
-        this.setClanColorValue(dyeColor.getDyeData());
+        this.setClanColorValue(dyeColor.getWoolData());
         this.AddRegionPost(instance);
     }
 
@@ -374,9 +376,9 @@ public class Region
 
                 Sign sign = (Sign)block1.getState();
 
-                sign.setLine(0, "Break this");
-                sign.setLine(1, "to start");
-                sign.setLine(2, "capture process");
+                sign.setLine(0, world.getName() + " " + regionX + " " + regionZ);
+                sign.setLine(2, "Break to capture");
+                sign.setLine(3, "this point");
 
                 sign.update();
             }

@@ -21,6 +21,7 @@ package to.us.tf.CapturePointClaims.managers;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -30,6 +31,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import to.us.tf.CapturePointClaims.CapturePointClaims;
@@ -38,8 +40,10 @@ import to.us.tf.CapturePointClaims.Region;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class RegionManager
 {
@@ -47,9 +51,9 @@ public class RegionManager
     YamlConfiguration regionStorage;
     Map<World, Table<Integer, Integer, Region>> worldCache = new HashMap<>();
 
-    public RegionManager(CapturePointClaims capturePointClaims)
+    public RegionManager(CapturePointClaims plugin)
     {
-        File storageFile = new File(capturePointClaims.getDataFolder(), "regionStorage.data");
+        File storageFile = new File(plugin.getDataFolder(), "regionStorage.data");
         if (!storageFile.exists())
         {
             try
@@ -58,23 +62,59 @@ public class RegionManager
             }
             catch (IOException e)
             {
-                capturePointClaims.getLogger().severe("Could not create storage.yml! Since I'm lazy, there currently is no \"in memory\" option. Will now disable along with a nice stack trace for you to bother me with:");
+                plugin.getLogger().severe("Could not create regionStorage.data! Since I'm lazy, there currently is no \"in memory\" option. Will now disable along with a nice stack trace for you to bother me with:");
                 e.printStackTrace();
                 return;
             }
         }
         regionStorage = YamlConfiguration.loadConfiguration(storageFile);
 
-        for (World world : capturePointClaims.claimWorlds)
+        for (World world : plugin.claimWorlds)
             worldCache.put(world, HashBasedTable.create());
+
+        //Load and cache data into worldCache from flatfile storage. Also purge unused entries
+        for (World world : worldCache.keySet())
+        {
+            Set<String> keysToDelete = new HashSet<>();
+
+            ConfigurationSection worldSection = regionStorage.getConfigurationSection(world.getName());
+            if (worldSection == null)
+                continue;
+            for (String regionKey : worldSection.getKeys(false))
+            {
+                ConfigurationSection regionSection = regionStorage.getConfigurationSection(world.getName()).getConfigurationSection(regionKey);
+                if (regionSection.getString("clanTag") == null)
+                {
+                    keysToDelete.add(regionKey);
+                    continue;
+                }
+                //Cache region
+                String[] values = regionKey.split(",");
+
+                try
+                {
+                    getRegion(world, Integer.parseInt(values[0]), Integer.parseInt(values[1]), false);
+                }
+                catch (NumberFormatException e)
+                {
+                    keysToDelete.add(regionKey);
+                    plugin.getLogger().warning("Failed to load a region into cache, deleting it. " + e.getMessage());
+                }
+            }
+
+            for (String deleteKey : keysToDelete)
+            {
+                worldSection.set(deleteKey, null);
+            }
+        }
 
         new BukkitRunnable()
         {
             public void run()
             {
-                saveData(capturePointClaims);
+                saveData(plugin);
             }
-        }.runTaskTimer(capturePointClaims, 6000L, 6000L);
+        }.runTaskTimer(plugin, 6000L, 6000L);
     }
 
     public void saveData(CapturePointClaims capturePointClaims)
@@ -95,13 +135,11 @@ public class RegionManager
 
     //given a location, returns the coordinates of the region containing that location
     //returns NULL when the location is not in the managed world
-    //TRIVIA!  despite the simplicity of this method, I got it badly wrong like 5 times before it was finally fixed
-    public Region fromLocation(Location location)
+    public Region getRegion(Location location)
     {
         if (!worldCache.containsKey(location.getWorld()))
             return null;
-        //keeping all regions the same size and arranging them in a strict grid makes this calculation supa-fast!
-        //that's important because we do it A LOT as players move, build, break blocks, and more
+        //keeping all regions the same size and arranging them in a strict grid makes this calculation supa-fast! //ses da bigscary
         int x = location.getBlockX() / REGION_SIZE;
         if(location.getX() < 0) x--;
 
@@ -116,5 +154,38 @@ public class RegionManager
         }
         return region;
     }
+
+    public Region getRegion(World world, int x, int z)
+    {
+        return getRegion(world, x, z, true);
+    }
+
+    public Region getRegion(World world, int x, int z, boolean cacheOnly)
+    {
+        if (!worldCache.containsKey(world))
+            return null;
+        Region region = worldCache.get(world).get(x, z); //Get the cached Region object
+        if (!cacheOnly && region == null) //create a new one if such doesn't exist
+        {
+            worldCache.get(world).put(x, z, new Region(x, z, world, REGION_SIZE, regionStorage));
+            region = worldCache.get(world).get(x, z);
+        }
+        return region;
+    }
+
+    public Set<Region> getRegions(String clanTag)
+    {
+        Set<Region> regionsToReturn = new HashSet<>();
+        for (Table<Integer, Integer, Region> world : worldCache.values())
+        {
+            for (Region region : world.values())
+            {
+                if (region.getOwningClanTag() != null && region.getOwningClanTag().equals(clanTag))
+                    regionsToReturn.add(region);
+            }
+        }
+        return regionsToReturn;
+    }
+
 }
 
