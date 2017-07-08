@@ -11,14 +11,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPistonEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import to.us.tf.CapturePointClaims.managers.CaptureManager;
 import to.us.tf.CapturePointClaims.CapturePointClaims;
 import to.us.tf.CapturePointClaims.Region;
 import to.us.tf.CapturePointClaims.managers.RegionManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -124,5 +129,45 @@ public class BlockEventListener implements Listener
         {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    void onEntityExplode(EntityExplodeEvent event)
+    {
+        //if not in managed world, do nothing
+        if(!instance.claimWorlds.contains(event.getEntity().getWorld())) return;
+
+        for (Block block : new ArrayList<>(event.blockList()))
+        {
+            Region region = regionManager.getRegion(block.getLocation());
+            if (region.nearRegionPost(block.getLocation(), 2))
+                event.blockList().remove(block);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    void onBlockExplode(BlockExplodeEvent event)
+    {
+        //if not in managed world, do nothing
+        if(!instance.claimWorlds.contains(event.getBlock().getWorld())) return;
+
+        for (Block block : new ArrayList<>(event.blockList()))
+        {
+            Region region = regionManager.getRegion(block.getLocation());
+            if (region.nearRegionPost(block.getLocation(), 2))
+                event.blockList().remove(block);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    void onPistonStuff(BlockPistonEvent event)
+    {
+        Block block = event.getBlock();
+        //if not in managed world, do nothing
+        if(!instance.claimWorlds.contains(event.getBlock().getWorld())) return;
+
+        Region region = regionManager.getRegion(block.getLocation());
+        if (region.nearRegionPost(block.getLocation(), 3))
+            event.setCancelled(true);
     }
 }

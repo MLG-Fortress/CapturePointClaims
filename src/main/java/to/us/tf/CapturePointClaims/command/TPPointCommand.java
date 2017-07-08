@@ -4,6 +4,7 @@ import me.robomwm.BetterTPA.BetterTPA;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -46,7 +47,7 @@ public class TPPointCommand implements CommandExecutor
 
         if (clanPlayer == null)
         {
-            sender.sendMessage("You need to be part of a clan to teleport to clan-claimed capture points.");
+            sender.sendMessage(ChatColor.RED + "You need to be part of a clan to teleport to clan-claimed capture points."); //TODO: instructions to /join
             return false;
         }
 
@@ -74,8 +75,8 @@ public class TPPointCommand implements CommandExecutor
         Region region = regionManager.getRegion(world, x, z);
         if (region == null || !region.getOwningClanTag().equals(clanPlayer.getClan().getTag()))
         {
-            sender.sendMessage("Invalid point, or not claimed by your clan.");
             errorMessage(player, clanPlayer);
+            sender.sendMessage(ChatColor.RED + "Invalid point, or not claimed by your clan.");
             return false;
         }
 
@@ -92,6 +93,6 @@ public class TPPointCommand implements CommandExecutor
                 player.sendMessage(region.getName());
             }
         }
-        player.sendMessage("/tppoint <world> <x> <z>");
+        player.sendMessage(ChatColor.GOLD + "/tppoint <world> <x> <z>");
     }
 }
