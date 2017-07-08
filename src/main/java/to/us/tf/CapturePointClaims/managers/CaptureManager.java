@@ -106,7 +106,7 @@ public class CaptureManager
         }
         else if (capturePoint.getAttackingClan() == clan) //Continue capture
         {
-            player.sendActionBar("Capture point health: " + capturePoint.decrementCaptureProgress(1) + "/100");
+            player.sendActionBar(ChatColor.AQUA + "Capture point health: " + capturePoint.decrementCaptureProgress(1) + "/100");
             capturePoint.checkOrEndGame(instance);
         }
         else
