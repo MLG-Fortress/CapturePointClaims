@@ -88,7 +88,16 @@ public class RegionManager
                 }
                 //Cache region
                 String[] values = regionKey.split(",");
-                getRegion(world, Integer.parseInt(values[0]), Integer.parseInt(values[1]), false);
+
+                try
+                {
+                    getRegion(world, Integer.parseInt(values[0]), Integer.parseInt(values[1]), false);
+                }
+                catch (NumberFormatException e)
+                {
+                    keysToDelete.add(regionKey);
+                    System.out.println("[CapturePointClaims] failed to load a region into cache, deleting it. " + e.getMessage());
+                }
             }
 
             for (String deleteKey : keysToDelete)
