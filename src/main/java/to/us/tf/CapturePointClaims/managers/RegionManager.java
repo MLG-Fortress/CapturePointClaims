@@ -31,6 +31,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import to.us.tf.CapturePointClaims.CapturePointClaims;
@@ -61,7 +62,7 @@ public class RegionManager
             }
             catch (IOException e)
             {
-                capturePointClaims.getLogger().severe("Could not create storage.yml! Since I'm lazy, there currently is no \"in memory\" option. Will now disable along with a nice stack trace for you to bother me with:");
+                capturePointClaims.getLogger().severe("Could not create regionStorage.data! Since I'm lazy, there currently is no \"in memory\" option. Will now disable along with a nice stack trace for you to bother me with:");
                 e.printStackTrace();
                 return;
             }
@@ -70,6 +71,31 @@ public class RegionManager
 
         for (World world : capturePointClaims.claimWorlds)
             worldCache.put(world, HashBasedTable.create());
+
+        //Load and cache data into worldCache from flatfile storage. Also purge unused entries
+        for (World world : worldCache.keySet())
+        {
+            Set<String> keysToDelete = new HashSet<>();
+
+            ConfigurationSection worldSection = regionStorage.getConfigurationSection(world.getName());
+            for (String regionKey : worldSection.getKeys(false))
+            {
+                ConfigurationSection regionSection = regionStorage.getConfigurationSection(world.getName()).getConfigurationSection(regionKey);
+                if (regionSection.getString("clanTag") == null)
+                {
+                    keysToDelete.add(regionKey);
+                    continue;
+                }
+                //Cache region
+                String[] values = regionKey.split(",");
+                getRegion(world, Integer.parseInt(values[0]), Integer.parseInt(values[1]), false);
+            }
+
+            for (String deleteKey : keysToDelete)
+            {
+                worldSection.set(deleteKey, null);
+            }
+        }
 
         new BukkitRunnable()
         {
@@ -120,7 +146,20 @@ public class RegionManager
 
     public Region getRegion(World world, int x, int z)
     {
-        return worldCache.get(world).get(x, z); //Get the cached Region object
+        return getRegion(world, x, z, true);
+    }
+
+    public Region getRegion(World world, int x, int z, boolean cacheOnly)
+    {
+        if (!worldCache.containsKey(world))
+            return null;
+        Region region = worldCache.get(world).get(x, z); //Get the cached Region object
+        if (!cacheOnly && region == null) //create a new one if such doesn't exist
+        {
+            worldCache.get(world).put(x, z, new Region(x, z, world, REGION_SIZE, regionStorage));
+            region = worldCache.get(world).get(x, z);
+        }
+        return region;
     }
 
     public Set<Region> getRegions(String clanTag)

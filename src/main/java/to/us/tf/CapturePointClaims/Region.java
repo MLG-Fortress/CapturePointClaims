@@ -28,17 +28,7 @@ public class Region
 
     public String getName()
     {
-        return getWorld().getName() + " " + getRegionX() + " " + getRegionX();
-    }
-
-    public int getRegionX()
-    {
-        return regionX;
-    }
-
-    public int getRegionZ()
-    {
-        return regionZ;
+        return getWorld().getName() + " " + regionX + " " + regionZ;
     }
 
     public Region(int regionX, int regionZ, World world, int regionSize, YamlConfiguration storage)
