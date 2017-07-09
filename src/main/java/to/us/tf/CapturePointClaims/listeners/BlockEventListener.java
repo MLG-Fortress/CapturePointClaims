@@ -17,6 +17,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import to.us.tf.CapturePointClaims.managers.CaptureManager;
 import to.us.tf.CapturePointClaims.CapturePointClaims;
 import to.us.tf.CapturePointClaims.Region;
@@ -27,6 +28,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by RoboMWM on 1/21/2017.
@@ -86,14 +88,25 @@ public class BlockEventListener implements Listener
         {
             short durability = player.getInventory().getItemInMainHand().getDurability();
             //TODO: Cancel if item is not a tool
-            if (durability > 0)
+            if (durability == 0)
             {
                 event.setCancelled(true);
                 player.sendActionBar(ChatColor.RED + "Use a tool to break blocks in an enemy claim.");
                 return;
             }
-            //TODO: otherwise reduce durability of tool
         }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    void onToolDamage(PlayerItemDamageEvent event)
+    {
+        Player player = event.getPlayer();
+        if (instance.isEnemyClaim(player.getLocation(), player, false))
+            event.setDamage(event.getDamage() * r4nd0m(2, 10));
+    }
+
+    public int r4nd0m(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -110,7 +123,7 @@ public class BlockEventListener implements Listener
         if (instance.isEnemyClaim(blockRegion, player, false))
         {
             event.setCancelled(true);
-            player.sendActionBar(ChatColor.RED + "First capture this area before building here.");
+            player.sendActionBar(ChatColor.RED + "You must capture the control point to build here!");
             return;
         }
 

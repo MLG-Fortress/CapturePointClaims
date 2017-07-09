@@ -120,7 +120,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
 
     public boolean isEnemyClaim(Location targetLocation, Player player, boolean includeWildernessAsEnemy)
     {
-        Clan clan = getOwningClan(regionManager.fromLocation(targetLocation));
+        Clan clan = getOwningClan(regionManager.getRegion(targetLocation));
         Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
 
         if (clan == null) //Unclaimed
