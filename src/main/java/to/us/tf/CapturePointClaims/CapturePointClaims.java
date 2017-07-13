@@ -93,7 +93,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
      */
     public Clan getOwningClan(Region region)
     {
-        if (region.getOwningClanTag() == null)
+        if (region == null || region.getOwningClanTag() == null)
             return null;
         return clanManager.getClan(region.getOwningClanTag());
     }
