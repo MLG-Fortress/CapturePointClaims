@@ -107,14 +107,18 @@ public class RegionManager
                 worldSection.set(deleteKey, null);
             }
         }
+    }
 
+    public void scheduleSaveData(CapturePointClaims capturePointClaims)
+    {
         new BukkitRunnable()
         {
+            @Override
             public void run()
             {
-                saveData(plugin);
+                saveData(capturePointClaims);
             }
-        }.runTaskTimer(plugin, 6000L, 6000L);
+        }.runTaskLater(capturePointClaims, 300L);
     }
 
     public void saveData(CapturePointClaims capturePointClaims)

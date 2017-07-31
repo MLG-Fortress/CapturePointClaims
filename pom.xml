@@ -6,7 +6,7 @@
 
     <groupId>to.us.tf</groupId>
     <artifactId>CapturePointClaims</artifactId>
-    <version>3.1</version>
+    <version>3.2</version>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

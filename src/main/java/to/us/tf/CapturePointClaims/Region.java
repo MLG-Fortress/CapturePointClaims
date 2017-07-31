@@ -170,6 +170,7 @@ public class Region
         }
         this.setClanColorValue(dyeColor.getWoolData());
         this.AddRegionPost(instance);
+        instance.regionManager.scheduleSaveData(instance);
     }
 
     //determines the center of a region (as a Location) given its region coordinates
