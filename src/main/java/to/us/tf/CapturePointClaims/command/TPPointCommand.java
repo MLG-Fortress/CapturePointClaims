@@ -73,7 +73,7 @@ public class TPPointCommand implements CommandExecutor
         }
 
         Region region = regionManager.getRegion(world, x, z);
-        if (region == null || !region.getOwningClanTag().equals(clanPlayer.getClan().getTag()))
+        if (region == null || region.getOwningClanTag() == null || !region.getOwningClanTag().equals(clanPlayer.getClan().getTag()))
         {
             errorMessage(player, clanPlayer);
             sender.sendMessage(ChatColor.RED + "Invalid point, or not claimed by your clan.");
