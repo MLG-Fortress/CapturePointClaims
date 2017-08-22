@@ -102,7 +102,7 @@ public class BossBarMessenger
         {
             //Create bossbar and cache it
             String owner = instance.getOwningClanString(region);
-            cachedRegions.put(region, instance.getServer().createBossBar("Owned by " + owner, BarColor.BLUE, BarStyle.SOLID));
+            cachedRegions.put(region, instance.getServer().createBossBar("Point (" + region.getName() + ") Owned by " + owner, BarColor.BLUE, BarStyle.SOLID));
         }
 
         lastSeenRegion.put(player, region);
