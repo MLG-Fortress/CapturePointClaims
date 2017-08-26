@@ -42,15 +42,15 @@ public class CapturePointClaims extends JavaPlugin implements Listener
 
     public void onEnable()
     {
+        saveConfig(); //Create data folder
         SimpleClans sc = (SimpleClans)getServer().getPluginManager().getPlugin("SimpleClans");
         this.clanManager = sc.getClanManager();
-        this.regionManager = new RegionManager(this);
         claimWorlds.add(getServer().getWorld("world"));
         claimWorlds.add(getServer().getWorld("cityworld"));
         claimWorlds.add(getServer().getWorld("cityworld_nether"));
         claimWorlds.add(getServer().getWorld("world_nether"));
-        saveConfig(); //Create data folder
-        
+        this.regionManager = new RegionManager(this);
+
         getServer().getPluginManager().registerEvents(this, this);
         CaptureManager captureManager = new CaptureManager(this, clanManager, regionManager);
         getServer().getPluginManager().registerEvents(new BlockEventListener(this, captureManager, clanManager, regionManager), this);
