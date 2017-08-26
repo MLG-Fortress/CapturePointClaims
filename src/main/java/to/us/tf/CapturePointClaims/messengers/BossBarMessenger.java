@@ -82,7 +82,7 @@ public class BossBarMessenger
             bar.setProgress(capturePoint.getCaptureProgress());
             String info = "Point (" + region.getName() + ") Owned by " + instance.getOwningClanName(region) + ChatColor.RED + " is under attack!";
             String time = Messenger.formatTimeDifferently(capturePoint.getSecondsToEndGame(), 1);
-            bar.setTitle(info + " " + time);
+            bar.setTitle(info + ChatColor.AQUA + " " + time);
         }
     }
 

@@ -113,19 +113,18 @@ public class Messenger {
 
     /**
      * Alerts members of attacking and defending clans of an attack.
-     * @param attackingClan
      * @param defendingClan
      */
-    public static void alertMembersOfAttack(Clan attackingClan, @Nullable Clan defendingClan, Region region)
+    public static void alertMembersOfAttack(@Nullable Clan defendingClan, Region region)
     {
         String defendingClanTag = "Nobody";
         if (defendingClan != null)
         {
             defendingClanTag = defendingClan.getTag();
-            chatMessageToClan(defendingClan, "Our capture point " + region.getName() + " is under attack by " + attackingClan.getColorTag() + " - " + attackingClan.getName()
+            chatMessageToClan(defendingClan, "Our capture point " + region.getName() + " is under attack!"
             + "\nHelp defend! Type " + ChatColor.GOLD + "/tppoint " + region.getName());
         }
 
-        chatMessageToClan(attackingClan, "We are attacking capture point " + region.getName() + " which is owned by " + defendingClanTag);
+        //chatMessageToClan(attackingClan, "We are attacking capture point " + region.getName() + " which is owned by " + defendingClanTag);
     }
 }

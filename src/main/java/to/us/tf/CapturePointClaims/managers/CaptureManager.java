@@ -80,7 +80,7 @@ public class CaptureManager
             if (capturePoint.getOwningClan() != null) //notify defenders
             {
                 Clan defendingClan = capturePoint.getOwningClan();
-                Messenger.alertMembersOfAttack(clan, capturePoint.getOwningClan(), region);
+                Messenger.alertMembersOfAttack(capturePoint.getOwningClan(), region);
             }
 
             //TODO: Fire event
@@ -102,7 +102,7 @@ public class CaptureManager
         }
         else if (instance.isEnemyClan(player, capturePoint.getOwningClan(), true)) //Continue capture
         {
-            player.sendActionBar(ChatColor.AQUA + "Capture point health: " + capturePoint.decrementCaptureProgress(10));
+            player.sendActionBar(ChatColor.AQUA + "Capture point health: " + capturePoint.decrementCaptureProgress(5));
             capturePoint.checkOrEndGame(instance, clan);
         }
         else if (!instance.isEnemyClan(player, capturePoint.getOwningClan(), true))
