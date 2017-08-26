@@ -1,6 +1,7 @@
 package to.us.tf.CapturePointClaims;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import to.us.tf.CapturePointClaims.events.CaptureFinishedEvent;
 
 import java.util.concurrent.TimeUnit;
@@ -11,14 +12,13 @@ public class CapturePoint
      * Contains information about a point in the process of being captured
      * Automatically manages and performs end-game (times runs out or point being captured)
      */
-    //capturingClan
-    private Clan attackingClan;
     //defendingClan (owning clan to notify, generally. Null if unclaimed)
     private Clan owningClan;
     //captureProgress (decrements to 0)
-    private int captureProgress = 100;
+    private int captureProgress = 1000;
+    private final double maxCaptureProgress = 1000;
     //Maximum amount of time to capture point, in ticks
-    private int ticksToEndGame = 6000; //5 minutes
+    private int ticksToEndGame = 12000; //10 minutes
     //Used to determine end game, and when point should be unlocked
     private Long timeCaptured = 0L;
     //Determines who won
@@ -28,14 +28,8 @@ public class CapturePoint
     //Capturing a new point
     public CapturePoint(Clan attackingClan, Clan owningClan, Region region)
     {
-        this.attackingClan = attackingClan;
         this.owningClan = owningClan;
         this.region = region;
-    }
-
-    public Clan getAttackingClan()
-    {
-        return this.attackingClan;
     }
 
     public Clan getOwningClan()
@@ -60,9 +54,9 @@ public class CapturePoint
         return this.timeCaptured;
     }
 
-    public int getCaptureProgress()
+    public double getCaptureProgress()
     {
-        return this.captureProgress;
+        return this.captureProgress / maxCaptureProgress;
     }
 
     public int getTicksToEndGame()
@@ -82,7 +76,8 @@ public class CapturePoint
 
     public boolean isLockExpired()
     {
-        return getTimeCaptured() != 0L && this.getTimeCaptured() < (System.currentTimeMillis() - 86400000);
+        //return getTimeCaptured() != 0L && this.getTimeCaptured() < (System.currentTimeMillis() - 86400000); //1 day
+        return getTimeCaptured() != 0L && this.getTimeCaptured() < (System.currentTimeMillis() - 1800000); //30 minutes
     }
 
     /**
@@ -118,16 +113,18 @@ public class CapturePoint
         if (isEnded())
             return this.captureProgress;
         this.captureProgress -= captureProgress;
+        if (this.captureProgress > maxCaptureProgress)
+            this.captureProgress = (int)maxCaptureProgress;
         return this.captureProgress;
     }
 
-    public Boolean checkOrEndGame(CapturePointClaims instance)
+    public Boolean checkOrEndGame(CapturePointClaims instance, Clan clan)
     {
         if (this.isEnded())
             return this.defended;
         if (this.ticksToEndGame <= 0)
             this.defended = true;
-        else if (this.getCaptureProgress() <= 0)
+        else if (captureProgress <= 0)
             this.defended = false;
         else
             return null;
@@ -135,9 +132,9 @@ public class CapturePoint
         //"Game over"
         this.timeCaptured = System.currentTimeMillis();
         if (!this.defended)
-            region.changeOwner(attackingClan, instance);
+            region.changeOwner(clan, instance);
 
-        instance.getServer().getPluginManager().callEvent(new CaptureFinishedEvent(attackingClan, owningClan, defended));
+        instance.getServer().getPluginManager().callEvent(new CaptureFinishedEvent(clan, owningClan, defended));
 
         return this.defended;
     }

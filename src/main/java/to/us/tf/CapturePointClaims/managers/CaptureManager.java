@@ -53,7 +53,8 @@ public class CaptureManager
                 else
                 {
                     capturePoint.setTicksToEndGame(20);
-                    capturePoint.checkOrEndGame(instance);
+                    capturePoint.decrementCaptureProgress(-1);
+                    capturePoint.checkOrEndGame(instance, null);
                 }
             }
         }.runTaskTimer(instance, 0L, 20L);
@@ -80,7 +81,6 @@ public class CaptureManager
             {
                 Clan defendingClan = capturePoint.getOwningClan();
                 Messenger.alertMembersOfAttack(clan, capturePoint.getOwningClan(), region);
-                //TODO: Dynmap: make claim appear in red or some color no clan uses
             }
 
             //TODO: Fire event
@@ -100,14 +100,14 @@ public class CaptureManager
                 player.sendMessage("Point is locked, please wait " + Messenger.formatTime(capturePoint.getExpirationTimeRemaining()));
             }
         }
-        else if (capturePoint.getAttackingClan() != clan) //Another clan is already capturing
+        else if (instance.isEnemyClan(player, capturePoint.getOwningClan(), true)) //Continue capture
         {
-            player.sendMessage("Point is being captured by " + capturePoint.getAttackingClan().getColorTag());
+            player.sendActionBar(ChatColor.AQUA + "Capture point health: " + capturePoint.decrementCaptureProgress(10));
+            capturePoint.checkOrEndGame(instance, clan);
         }
-        else if (capturePoint.getAttackingClan() == clan) //Continue capture
+        else if (!instance.isEnemyClan(player, capturePoint.getOwningClan(), true))
         {
-            player.sendActionBar(ChatColor.AQUA + "Capture point health: " + capturePoint.decrementCaptureProgress(1) + "/100");
-            capturePoint.checkOrEndGame(instance);
+            player.sendMessage("Defend this point until the timer runs out!");
         }
         else
             instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");

@@ -79,8 +79,8 @@ public class BossBarMessenger
             }
             bar.setStyle(BarStyle.SEGMENTED_20);
             bar.setColor(BarColor.RED);
-            bar.setProgress(capturePoint.getCaptureProgress() / 100D);
-            String info = capturePoint.getAttackingClan().getColorTag() + ChatColor.RESET + " attacking " + capturePoint.getOwningClanColorTag() + ChatColor.RESET;
+            bar.setProgress(capturePoint.getCaptureProgress());
+            String info = "Point (" + region.getName() + ") Owned by " + instance.getOwningClanName(region) + ChatColor.RED + " is under attack!";
             String time = Messenger.formatTimeDifferently(capturePoint.getSecondsToEndGame(), 1);
             bar.setTitle(info + " " + time);
         }
@@ -107,6 +107,7 @@ public class BossBarMessenger
 
         lastSeenRegion.put(player, region);
         cachedRegions.get(region).addPlayer(player);
+        player.setCompassTarget(region.getRegionCenter(false));
     }
 
     public void removePlayerFromBossBar(Player player)

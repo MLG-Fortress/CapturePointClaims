@@ -3,6 +3,7 @@ package to.us.tf.CapturePointClaims;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -108,7 +109,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         Clan clan = getOwningClan(region);
         if (clan == null)
             return "Wilderness";
-        return clan.getName();
+        return "[" + clan.getColorTag() + ChatColor.RESET + "] " + clan.getName();
     }
 
     public boolean isEnemyClaim(Region region, Player player, boolean includeWildernessAsEnemy)
