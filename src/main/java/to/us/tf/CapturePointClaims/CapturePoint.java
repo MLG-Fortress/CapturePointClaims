@@ -17,6 +17,7 @@ public class CapturePoint
     //captureProgress (decrements to 0)
     private int captureProgress = 1000;
     private final double maxCaptureProgress = 1000;
+    private final long lockTime = TimeUnit.MINUTES.toMillis(30L); //point locks for 30 minutes
     //Maximum amount of time to capture point, in ticks
     private int ticksToEndGame = 12000; //10 minutes
     //Used to determine end game, and when point should be unlocked
@@ -77,7 +78,7 @@ public class CapturePoint
     public boolean isLockExpired()
     {
         //return getTimeCaptured() != 0L && this.getTimeCaptured() < (System.currentTimeMillis() - 86400000); //1 day
-        return getTimeCaptured() != 0L && this.getTimeCaptured() < (System.currentTimeMillis() - 1800000); //30 minutes
+        return getExpirationTimeRemaining() <= 0;
     }
 
     /**
@@ -87,17 +88,19 @@ public class CapturePoint
     {
         if (!isEnded())
             return null;
-        return (((this.getTimeCaptured() + TimeUnit.DAYS.toMillis(1L)) - System.currentTimeMillis()) / 1000);
+        //return (((this.getTimeCaptured() + TimeUnit.DAYS.toMillis(1L)) - System.currentTimeMillis()) / 1000); //1 day
+        return (((this.getTimeCaptured() + lockTime) - System.currentTimeMillis()) / 1000);
     }
 
     /**
      * @return 0.0 - 1.0, increasing to 1.0
+     * TODO: add checks????
      */
     public Double getExpirationTimeAsPercentage()
     {
         if (!isEnded())
             return null;
-        return (TimeUnit.DAYS.toSeconds(1L) - Double.valueOf(getExpirationTimeRemaining())) / TimeUnit.DAYS.toSeconds(1L);
+        return (lockTime - Double.valueOf(getExpirationTimeRemaining())) / lockTime;
     }
 
 
