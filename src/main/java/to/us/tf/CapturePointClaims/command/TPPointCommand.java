@@ -11,8 +11,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import to.us.tf.CapturePointClaims.CapturePointClaims;
 import to.us.tf.CapturePointClaims.Region;
 import to.us.tf.CapturePointClaims.managers.RegionManager;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created on 7/7/2017.
@@ -21,12 +25,12 @@ import to.us.tf.CapturePointClaims.managers.RegionManager;
  */
 public class TPPointCommand implements CommandExecutor
 {
-    JavaPlugin instance;
+    CapturePointClaims instance;
     ClanManager clansManager;
     RegionManager regionManager;
     BetterTPA betterTPA;
 
-    public TPPointCommand(JavaPlugin plugin, ClanManager clansManager, RegionManager regionManager)
+    public TPPointCommand(CapturePointClaims plugin, ClanManager clansManager, RegionManager regionManager)
     {
         this.instance = plugin;
         this.clansManager = clansManager;
@@ -73,10 +77,12 @@ public class TPPointCommand implements CommandExecutor
         }
 
         Region region = regionManager.getRegion(world, x, z);
-        if (region == null || region.getOwningClanTag() == null || !region.getOwningClanTag().equals(clanPlayer.getClan().getTag()))
+
+        //If world does not contain any points, not owned by any clan, or owned by an enemy clan...
+        if (region == null || instance.isEnemyClan(player, region.getOwningClanTag(), true))
         {
             errorMessage(player, clanPlayer);
-            sender.sendMessage(ChatColor.RED + "Invalid point, or not claimed by your clan.");
+            sender.sendMessage(ChatColor.RED + "Invalid point or not claimed by your clan.");
             return false;
         }
 
@@ -84,15 +90,45 @@ public class TPPointCommand implements CommandExecutor
         return true;
     }
 
+    //TODO: make tppoints clickable to teleport
     private void errorMessage(Player player, ClanPlayer clanPlayer)
     {
         if (clanPlayer != null)
         {
-            for (Region region : regionManager.getRegions(clanPlayer.getClan().getTag()))
+            for (String alliedClanTag : clanPlayer.getClan().getAllies())
             {
-                player.sendMessage(region.getName());
+                player.sendMessage(alliedClanTag + "'s points: ");
+                player.sendMessage(formattedSet(regionNames(regionManager.getRegions(alliedClanTag)), ChatColor.GREEN));
             }
+            player.sendMessage(formattedSet(regionNames(regionManager.getRegions(clanPlayer.getClan().getTag())), ChatColor.AQUA));
         }
         player.sendMessage(ChatColor.GOLD + "/tppoint <world> <x> <z>");
+    }
+
+    private String formattedSet(Set<String> stringSet, ChatColor color)
+    {
+        int i = 0;
+        StringBuilder formattedString = new StringBuilder();
+        for (String string : stringSet)
+        {
+            if (i > 0)
+            {
+                if (i % 2 == 0)
+                    formattedString.append("\n" + color);
+                else
+                    formattedString.append("\t");
+            }
+            formattedString.append(string);
+            i++;
+        }
+        return formattedString.toString();
+    }
+
+    private Set<String> regionNames(Set<Region> regions)
+    {
+        Set<String> whatever = new HashSet<>();
+        for (Region region : regions)
+            whatever.add(region.getName());
+        return whatever;
     }
 }

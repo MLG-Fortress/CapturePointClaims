@@ -109,24 +109,28 @@ public class CapturePointClaims extends JavaPlugin implements Listener
     public boolean isEnemyClaim(Region region, Player player, boolean includeWildernessAsEnemy)
     {
         Clan clan = getOwningClan(region);
-        Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
-
-        if (clan == null) //Unclaimed
-        {
-            return includeWildernessAsEnemy;
-        }
-        return playerClan != clan;
+        return isEnemyClan(player, clan, includeWildernessAsEnemy);
     }
 
     public boolean isEnemyClaim(Location targetLocation, Player player, boolean includeWildernessAsEnemy)
     {
         Clan clan = getOwningClan(regionManager.getRegion(targetLocation));
-        Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
+        return isEnemyClan(player, clan, includeWildernessAsEnemy);
+    }
 
+    public boolean isEnemyClan(Player player, Clan clan, boolean includeWildernessAsEnemy)
+    {
         if (clan == null) //Unclaimed
-        {
             return includeWildernessAsEnemy;
-        }
-        return playerClan != clan;
+        Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
+        return playerClan == null || playerClan != clan && !playerClan.isAlly(clan.getTag());
+    }
+
+    public boolean isEnemyClan(Player player, String clanTag, boolean includeWildernessAsEnemy)
+    {
+        if (clanTag == null || clanTag.isEmpty()) //Unclaimed
+            return includeWildernessAsEnemy;
+        Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
+        return playerClan == null || !playerClan.getTag().equals(clanTag) && !playerClan.isAlly(clanTag);
     }
 }
