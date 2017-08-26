@@ -78,7 +78,7 @@ public class CapturePoint
     public boolean isLockExpired()
     {
         //return getTimeCaptured() != 0L && this.getTimeCaptured() < (System.currentTimeMillis() - 86400000); //1 day
-        return getExpirationTimeRemaining() <= 0;
+        return getExpirationTimeRemaining() != null && getExpirationTimeRemaining() <= 0;
     }
 
     /**
