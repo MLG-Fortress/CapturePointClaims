@@ -31,6 +31,10 @@ public class CapturePointClaims extends JavaPlugin implements Listener
     private ClanManager clanManager;
     private RegionManager regionManager;
 
+    public RegionManager getRegionManager()
+    {
+        return regionManager;
+    }
     public ClanManager getClanManager()
     {
         return clanManager;
