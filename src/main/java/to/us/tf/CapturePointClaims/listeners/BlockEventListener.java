@@ -17,7 +17,11 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import to.us.tf.CapturePointClaims.managers.CaptureManager;
 import to.us.tf.CapturePointClaims.CapturePointClaims;
 import to.us.tf.CapturePointClaims.Region;
@@ -42,8 +46,6 @@ public class BlockEventListener implements Listener
     private Set<Material> alwaysBreakableMaterials = new HashSet<Material>(Arrays.asList(
             Material.LONG_GRASS,
             Material.DOUBLE_PLANT,
-            Material.LOG,
-            Material.LOG_2,
             Material.LEAVES,
             Material.LEAVES_2,
             Material.RED_ROSE,
@@ -86,15 +88,58 @@ public class BlockEventListener implements Listener
         //Otherwise, just general region claim check stuff
         else if (instance.isEnemyClaim(blockRegion, player, false))
         {
-            short durability = player.getInventory().getItemInMainHand().getDurability();
-            //TODO: Cancel if item is not a tool
-            if (durability == 0)
+            if (!isTool(player.getInventory().getItemInMainHand().getType()))
             {
                 event.setCancelled(true);
-                player.sendActionBar(ChatColor.RED + "Use a tool to break blocks in an enemy claim.");
+                player.sendActionBar(ChatColor.RED + "Use a tool to break blocks in an enemy's claim.");
                 return;
             }
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void onOpenChest(PlayerInteractEvent event)
+    {
+        Player player = event.getPlayer();
+        Block block = event.getClickedBlock();
+
+        //if the player is not in managed world, do nothing
+        if(!instance.claimWorlds.contains(player.getWorld()))
+            return;
+        if (!instance.isEnemyClaim(block.getLocation(), player, false))
+            return;
+
+        if (block.getState() instanceof InventoryHolder)
+            event.setCancelled(true);
+    }
+
+    private boolean isTool(Material material)
+    {
+        switch(material)
+        {
+            case WOOD_SPADE:
+            case WOOD_HOE:
+            case WOOD_PICKAXE:
+            case WOOD_SWORD:
+            case WOOD_AXE:
+            case GOLD_SPADE:
+            case GOLD_HOE:
+            case GOLD_PICKAXE:
+            case GOLD_SWORD:
+            case GOLD_AXE:
+            case IRON_SPADE:
+            case IRON_HOE:
+            case IRON_PICKAXE:
+            case IRON_SWORD:
+            case IRON_AXE:
+            case DIAMOND_SPADE:
+            case DIAMOND_HOE:
+            case DIAMOND_PICKAXE:
+            case DIAMOND_SWORD:
+            case DIAMOND_AXE:
+                return true;
+        }
+        return false;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
@@ -102,7 +147,7 @@ public class BlockEventListener implements Listener
     {
         Player player = event.getPlayer();
         if (instance.isEnemyClaim(player.getLocation(), player, false))
-            event.setDamage(event.getDamage() * r4nd0m(2, 10));
+            event.setDamage(event.getDamage() * r4nd0m(50, 100));
     }
 
     public int r4nd0m(int min, int max) {
