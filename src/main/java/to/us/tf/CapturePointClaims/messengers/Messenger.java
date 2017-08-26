@@ -117,10 +117,9 @@ public class Messenger {
      */
     public static void alertMembersOfAttack(@Nullable Clan defendingClan, Region region)
     {
-        String defendingClanTag = "Nobody";
         if (defendingClan != null)
         {
-            defendingClanTag = defendingClan.getTag();
+            String defendingClanTag = defendingClan.getTag();
             chatMessageToClan(defendingClan, "Our capture point " + region.getName() + " is under attack!"
             + "\nHelp defend! Type " + ChatColor.GOLD + "/tppoint " + region.getName());
         }

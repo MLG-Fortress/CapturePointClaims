@@ -18,6 +18,7 @@ public class CapturePoint
     private int captureProgress = 1000;
     private final double maxCaptureProgress = 1000;
     private final long lockTime = TimeUnit.MINUTES.toMillis(30L); //point locks for 30 minutes
+    private final long lockTimeInSeconds = TimeUnit.MINUTES.toMillis(30L) / 1000L;
     //Maximum amount of time to capture point, in ticks
     private int ticksToEndGame = 12000; //10 minutes
     //Used to determine end game, and when point should be unlocked
@@ -100,7 +101,7 @@ public class CapturePoint
     {
         if (!isEnded())
             return null;
-        return (lockTime - Double.valueOf(getExpirationTimeRemaining())) / lockTime;
+        return (lockTimeInSeconds - Double.valueOf(getExpirationTimeRemaining())) / lockTimeInSeconds;
     }
 
 
