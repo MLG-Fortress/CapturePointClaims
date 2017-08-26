@@ -65,7 +65,7 @@ public class BossBarMessenger
 
             if (capturePoint == null) //TODO: replace with event listener
             {
-                bar.setTitle("Point (" + region.getName() + ") Owned by " + instance.getOwningClanString(region));
+                bar.setTitle("Point (" + region.getName() + ") Owned by " + instance.getOwningClanName(region));
                 continue;
             }
 
@@ -73,7 +73,7 @@ public class BossBarMessenger
             {
                 bar.setStyle(BarStyle.SOLID);
                 bar.setColor(BarColor.BLUE);
-                bar.setTitle("Point (" + region.getName() + ") Locked by " + instance.getOwningClanString(region));
+                bar.setTitle("Point (" + region.getName() + ") Locked by " + instance.getOwningClanName(region));
                 bar.setProgress(capturePoint.getExpirationTimeAsPercentage());
                 continue;
             }
@@ -101,7 +101,7 @@ public class BossBarMessenger
         if (!cachedRegions.containsKey(region))
         {
             //Create bossbar and cache it
-            String owner = instance.getOwningClanString(region);
+            String owner = instance.getOwningClanName(region);
             cachedRegions.put(region, instance.getServer().createBossBar("Point (" + region.getName() + ") Owned by " + owner, BarColor.BLUE, BarStyle.SOLID));
         }
 
