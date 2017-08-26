@@ -83,7 +83,7 @@ public class RegionManager
             for (String regionKey : worldSection.getKeys(false))
             {
                 ConfigurationSection regionSection = regionStorage.getConfigurationSection(world.getName()).getConfigurationSection(regionKey);
-                if (regionSection.getString("clanTag") == null)
+                if (regionSection.getString("clanTag") == null || plugin.getClanManager().getClan(regionSection.getString("clanTag")) == null)
                 {
                     keysToDelete.add(regionKey);
                     continue;

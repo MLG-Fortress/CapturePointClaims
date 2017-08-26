@@ -27,8 +27,13 @@ import java.util.Set;
 public class CapturePointClaims extends JavaPlugin implements Listener
 {
     public Set<World> claimWorlds = new HashSet<>();
-    ClanManager clanManager;
-    RegionManager regionManager;
+    private ClanManager clanManager;
+    private RegionManager regionManager;
+
+    public ClanManager getClanManager()
+    {
+        return clanManager;
+    }
 
     public void onEnable()
     {
