@@ -5,6 +5,9 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import to.us.tf.CapturePointClaims.managers.CaptureManager;
 import to.us.tf.CapturePointClaims.CapturePoint;
@@ -13,7 +16,9 @@ import to.us.tf.CapturePointClaims.Region;
 import to.us.tf.CapturePointClaims.managers.RegionManager;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by RoboMWM on 12/23/2016.
@@ -21,10 +26,11 @@ import java.util.Map;
  */
 public class BossBarMessenger
 {
-    CapturePointClaims instance;
-    Map<Region, BossBar> cachedRegions = new HashMap<>();
-    Map<Player, Region> lastSeenRegion = new HashMap<>();
-    CaptureManager captureManager;
+    private CapturePointClaims instance;
+    private Map<Region, BossBar> bossBars = new HashMap<>();
+    private Map<Player, Region> lastSeenRegion = new HashMap<>();
+    private Set<Player> playersMoved = new HashSet<>();
+    private CaptureManager captureManager;
 
     public BossBarMessenger(CapturePointClaims capturePointClaims, CaptureManager captureManager, RegionManager regionManager)
     {
@@ -39,81 +45,100 @@ public class BossBarMessenger
         }.runTaskTimer(instance, 200L, 10L);
         new BukkitRunnable()
         {
+            @Override
             public void run()
             {
-            for (Player player : instance.getServer().getOnlinePlayers())
-            {
-                if (!instance.claimWorlds.contains(player.getWorld()))
+                for (Player player : playersMoved)
                 {
-                    removePlayerFromBossBar(player);
-                    continue;
+                    updateViewedBossBar(player);
                 }
+                playersMoved.clear();
+            }
+        }.runTaskTimer(capturePointClaims, 100L, 20L);
+    }
 
-                Region region = regionManager.getRegion(player.getLocation());
-                addPlayerToBossBar(player, region);
-            }
-            }
-        }.runTaskTimer(this.instance, 200L, 100L);
+    @EventHandler
+    private void onWorldChange(PlayerChangedWorldEvent event)
+    {
+        updateViewedBossBar(event.getPlayer());
+    }
+
+    @EventHandler
+    private void onPlayerMove(PlayerMoveEvent event)
+    {
+        if (event.getFrom().getWorld() != event.getTo().getWorld())
+            return; //handled in PlayerChangedWorldEvent
+        if (event.getFrom().distanceSquared(event.getTo()) == 0)
+            return;
+
+        playersMoved.add(event.getPlayer());
     }
 
     private void updateBossBar()
     {
-        for (Region region : cachedRegions.keySet())
+        for (Region region : bossBars.keySet())
         {
-            BossBar bar = cachedRegions.get(region);
+            BossBar bar = bossBars.get(region);
             CapturePoint capturePoint = captureManager.getCapturePoint(region);
 
             if (capturePoint == null) //TODO: replace with event listener
             {
-                bar.setTitle("Point (" + region.getName() + ") Owned by " + instance.getOwningClanName(region));
+                bar.setTitle(getName(region, "Owned"));
                 continue;
             }
 
             if (capturePoint.isEnded()) //Locked point
             {
-                bar.setStyle(BarStyle.SOLID);
+                bar.setStyle(BarStyle.SEGMENTED_12);
                 bar.setColor(BarColor.BLUE);
-                bar.setTitle("Point (" + region.getName() + ") Locked by " + instance.getOwningClanName(region));
+                bar.setTitle(getName(region, ChatColor.AQUA + "Locked"));
                 bar.setProgress(capturePoint.getExpirationTimeAsPercentage());
                 continue;
             }
             bar.setStyle(BarStyle.SEGMENTED_20);
             bar.setColor(BarColor.RED);
             bar.setProgress(capturePoint.getCaptureProgress());
-            String info = "Point (" + region.getName() + ") Owned by " + instance.getOwningClanName(region) + ChatColor.RED + " is under attack!";
+            String info = getName(region, "Owned") + ChatColor.RED + " is under attack!";
             String time = Messenger.formatTimeDifferently(capturePoint.getSecondsToEndGame(), 1);
             bar.setTitle(info + ChatColor.AQUA + " " + time);
         }
     }
 
-    public void addPlayerToBossBar(Player player, Region region)
+    public void updateViewedBossBar(Player player)
     {
         Region lastRegion = this.lastSeenRegion.get(player);
+        Region region = instance.getRegionManager().getRegion(player.getLocation());
         if (lastRegion == region)
             return; //Nothing to do if the player hasn't moved regions
 
-        if (lastRegion != null && cachedRegions.containsKey(lastRegion))
+        //Remove player from bossbar if player is no longer in a world with capturepoints
+        if (!instance.claimWorlds.contains(player.getWorld()))
         {
-            //Remove player from old bossBar
-            cachedRegions.get(lastRegion).removePlayer(player);
+            if (this.lastSeenRegion.remove(player) != null)
+                bossBars.get(lastRegion).removePlayer(player);
+            return;
         }
 
-        if (!cachedRegions.containsKey(region))
+        if (lastRegion != null && bossBars.containsKey(lastRegion))
         {
-            //Create bossbar and cache it
-            String owner = instance.getOwningClanName(region);
-            cachedRegions.put(region, instance.getServer().createBossBar("Point (" + region.getName() + ") Owned by " + owner, BarColor.BLUE, BarStyle.SOLID));
+            //Remove player from old bossBar
+            bossBars.get(lastRegion).removePlayer(player);
+        }
+
+        //No bossbar exists for the current region
+        if (!bossBars.containsKey(region))
+        {
+            //Create bossbar and store it
+            bossBars.put(region, instance.getServer().createBossBar(getName(region, "Owned"), BarColor.BLUE, BarStyle.SOLID));
         }
 
         lastSeenRegion.put(player, region);
-        cachedRegions.get(region).addPlayer(player);
+        bossBars.get(region).addPlayer(player);
         player.setCompassTarget(region.getRegionCenter(false));
     }
 
-    public void removePlayerFromBossBar(Player player)
+    private String getName(Region region, String verb)
     {
-        Region lastRegion = this.lastSeenRegion.remove(player);
-        if (lastRegion != null)
-            cachedRegions.get(lastRegion).removePlayer(player);
+        return "Point (" + region.getName() + ") " + verb + ChatColor.RESET + " by " + instance.getOwningClanName(region);
     }
 }

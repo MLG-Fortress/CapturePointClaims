@@ -114,7 +114,8 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         Clan clan = getOwningClan(region);
         if (clan == null)
             return "Wilderness";
-        return "[" + clan.getColorTag() + ChatColor.RESET + "] " + clan.getName();
+        String color = ChatColor.getLastColors(clan.getColorTag());
+        return color + "[" + clan.getColorTag() + "] " + clan.getName();
     }
 
     public boolean isEnemyClaim(Region region, Player player, boolean includeWildernessAsEnemy)
