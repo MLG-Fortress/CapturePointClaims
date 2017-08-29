@@ -6,6 +6,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,7 +25,7 @@ import java.util.Set;
  * Created by RoboMWM on 12/23/2016.
  * Bagh wat am i doing
  */
-public class BossBarMessenger
+public class BossBarMessenger implements Listener
 {
     private CapturePointClaims instance;
     private Map<Region, BossBar> bossBars = new HashMap<>();
@@ -32,8 +33,9 @@ public class BossBarMessenger
     private Set<Player> playersMoved = new HashSet<>();
     private CaptureManager captureManager;
 
-    public BossBarMessenger(CapturePointClaims capturePointClaims, CaptureManager captureManager, RegionManager regionManager)
+    public BossBarMessenger(CapturePointClaims capturePointClaims, CaptureManager captureManager)
     {
+        capturePointClaims.getServer().getPluginManager().registerEvents(this, capturePointClaims);
         this.instance = capturePointClaims;
         this.captureManager = captureManager;
         new BukkitRunnable()
