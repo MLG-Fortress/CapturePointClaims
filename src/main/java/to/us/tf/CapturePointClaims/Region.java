@@ -60,8 +60,6 @@ public class Region
 //        else
 //        {
             regionSection.set(key, value);
-            worldSection.set(world.getName(), regionSection); //TODO: necessary?
-            storage.set(path, regionSection); //TODO: necessary?
 //        }
     }
 
