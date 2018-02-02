@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import to.us.tf.CapturePointClaims.command.TPPointCommand;
 import to.us.tf.CapturePointClaims.listeners.BlockEventListener;
+import to.us.tf.CapturePointClaims.listeners.PointUpgrader;
 import to.us.tf.CapturePointClaims.managers.CaptureManager;
 import to.us.tf.CapturePointClaims.managers.RegionManager;
 import to.us.tf.CapturePointClaims.messengers.BossBarMessenger;
@@ -59,6 +60,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(new BlockEventListener(this, captureManager, clanManager, regionManager), this);
         new BossBarMessenger(this, captureManager);
         getCommand("tppoint").setExecutor(new TPPointCommand(this, clanManager, regionManager));
+        new PointUpgrader(this);
     }
 
     @EventHandler

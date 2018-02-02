@@ -44,13 +44,13 @@ public class PointUpgrader implements Listener
             return;
         if (instance.isEnemyClaim(region, player, true))
             return;
+        if (!region.nearRegionPost(block.getLocation(), 0) || block.getType() != Material.BEACON)
+            return;
         if (instance.getCaptureManager().getCapturePoint(region) != null && !instance.getCaptureManager().getCapturePoint(region).isEnded())
             return;
-        if (!region.nearRegionPost(block.getLocation(), 1) || block.getType() != Material.EMERALD_BLOCK)
-            return;
 
-        Inventory inventory = instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Input upgrades here. See /help capturepoint");
-        player.openInventory(inventory);
+        event.setCancelled(true);
+        player.openInventory(instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Input upgrades here. See /help capturepoint"));
     }
 
     @EventHandler(ignoreCancelled = true)
