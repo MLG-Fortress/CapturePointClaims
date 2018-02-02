@@ -42,14 +42,16 @@ public class PointUpgrader implements Listener
 
         if (region == null)
             return;
-        if (instance.isEnemyClaim(region, player, true))
-            return;
         if (!region.nearRegionPost(block.getLocation(), 0) || block.getType() != Material.BEACON)
+            return;
+
+        event.setCancelled(true);
+        
+        if (instance.isEnemyClaim(region, player, true))
             return;
         if (instance.getCaptureManager().getCapturePoint(region) != null && !instance.getCaptureManager().getCapturePoint(region).isEnded())
             return;
 
-        event.setCancelled(true);
         player.openInventory(instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Upgrade station. /help capturepoint"));
     }
 
