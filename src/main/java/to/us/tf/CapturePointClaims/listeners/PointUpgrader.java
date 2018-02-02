@@ -58,7 +58,7 @@ public class PointUpgrader implements Listener
     {
         if (!(event.getInventory().getHolder() instanceof UpgradeInventoryHolder))
             return;
-        Region region = ((UpgradeInventoryHolder)event.getInventory()).getRegion();
+        Region region = ((UpgradeInventoryHolder)event.getInventory().getHolder()).getRegion();
 
         int emeraldBlocks = region.getCaptureTime();
         int diamondBlocks = region.getHealth();
