@@ -330,7 +330,7 @@ public class Region
         {
             for(int z1 = z - 1; z1 <= z + 1; z1++)
             {
-                world.getBlockAt(x1, y, z1).setType(Material.BEDROCK);
+                world.getBlockAt(x1, y, z1).setType(Material.EMERALD_BLOCK);
             }
         }
 
