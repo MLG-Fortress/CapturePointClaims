@@ -30,6 +30,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
     public Set<World> claimWorlds = new HashSet<>();
     private ClanManager clanManager;
     private RegionManager regionManager;
+    private CaptureManager captureManager;
 
     public RegionManager getRegionManager()
     {
@@ -38,6 +39,10 @@ public class CapturePointClaims extends JavaPlugin implements Listener
     public ClanManager getClanManager()
     {
         return clanManager;
+    }
+    public CaptureManager getCaptureManager()
+    {
+        return captureManager;
     }
 
     public void onEnable()
@@ -50,7 +55,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         this.regionManager = new RegionManager(this);
 
         getServer().getPluginManager().registerEvents(this, this);
-        CaptureManager captureManager = new CaptureManager(this, clanManager, regionManager);
+        captureManager = new CaptureManager(this, clanManager, regionManager);
         getServer().getPluginManager().registerEvents(new BlockEventListener(this, captureManager, clanManager, regionManager), this);
         new BossBarMessenger(this, captureManager);
         getCommand("tppoint").setExecutor(new TPPointCommand(this, clanManager, regionManager));

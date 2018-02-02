@@ -17,11 +17,11 @@ import java.util.*;
  */
 public class CaptureManager
 {
-    ClanManager clanManager;
+    private ClanManager clanManager;
     //Set of CapturePoints being captured
     private Map<Region, CapturePoint> pointsBeingCaptured = new HashMap<>();
-    CapturePointClaims instance;
-    RegionManager regionManager;
+    private CapturePointClaims instance;
+    private RegionManager regionManager;
 
     public CaptureManager(CapturePointClaims capturePointClaims, ClanManager clanManager, RegionManager regionManager)
     {

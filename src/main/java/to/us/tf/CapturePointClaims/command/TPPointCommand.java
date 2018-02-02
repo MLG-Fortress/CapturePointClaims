@@ -24,10 +24,12 @@ import java.util.Set;
  */
 public class TPPointCommand implements CommandExecutor
 {
-    CapturePointClaims instance;
-    ClanManager clansManager;
-    RegionManager regionManager;
-    BetterTPA betterTPA;
+    private final String TAB = "    ";
+
+    private CapturePointClaims instance;
+    private ClanManager clansManager;
+    private RegionManager regionManager;
+    private BetterTPA betterTPA;
 
     public TPPointCommand(CapturePointClaims plugin, ClanManager clansManager, RegionManager regionManager)
     {
@@ -97,9 +99,10 @@ public class TPPointCommand implements CommandExecutor
             for (String alliedClanTag : clanPlayer.getClan().getAllies())
             {
                 Clan alliedClan = clansManager.getClan(alliedClanTag);
-                player.sendMessage(alliedClanTag + "'s points: ");
+                player.sendMessage(alliedClan.getName() + "'s points: ");
                 player.sendMessage(formattedSet(regionNames(regionManager.getRegions(alliedClan)), ChatColor.GREEN));
             }
+            player.sendMessage(clanPlayer.getClan().getName() + "'s points: ");
             player.sendMessage(formattedSet(regionNames(regionManager.getRegions(clanPlayer.getClan())), ChatColor.AQUA));
         }
         player.sendMessage(ChatColor.GOLD + "/tppoint <world> <x> <z>");
@@ -116,7 +119,7 @@ public class TPPointCommand implements CommandExecutor
                 if (i % 2 == 0)
                     formattedString.append("\n" + color);
                 else
-                    formattedString.append("      ");
+                    formattedString.append(TAB);
             }
             formattedString.append(string);
             i++;

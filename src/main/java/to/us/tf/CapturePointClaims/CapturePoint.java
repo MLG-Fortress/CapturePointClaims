@@ -134,9 +134,12 @@ public class CapturePoint
         //"Game over"
         this.timeCaptured = System.currentTimeMillis();
         if (!this.defended)
+        {
             region.changeOwner(clan, instance);
-        if (captureProgress < 100)
             captureProgress = 100;
+            region.setCaptureTime(15);
+        }
+
         region.setHealth(captureProgress);
         region.getRegionManager().saveRegion(region);
 
