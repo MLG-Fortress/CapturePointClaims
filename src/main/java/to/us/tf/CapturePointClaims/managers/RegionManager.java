@@ -45,6 +45,7 @@ public class RegionManager
 
     public RegionManager(CapturePointClaims plugin)
     {
+        instance = plugin;
         File storageFile = new File(plugin.getDataFolder(), "regionStorage.data");
         if (!storageFile.exists())
         {
@@ -99,7 +100,6 @@ public class RegionManager
                 worldSection.set(deleteKey, null);
             }
         }
-        instance = plugin;
     }
 
     //given a location, returns the coordinates of the region containing that location
