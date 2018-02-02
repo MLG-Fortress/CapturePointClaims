@@ -46,7 +46,7 @@ public class PointUpgrader implements Listener
             return;
 
         event.setCancelled(true);
-        
+
         if (instance.isEnemyClaim(region, player, true))
             return;
         if (instance.getCaptureManager().getCapturePoint(region) != null && !instance.getCaptureManager().getCapturePoint(region).isEnded())
@@ -67,6 +67,8 @@ public class PointUpgrader implements Listener
 
         for (ItemStack itemStack : event.getInventory())
         {
+            if (itemStack == null)
+                continue;
             switch (itemStack.getType())
             {
                 case DIAMOND_BLOCK:
