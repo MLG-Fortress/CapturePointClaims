@@ -184,9 +184,8 @@ public class Region
     {
         Location postLocation = getRegionCenter(false);
 
-        //NOTE!  Why not use distance?  Because I want a box to the sky, not a sphere.
+        //NOTE!  Why not use distance?  Because I want a box, not a sphere.
         //Why not round?  Below calculation is cheaper than distance (needed for a cylinder or sphere).
-        //Why to the sky?  Because if somebody builds a platform above the post, folks will teleport onto that platform by mistake.
         //Also...  lava from above would be bad.
         //Why not below?  Because I can't imagine mining beneath a post as an avenue for griefing.
 
@@ -194,7 +193,8 @@ public class Region
                 location.getBlockX() <= postLocation.getBlockX() + howClose &&
                 location.getBlockZ() >= postLocation.getBlockZ() - howClose &&
                 location.getBlockZ() <= postLocation.getBlockZ() + howClose &&
-                location.getBlockY() >= location.getWorld().getHighestBlockYAt(postLocation) - 4
+                location.getBlockY() >= location.getWorld().getHighestBlockYAt(postLocation) - 4 &&
+                location.getBlockY() <= location.getWorld().getHighestBlockYAt(postLocation) + 8
         );
     }
 
