@@ -56,11 +56,6 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         getCommand("tppoint").setExecutor(new TPPointCommand(this, clanManager, regionManager));
     }
 
-    public void onDisable()
-    {
-        regionManager.saveData(this);
-    }
-
     @EventHandler
     void onChunkLoad(ChunkLoadEvent event)
     {
@@ -102,9 +97,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
      */
     public Clan getOwningClan(Region region)
     {
-        if (region == null || region.getOwningClanTag() == null)
-            return null;
-        return clanManager.getClan(region.getOwningClanTag());
+        return region.getClan();
     }
 
     public String getOwningClanName(Region region)

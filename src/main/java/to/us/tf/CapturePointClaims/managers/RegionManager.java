@@ -21,17 +21,9 @@ package to.us.tf.CapturePointClaims.managers;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
-import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
-import org.bukkit.Chunk;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import to.us.tf.CapturePointClaims.CapturePointClaims;
@@ -41,15 +33,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class RegionManager
 {
-    final int REGION_SIZE = 400;
-    YamlConfiguration regionStorage;
-    Map<World, Table<Integer, Integer, Region>> worldCache = new HashMap<>();
+    private CapturePointClaims instance;
+    private final int REGION_SIZE = 400;
+    private YamlConfiguration regionStorage;
+    private Map<World, Table<Integer, Integer, Region>> worldCache = new HashMap<>();
 
     public RegionManager(CapturePointClaims plugin)
     {
@@ -107,34 +99,7 @@ public class RegionManager
                 worldSection.set(deleteKey, null);
             }
         }
-    }
-
-    public void scheduleSaveData(CapturePointClaims capturePointClaims)
-    {
-        new BukkitRunnable()
-        {
-            @Override
-            public void run()
-            {
-                saveData(capturePointClaims);
-            }
-        }.runTaskLater(capturePointClaims, 300L);
-    }
-
-    public void saveData(CapturePointClaims capturePointClaims)
-    {
-        File storageFile = new File(capturePointClaims.getDataFolder(), "regionStorage.data");
-        if (regionStorage != null)
-        {
-            try
-            {
-                regionStorage.save(storageFile);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
+        instance = plugin;
     }
 
     //given a location, returns the coordinates of the region containing that location
@@ -152,10 +117,7 @@ public class RegionManager
 
         Region region = worldCache.get(location.getWorld()).get(x, z); //Get the cached Region object
         if (region == null) //create a new one if such doesn't exist
-        {
-            worldCache.get(location.getWorld()).put(x, z, new Region(x, z, location.getWorld(), REGION_SIZE, regionStorage));
-            region = worldCache.get(location.getWorld()).get(x, z);
-        }
+            region = loadRegion(location.getWorld(), x, z);
         return region;
     }
 
@@ -170,25 +132,80 @@ public class RegionManager
             return null;
         Region region = worldCache.get(world).get(x, z); //Get the cached Region object
         if (!cacheOnly && region == null) //create a new one if such doesn't exist
-        {
-            worldCache.get(world).put(x, z, new Region(x, z, world, REGION_SIZE, regionStorage));
-            region = worldCache.get(world).get(x, z);
-        }
+            region = loadRegion(world, x, z);
         return region;
     }
 
-    public Set<Region> getRegions(String clanTag)
+    public Set<Region> getRegions(Clan clan)
     {
         Set<Region> regionsToReturn = new HashSet<>();
         for (Table<Integer, Integer, Region> world : worldCache.values())
         {
             for (Region region : world.values())
             {
-                if (region.getOwningClanTag() != null && region.getOwningClanTag().equals(clanTag))
+                if (region.getClan() != null && region.getClan().equals(clan))
                     regionsToReturn.add(region);
             }
         }
         return regionsToReturn;
+    }
+
+    private Region loadRegion(World world, int x, int z)
+    {
+        if (!worldCache.containsKey(world))
+            return null;
+
+        Region region = new Region(x, z, world, REGION_SIZE, this);
+        worldCache.get(world).put(x, z, region);
+
+        ConfigurationSection worldSection = regionStorage.getConfigurationSection(region.getWorld().getName());
+        if (worldSection != null)
+        {
+            ConfigurationSection regionSection = worldSection.getConfigurationSection(region.toString());
+            if (regionSection != null)
+            {
+                worldCache.get(world).get(x, z).setOwningClanTag(instance.getClanManager().getClan(regionSection.getString("clanTag")));
+                worldCache.get(world).get(x, z).setHealth(regionSection.getInt("health", 100));
+                worldCache.get(world).get(x, z).setCaptureTime(regionSection.getInt("captureTime", 15));
+            }
+        }
+        return worldCache.get(world).get(x, z);
+    }
+
+    public boolean saveRegion(Region region)
+    {
+        if (!worldCache.containsKey(region.getWorld()))
+            return false;
+        ConfigurationSection worldSection = regionStorage.getConfigurationSection(region.getWorld().getName());
+        if (worldSection == null)
+            worldSection = regionStorage.createSection(region.getWorld().getName());
+        ConfigurationSection regionSection = worldSection.getConfigurationSection(region.toString());
+        if (regionSection == null)
+            regionSection = worldSection.createSection(region.toString());
+
+        regionSection.set("clanTag", region.getClan().getTag());
+        regionSection.set("health", region.getHealth());
+        regionSection.set("captureTime", region.getCaptureTime());
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                File storageFile = new File(instance.getDataFolder(), "regionStorage.data");
+                if (regionStorage != null)
+                {
+                    try
+                    {
+                        regionStorage.save(storageFile);
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.runTaskLater(instance, 1L);
+        return true;
     }
 
 }

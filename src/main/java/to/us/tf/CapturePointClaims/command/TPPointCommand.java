@@ -10,7 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import to.us.tf.CapturePointClaims.CapturePointClaims;
 import to.us.tf.CapturePointClaims.Region;
 import to.us.tf.CapturePointClaims.managers.RegionManager;
@@ -79,7 +78,7 @@ public class TPPointCommand implements CommandExecutor
         Region region = regionManager.getRegion(world, x, z);
 
         //If world does not contain any points, not owned by any clan, or owned by an enemy clan...
-        if (region == null || instance.isEnemyClan(player, region.getOwningClanTag(), true))
+        if (region == null || instance.isEnemyClan(player, region.getClan(), true))
         {
             errorMessage(player, clanPlayer);
             sender.sendMessage(ChatColor.RED + "Invalid point or not claimed by your clan.");
@@ -97,10 +96,11 @@ public class TPPointCommand implements CommandExecutor
         {
             for (String alliedClanTag : clanPlayer.getClan().getAllies())
             {
+                Clan alliedClan = clansManager.getClan(alliedClanTag);
                 player.sendMessage(alliedClanTag + "'s points: ");
-                player.sendMessage(formattedSet(regionNames(regionManager.getRegions(alliedClanTag)), ChatColor.GREEN));
+                player.sendMessage(formattedSet(regionNames(regionManager.getRegions(alliedClan)), ChatColor.GREEN));
             }
-            player.sendMessage(formattedSet(regionNames(regionManager.getRegions(clanPlayer.getClan().getTag())), ChatColor.AQUA));
+            player.sendMessage(formattedSet(regionNames(regionManager.getRegions(clanPlayer.getClan())), ChatColor.AQUA));
         }
         player.sendMessage(ChatColor.GOLD + "/tppoint <world> <x> <z>");
     }
@@ -116,7 +116,7 @@ public class TPPointCommand implements CommandExecutor
                 if (i % 2 == 0)
                     formattedString.append("\n" + color);
                 else
-                    formattedString.append("\t");
+                    formattedString.append("      ");
             }
             formattedString.append(string);
             i++;

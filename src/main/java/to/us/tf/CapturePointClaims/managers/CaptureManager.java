@@ -53,7 +53,6 @@ public class CaptureManager
                 else
                 {
                     capturePoint.setTicksToEndGame(20);
-                    capturePoint.decrementCaptureProgress(-1);
                     capturePoint.checkOrEndGame(instance, null);
                 }
             }
@@ -102,7 +101,7 @@ public class CaptureManager
         }
         else if (instance.isEnemyClan(player, capturePoint.getOwningClan(), true)) //Continue capture
         {
-            player.sendActionBar(ChatColor.AQUA + "Capture point health: " + capturePoint.decrementCaptureProgress(5));
+            player.sendActionBar(ChatColor.AQUA + "Capture point health: " + capturePoint.decrementCaptureProgress(1));
             capturePoint.checkOrEndGame(instance, clan);
         }
         else if (!instance.isEnemyClan(player, capturePoint.getOwningClan(), true))

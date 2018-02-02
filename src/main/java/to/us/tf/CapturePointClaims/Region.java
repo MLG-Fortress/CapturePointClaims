@@ -1,6 +1,7 @@
 package to.us.tf.CapturePointClaims;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
@@ -13,62 +14,38 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
+import to.us.tf.CapturePointClaims.managers.RegionManager;
+
+import javax.annotation.Nonnull;
 
 public class Region
 {
     private int regionX;
     private int regionZ;
     private World world;
-    private String owningClanTag; //Although clan names aren't mutable(?), there's only a method to get clans by tag.
+    private Clan owningClan;
     private int REGION_SIZE;
-    private YamlConfiguration storage;
-    ConfigurationSection regionSection;
-    ConfigurationSection worldSection;
-    String path;
+    private int health = 50;
+    private int captureTime = 15;
+    private RegionManager regionManager;
 
     public String getName()
     {
         return getWorld().getName() + " " + regionX + " " + regionZ;
     }
 
-    public Region(int regionX, int regionZ, World world, int regionSize, YamlConfiguration storage)
+    public Region(int regionX, int regionZ, World world, int regionSize, RegionManager regionManager)
     {
         this.regionX = regionX;
         this.regionZ = regionZ;
         this.world = world;
         this.REGION_SIZE = regionSize;
-        this.storage = storage;
-        path = String.valueOf(regionX) + "," + String.valueOf(regionZ);
-        worldSection = storage.getConfigurationSection(world.getName());
-        if (worldSection == null)
-            worldSection = storage.createSection(world.getName());
-        regionSection = worldSection.getConfigurationSection(path);
-        if (regionSection == null)
-            regionSection = worldSection.createSection(path);
+        this.regionManager = regionManager;
     }
 
-    private void saveData(String key, String value)
+    public RegionManager getRegionManager()
     {
-//        if (regionSection == null)
-//        {
-//            regionSection = storage.createSection(path);
-////            Map<String, String> uhHi = new LinkedHashMap<>();
-////            uhHi.put(key, value);
-////            storage.set(path, uhHi);
-////            regionSection = storage.getConfigurationSection(path);
-//        }
-//        else
-//        {
-            regionSection.set(key, value);
-//        }
-    }
-
-    private String getData(String key)
-    {
-        ConfigurationSection regionSection = storage.getConfigurationSection(path);
-        if (regionSection == null)
-            return null;
-        return regionSection.getString(key);
+        return regionManager;
     }
 
     //converts a string representing region coordinates to a proper region coordinates object
@@ -90,7 +67,7 @@ public class Region
     //opposite of above - converts region coordinates to a handy string
     public String toString()
     {
-        return Integer.toString(this.regionX) + " " + Integer.toString(this.regionZ);
+        return Integer.toString(this.regionX) + "," + Integer.toString(this.regionZ);
     }
 
     //compares two region coordinates to see if they match
@@ -117,44 +94,48 @@ public class Region
         return this.world;
     }
 
-    public String getOwningClanTag() //Must be converted to a clan
+    public Clan getClan() //Must be converted to a clan
     {
-        if (this.owningClanTag == null)
-            this.owningClanTag = getData("clanTag");
-        return this.owningClanTag;
+        return this.owningClan;
     }
 
-    private void setOwningClanTag(String clanTag)
+    public void setOwningClanTag(Clan clan)
     {
-        this.owningClanTag = clanTag;
-        saveData("clanTag", this.owningClanTag);
+        this.owningClan = clan;
     }
 
-    private void setClanColorValue(byte value)
+    public int getHealth()
     {
-        saveData("clanColor", String.valueOf(value));
+        return health;
+    }
+
+    public void setHealth(int health)
+    {
+        this.health = health;
+    }
+
+    public int getCaptureTime()
+    {
+        return captureTime;
+    }
+
+    public void setCaptureTime(int captureTime)
+    {
+        this.captureTime = captureTime;
     }
 
     private byte getClanColorValue()
     {
-        String colorValue = getData("clanColor");
-        if (colorValue == null)
+        if (owningClan == null)
             return DyeColor.WHITE.getWoolData();
-        return Byte.valueOf(colorValue);
-    }
 
-    public void changeOwner(Clan clan, CapturePointClaims instance)
-    {
-        if (clan == null)
-            return;
-
-        this.setOwningClanTag(clan.getTag());
-        char clanTagChar = clan.getColorTag().charAt(1);
+        char clanTagChar = owningClan.getColorTag().charAt(1);
         ChatColor chatColor = ChatColor.getByChar(clanTagChar);
-        DyeColor dyeColor = DyeColor.WHITE; //TODO: dyeColor is inaccurate for stained glass(?)
+        DyeColor dyeColor = DyeColor.WHITE;
 
         switch (chatColor)
         {
+            case LIGHT_PURPLE:
             case DARK_PURPLE:
                 dyeColor = DyeColor.PURPLE;
                 break;
@@ -165,10 +146,23 @@ public class Region
             case GREEN:
                 dyeColor = DyeColor.GREEN;
                 break;
+            case AQUA:
+                dyeColor = DyeColor.CYAN;
+                break;
         }
-        this.setClanColorValue(dyeColor.getWoolData());
+
+        return dyeColor.getWoolData();
+    }
+
+    /**
+     * Only way to "assign" a new clan to a region
+     * @param clan
+     * @param instance
+     */
+    public void changeOwner(Clan clan, CapturePointClaims instance)
+    {
+        this.setOwningClanTag(clan);
         this.AddRegionPost(instance);
-        instance.getRegionManager().scheduleSaveData(instance);
     }
 
     //determines the center of a region (as a Location) given its region coordinates
@@ -327,7 +321,7 @@ public class Region
         {
             for(int z1 = z - 2; z1 <= z + 2; z1++)
             {
-                world.getBlockAt(x1, y, z1).setType(Material.EMERALD_BLOCK);
+                world.getBlockAt(x1, y, z1).setType(Material.BEDROCK);
             }
         }
 
@@ -336,7 +330,7 @@ public class Region
         {
             for(int z1 = z - 1; z1 <= z + 1; z1++)
             {
-                world.getBlockAt(x1, y, z1).setType(Material.EMERALD_BLOCK);
+                world.getBlockAt(x1, y, z1).setType(Material.BEDROCK);
             }
         }
 
@@ -346,7 +340,7 @@ public class Region
         world.getBlockAt(x, ++y1, z).setType(Material.BEACON);
 
         //build a sign on top with region name (or wilderness if no name)
-//        String regionName = region.getOwningClanTag();
+//        String regionName = region.getClan();
 //        if(regionName == null) regionName = "Nobody";
 //        Block block = world.getBlockAt(regionX, y + 4, regionZ);
 //        block.setType(Material.SIGN_POST);

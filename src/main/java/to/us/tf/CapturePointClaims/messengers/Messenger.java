@@ -121,7 +121,7 @@ public class Messenger {
         {
             String defendingClanTag = defendingClan.getTag();
             chatMessageToClan(defendingClan, "Our capture point " + region.getName() + " is under attack!"
-            + "\nHelp defend! Type " + ChatColor.GOLD + "/tppoint " + region.getName());
+            + "\nHelp defend! " + ChatColor.GOLD + "/tppoint " + region.getName());
         }
 
         //chatMessageToClan(attackingClan, "We are attacking capture point " + region.getName() + " which is owned by " + defendingClanTag);
