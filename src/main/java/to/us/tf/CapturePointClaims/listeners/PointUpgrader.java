@@ -50,7 +50,7 @@ public class PointUpgrader implements Listener
             return;
 
         event.setCancelled(true);
-        player.openInventory(instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Input upgrades here. See /help capturepoint"));
+        player.openInventory(instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Upgrade station. /help capturepoint"));
     }
 
     @EventHandler(ignoreCancelled = true)
