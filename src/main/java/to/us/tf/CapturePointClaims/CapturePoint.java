@@ -58,7 +58,7 @@ public class CapturePoint
 
     public double getCaptureProgress()
     {
-        return this.captureProgress / region.getHealth();
+        return (double)this.captureProgress / (double)region.getHealth();
     }
 
     public int getTicksToEndGame()
