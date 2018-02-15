@@ -42,7 +42,7 @@ public class CapturePoint
     public String getOwningClanColorTag()
     {
         if (getOwningClan() == null)
-            return "Wilderness";
+            return "The Wild West";
         return getOwningClan().getColorTag();
     }
 
