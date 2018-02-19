@@ -52,7 +52,7 @@ public class PointUpgrader implements Listener
         if (instance.getCaptureManager().getCapturePoint(region) != null && !instance.getCaptureManager().getCapturePoint(region).isEnded())
             return;
 
-        player.openInventory(instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Upgrade station. /help capturepoint"));
+        player.openInventory(instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Deposit upgrades. /help capturepoint"));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -62,8 +62,8 @@ public class PointUpgrader implements Listener
             return;
         Region region = ((UpgradeInventoryHolder)event.getInventory().getHolder()).getRegion();
 
-        int emeraldBlocks = region.getCaptureTime();
-        int diamondBlocks = region.getHealth();
+        int diamondBlocks = region.getCaptureTime();
+        int emeraldBlocks = region.getHealth();
 
         for (ItemStack itemStack : event.getInventory())
         {
@@ -72,21 +72,22 @@ public class PointUpgrader implements Listener
             switch (itemStack.getType())
             {
                 case DIAMOND_BLOCK:
-                    diamondBlocks += itemStack.getAmount();
-                    break;
-                case EMERALD_BLOCK:
-                    if (emeraldBlocks > 5)
+                    if (diamondBlocks > 5)
                     {
                         int amount = itemStack.getAmount();
-                        if (emeraldBlocks - amount < 5)
+                        if (diamondBlocks - amount < 5)
                         {
-                            amount = emeraldBlocks - 5;
+                            amount = diamondBlocks - 5;
                             itemStack.setAmount(itemStack.getAmount() - amount);
                             event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), itemStack);
                         }
-                        emeraldBlocks -= amount;
+                        diamondBlocks -= amount;
                         break;
                     }
+                    break;
+                case EMERALD_BLOCK:
+                    emeraldBlocks += itemStack.getAmount();
+                    break;
                     default:
                         event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), itemStack);
             }
