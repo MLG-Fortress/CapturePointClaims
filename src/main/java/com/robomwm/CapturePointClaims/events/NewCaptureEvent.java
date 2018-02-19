@@ -1,8 +1,8 @@
-package to.us.tf.CapturePointClaims.events;
+package com.robomwm.CapturePointClaims.events;
 
+import com.robomwm.CapturePointClaims.managers.RegionManager;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import to.us.tf.CapturePointClaims.managers.RegionManager;
 
 /**
  * Created by RoboMWM on 1/21/2017.

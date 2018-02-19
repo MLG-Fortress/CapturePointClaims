@@ -1,4 +1,4 @@
-package to.us.tf.CapturePointClaims.events;
+package com.robomwm.CapturePointClaims.events;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.event.Event;

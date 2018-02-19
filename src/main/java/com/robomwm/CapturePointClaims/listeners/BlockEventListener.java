@@ -1,6 +1,8 @@
-package to.us.tf.CapturePointClaims.listeners;
+package com.robomwm.CapturePointClaims.listeners;
 
-import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import com.robomwm.CapturePointClaims.CapturePointClaims;
+import com.robomwm.CapturePointClaims.Region;
+import com.robomwm.CapturePointClaims.managers.RegionManager;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,25 +14,18 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockPistonEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-import to.us.tf.CapturePointClaims.managers.CaptureManager;
-import to.us.tf.CapturePointClaims.CapturePointClaims;
-import to.us.tf.CapturePointClaims.Region;
-import to.us.tf.CapturePointClaims.managers.RegionManager;
+import com.robomwm.CapturePointClaims.managers.CaptureManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 

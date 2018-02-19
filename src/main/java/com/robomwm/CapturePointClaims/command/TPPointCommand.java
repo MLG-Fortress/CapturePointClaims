@@ -1,5 +1,8 @@
-package to.us.tf.CapturePointClaims.command;
+package com.robomwm.CapturePointClaims.command;
 
+import com.robomwm.CapturePointClaims.CapturePointClaims;
+import com.robomwm.CapturePointClaims.Region;
+import com.robomwm.CapturePointClaims.managers.RegionManager;
 import me.robomwm.BetterTPA.BetterTPA;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
@@ -10,9 +13,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import to.us.tf.CapturePointClaims.CapturePointClaims;
-import to.us.tf.CapturePointClaims.Region;
-import to.us.tf.CapturePointClaims.managers.RegionManager;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,5 +1,8 @@
-package to.us.tf.CapturePointClaims.messengers;
+package com.robomwm.CapturePointClaims.messengers;
 
+import com.robomwm.CapturePointClaims.CapturePoint;
+import com.robomwm.CapturePointClaims.CapturePointClaims;
+import com.robomwm.CapturePointClaims.Region;
 import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -10,11 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import to.us.tf.CapturePointClaims.managers.CaptureManager;
-import to.us.tf.CapturePointClaims.CapturePoint;
-import to.us.tf.CapturePointClaims.CapturePointClaims;
-import to.us.tf.CapturePointClaims.Region;
-import to.us.tf.CapturePointClaims.managers.RegionManager;
+import com.robomwm.CapturePointClaims.managers.CaptureManager;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -2,7 +2,7 @@ name: CapturePointClaims
 version: ${project.version}
 #website:
 author: RoboMWM
-main: to.us.tf.CapturePointClaims.CapturePointClaims
+main: com.robomwm.CapturePointClaims.CapturePointClaims
 softdepend:
 - Multiverse-Core
 - SimpleClans

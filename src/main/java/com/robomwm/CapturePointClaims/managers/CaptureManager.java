@@ -1,14 +1,14 @@
-package to.us.tf.CapturePointClaims.managers;
+package com.robomwm.CapturePointClaims.managers;
 
+import com.robomwm.CapturePointClaims.CapturePoint;
+import com.robomwm.CapturePointClaims.CapturePointClaims;
+import com.robomwm.CapturePointClaims.Region;
+import com.robomwm.CapturePointClaims.messengers.Messenger;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import to.us.tf.CapturePointClaims.CapturePoint;
-import to.us.tf.CapturePointClaims.CapturePointClaims;
-import to.us.tf.CapturePointClaims.Region;
-import to.us.tf.CapturePointClaims.messengers.Messenger;
 
 import java.util.*;
 

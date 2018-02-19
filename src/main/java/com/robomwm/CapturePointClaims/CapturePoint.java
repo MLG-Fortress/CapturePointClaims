@@ -1,7 +1,7 @@
-package to.us.tf.CapturePointClaims;
+package com.robomwm.CapturePointClaims;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
-import to.us.tf.CapturePointClaims.events.CaptureFinishedEvent;
+import com.robomwm.CapturePointClaims.events.CaptureFinishedEvent;
 
 import java.util.concurrent.TimeUnit;
 

@@ -1,7 +1,6 @@
-package to.us.tf.CapturePointClaims;
+package com.robomwm.CapturePointClaims;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
-import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
@@ -11,12 +10,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import to.us.tf.CapturePointClaims.managers.RegionManager;
-
-import javax.annotation.Nonnull;
+import com.robomwm.CapturePointClaims.managers.RegionManager;
 
 public class Region
 {

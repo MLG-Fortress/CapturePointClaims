@@ -1,4 +1,4 @@
-package to.us.tf.CapturePointClaims.managers;
+package com.robomwm.CapturePointClaims.managers;
 
 /*
     PopulationDensity Server Plugin for Minecraft
@@ -20,14 +20,14 @@ package to.us.tf.CapturePointClaims.managers;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.robomwm.CapturePointClaims.CapturePointClaims;
+import com.robomwm.CapturePointClaims.Region;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-import to.us.tf.CapturePointClaims.CapturePointClaims;
-import to.us.tf.CapturePointClaims.Region;
 
 import java.io.File;
 import java.io.IOException;

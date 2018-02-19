@@ -1,13 +1,12 @@
-package to.us.tf.CapturePointClaims.listeners;
+package com.robomwm.CapturePointClaims.listeners;
 
+import com.robomwm.CapturePointClaims.CapturePointClaims;
 import me.robomwm.BetterTPA.BetterTPA;
 import me.robomwm.BetterTPA.PreTPATeleportEvent;
-import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import to.us.tf.CapturePointClaims.CapturePointClaims;
 
 /**
  * Created on 3/18/2017.
