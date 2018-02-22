@@ -117,6 +117,11 @@ public class BlockEventListener implements Listener
             case WOOD_PICKAXE:
             case WOOD_SWORD:
             case WOOD_AXE:
+            case STONE_SPADE:
+            case STONE_HOE:
+            case STONE_PICKAXE:
+            case STONE_SWORD:
+            case STONE_AXE:
             case GOLD_SPADE:
             case GOLD_HOE:
             case GOLD_PICKAXE:
