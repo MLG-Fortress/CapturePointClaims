@@ -191,17 +191,22 @@ public class RegionManager
             ConfigurationSection regionSection = worldSection.getConfigurationSection(region.toString());
             if (regionSection != null)
             {
-                if (regionSection.getString("clanTag") != null)
+                region.setHealth(regionSection.getInt("health", 100));
+                region.setCaptureTime(regionSection.getInt("captureTime", 15));
+                if (regionSection.getString("clanTag") != null) //old point
                 {
                     Clan clan = instance.getClanManager().getClan(regionSection.getString("clanTag"));
-                    OfflinePlayer player = instance.getServer().getOfflinePlayer(clan.getLeaders().get(0).getUniqueId());
-                    region.setOwner(player);
+                    if (clan != null)
+                    {
+                        OfflinePlayer player = instance.getServer().getOfflinePlayer(clan.getLeaders().get(0).getUniqueId());
+                        region.setOwner(player);
+                    }
+                    else
+                        return region; //Clan does not exist
                     regionSection.set("clanTag", null);
                 }
                 else
                     region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));
-                region.setHealth(regionSection.getInt("health", 100));
-                region.setCaptureTime(regionSection.getInt("captureTime", 15));
             }
         }
         worldCache.get(world).put(x, z, region);

@@ -29,7 +29,7 @@ public class BetterTPAListener implements Listener
         else if (instance.getRegionManager().isEnemyClaim(event.getPlayer().getLocation(), event.getPlayer(), false))
         {
             event.setWarmup(400L);
-            event.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Interference from the enemy clan's capture point is causing the lock-on process to take longer. Please be patient and hold still if you wish to be teleported...");
+            event.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "Interference from the enemy clan's control point is causing the lock-on process to take longer. Please be patient and hold still if you wish to be teleported...");
         }
     }
 }
