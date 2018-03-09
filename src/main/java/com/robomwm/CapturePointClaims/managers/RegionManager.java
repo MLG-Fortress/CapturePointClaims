@@ -197,20 +197,9 @@ public class RegionManager
 
                 region.setHealth(regionSection.getInt("health", 100));
                 region.setCaptureTime(regionSection.getInt("captureTime", 15));
-                if (regionSection.getString("clanTag") != null) //TODO: remove converter
-                {
-                    Clan clan = instance.getClanManager().getClan(regionSection.getString("clanTag"));
-                    if (clan != null)
-                    {
-                        OfflinePlayer player = instance.getServer().getOfflinePlayer(clan.getLeaders().get(0).getUniqueId());
-                        region.setOwner(player);
-                        regionSection.set("owner", player.getUniqueId().toString());
-                    }
-                    regionSection.set("clanTag", null);
-                }
                 if (regionSection.contains("owner"))
                     region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));
-                saveRegion(region);
+                saveRegion(region); //Used for storage upgrade conversion
             }
         }
         worldCache.get(world).put(x, z, region);
@@ -233,6 +222,7 @@ public class RegionManager
             worldSection.set(region.toString(), null);
         else
         {
+            regionSection.set("clanColor", null); //TODO: delete
             regionSection.set("owner", region.getOwner().getUniqueId().toString());
             regionSection.set("health", region.getHealth());
             regionSection.set("captureTime", region.getCaptureTime());
