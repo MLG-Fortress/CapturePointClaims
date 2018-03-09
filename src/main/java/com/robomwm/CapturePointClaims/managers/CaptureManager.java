@@ -42,7 +42,7 @@ public class CaptureManager
 
     private CapturePoint startNewCapture(Clan attackingClan, Region region)
     {
-        CapturePoint capturePoint = new CapturePoint(attackingClan, instance.getOwningClan(region), region);
+        CapturePoint capturePoint = new CapturePoint(region);
         pointsBeingCaptured.put(region, capturePoint);
         new BukkitRunnable()
         {
@@ -76,10 +76,12 @@ public class CaptureManager
         {
             capturePoint = startNewCapture(clan, region);
 
-            if (capturePoint.getOwningClan() != null) //notify defenders
+            if (capturePoint.getOwner() != null) //notify defenders
             {
-                Clan defendingClan = capturePoint.getOwningClan();
-                Messenger.alertMembersOfAttack(capturePoint.getOwningClan(), region);
+                Clan defendingClan = clanManager.getClanByPlayerUniqueId(capturePoint.getOwner().getUniqueId());
+                if (defendingClan != null)
+                    Messenger.alertMembersOfAttack(defendingClan, region);
+                //TODO: mail owner
             }
 
             //TODO: Fire event
@@ -99,12 +101,12 @@ public class CaptureManager
                 player.sendMessage("Point is locked, please wait " + Messenger.formatTime(capturePoint.getExpirationTimeRemaining()));
             }
         }
-        else if (instance.isEnemyClan(player, capturePoint.getOwningClan(), true)) //Continue capture
+        else if (instance.getRegionManager().isEnemyClaim(region, player, true)) //Continue capture
         {
             player.sendActionBar(ChatColor.AQUA + "Capture point health: " + capturePoint.decrementCaptureProgress(1));
-            capturePoint.checkOrEndGame(instance, clan);
+            capturePoint.checkOrEndGame(instance, player);
         }
-        else if (!instance.isEnemyClan(player, capturePoint.getOwningClan(), true))
+        else if (!instance.getRegionManager().isEnemyClaim(region, player, true))
         {
             player.sendMessage("Defend this point until the timer runs out!");
         }

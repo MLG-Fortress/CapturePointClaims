@@ -1,5 +1,6 @@
 package com.robomwm.CapturePointClaims;
 
+import com.robomwm.grandioseapi.GrandioseAPI;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
@@ -45,11 +46,15 @@ public class CapturePointClaims extends JavaPlugin implements Listener
     {
         return captureManager;
     }
+    public GrandioseAPI getGrandAPI()
+    {
+        return (GrandioseAPI)getServer().getPluginManager().getPlugin("GrandioseAPI");
+    }
 
     public void onEnable()
     {
         saveConfig(); //Create data folder
-        SimpleClans sc = (SimpleClans)getServer().getPluginManager().getPlugin("SimpleClans");
+        SimpleClans sc = (SimpleClans) getServer().getPluginManager().getPlugin("SimpleClans");
         this.clanManager = sc.getClanManager();
         claimWorlds.add(getServer().getWorld("world"));
         claimWorlds.add(getServer().getWorld("cityworld"));
@@ -92,57 +97,5 @@ public class CapturePointClaims extends JavaPlugin implements Listener
                 }
             }.runTaskLater(this, 200L);
         }
-    }
-
-    /**
-     * Utils (should be in a static class of its own????)
-     */
-
-    /**
-     * @param region
-     * @return clan that owns region, otherwise null
-     */
-    public Clan getOwningClan(Region region)
-    {
-        return region.getClan();
-    }
-
-    public String getOwningClanName(Region region)
-    {
-        Clan clan = getOwningClan(region);
-        if (clan == null)
-            return "Wilderness";
-        String color = ChatColor.getLastColors(clan.getColorTag());
-        return color + "[" + clan.getColorTag() + "] " + clan.getName();
-    }
-
-    public boolean isEnemyClaim(Region region, Player player, boolean includeWildernessAsEnemy)
-    {
-        Clan clan = getOwningClan(region);
-        return isEnemyClan(player, clan, includeWildernessAsEnemy);
-    }
-
-    public boolean isEnemyClaim(Location targetLocation, Player player, boolean includeWildernessAsEnemy)
-    {
-        if (!this.claimWorlds.contains(targetLocation.getWorld()))
-            return false;
-        Clan clan = getOwningClan(regionManager.getRegion(targetLocation));
-        return isEnemyClan(player, clan, includeWildernessAsEnemy);
-    }
-
-    public boolean isEnemyClan(Player player, String clanTag, boolean includeWildernessAsEnemy)
-    {
-        if (clanTag == null || clanTag.isEmpty()) //Unclaimed
-            return includeWildernessAsEnemy;
-        Clan clan = clanManager.getClan(clanTag);
-        return isEnemyClan(player, clan, includeWildernessAsEnemy);
-    }
-
-    public boolean isEnemyClan(Player player, Clan clan, boolean includeWildernessAsEnemy)
-    {
-        if (clan == null) //Unclaimed
-            return includeWildernessAsEnemy;
-        Clan playerClan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
-        return playerClan == null || playerClan != clan && !playerClan.isAlly(clan.getTag());
     }
 }

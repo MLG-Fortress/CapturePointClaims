@@ -1,15 +1,16 @@
 package com.robomwm.CapturePointClaims;
 
-import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import com.robomwm.CapturePointClaims.managers.RegionManager;
 
@@ -18,7 +19,7 @@ public class Region
     private int regionX;
     private int regionZ;
     private World world;
-    private Clan owningClan;
+    private OfflinePlayer owner;
     private int REGION_SIZE;
     private int health = 50;
     private int captureTime = 15;
@@ -89,14 +90,14 @@ public class Region
         return this.world;
     }
 
-    public Clan getClan() //Must be converted to a clan
+    public OfflinePlayer getOwner() //Must be converted to a clan
     {
-        return this.owningClan;
+        return this.owner;
     }
 
-    public void setOwningClanTag(Clan clan)
+    public void setOwner(OfflinePlayer player)
     {
-        this.owningClan = clan;
+        this.owner = player;
     }
 
     public int getHealth()
@@ -119,16 +120,15 @@ public class Region
         this.captureTime = captureTime;
     }
 
-    private byte getClanColorValue()
+    private byte getPlayerColorValue()
     {
-        if (owningClan == null)
+        if (owner == null)
             return DyeColor.WHITE.getWoolData();
 
-        char clanTagChar = owningClan.getColorTag().charAt(1);
-        ChatColor chatColor = ChatColor.getByChar(clanTagChar);
+        ChatColor chatColor = regionManager.getGrandPlayerManager().getGrandPlayer(owner).getNameColor();
         DyeColor dyeColor = DyeColor.WHITE;
 
-        switch (chatColor)
+        switch (chatColor) //TODO: unfinished
         {
             case LIGHT_PURPLE:
             case DARK_PURPLE:
@@ -151,12 +151,12 @@ public class Region
 
     /**
      * Only way to "assign" a new clan to a region
-     * @param clan
+     * @param player
      * @param instance
      */
-    public void changeOwner(Clan clan, CapturePointClaims instance)
+    public void changeOwner(OfflinePlayer player, CapturePointClaims instance)
     {
-        this.setOwningClanTag(clan);
+        this.setOwner(player);
         this.AddRegionPost(instance);
     }
 
@@ -211,7 +211,7 @@ public class Region
 
     //actually edits the world to create a region post at the center of the specified region
     @SuppressWarnings("deprecation")
-    public void AddRegionPost(CapturePointClaims instance)
+    public void AddRegionPost(JavaPlugin instance)
     {
         //find the center
         Location regionCenter = getRegionCenter(false);
@@ -309,7 +309,7 @@ public class Region
         world.getBlockAt(x, y + 3, z).setType(Material.BARRIER);
         Block glass = world.getBlockAt(x, y + 2, z);
         glass.setType(Material.STAINED_GLASS);
-        glass.setData(getClanColorValue());
+        glass.setData(getPlayerColorValue());
 
         //build outer platform
         for(int x1 = x - 2; x1 <= x + 2; x1++)

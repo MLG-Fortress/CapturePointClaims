@@ -3,10 +3,12 @@ version: ${project.version}
 #website:
 author: RoboMWM
 main: com.robomwm.CapturePointClaims.CapturePointClaims
+depend:
+- GrandioseAPI
+- BetterTPA
+- SimpleClans
 softdepend:
 - Multiverse-Core
-- SimpleClans
-- BetterTPA
 commands:
   tppoint:
-    aliases: [tpclaim]
+    aliases: [tpclaim, tppost]

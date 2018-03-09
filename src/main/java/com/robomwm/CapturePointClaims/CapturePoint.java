@@ -1,7 +1,8 @@
 package com.robomwm.CapturePointClaims;
 
-import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import com.robomwm.CapturePointClaims.events.CaptureFinishedEvent;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,8 +15,6 @@ public class CapturePoint
     private final long LOCK_TIME = TimeUnit.MINUTES.toMillis(30L); //point locks for 30 minutes
     private final long LOCK_TIME_SECONDS = TimeUnit.MINUTES.toMillis(30L) / 1000L;
 
-    //defendingClan (owning clan to notify, generally. Null if unclaimed)
-    private Clan owningClan;
     //captureProgress (decrements to 0)
     private int captureProgress;
     //Maximum amount of time to capture point, in ticks
@@ -27,23 +26,15 @@ public class CapturePoint
     private Region region;
 
     //Capturing a new point
-    public CapturePoint(Clan attackingClan, Clan owningClan, Region region)
+    public CapturePoint(Region region)
     {
-        this.owningClan = owningClan;
         this.region = region;
         this.captureProgress = region.getHealth();
     }
 
-    public Clan getOwningClan()
+    public OfflinePlayer getOwner()
     {
-        return this.owningClan;
-    }
-
-    public String getOwningClanColorTag()
-    {
-        if (getOwningClan() == null)
-            return "The Wild West";
-        return getOwningClan().getColorTag();
+        return region.getOwner();
     }
 
     public boolean isEnded()
@@ -120,7 +111,7 @@ public class CapturePoint
         return this.captureProgress;
     }
 
-    public Boolean checkOrEndGame(CapturePointClaims instance, Clan clan)
+    public Boolean checkOrEndGame(CapturePointClaims instance, Player player)
     {
         if (this.isEnded())
             return this.defended;
@@ -133,9 +124,11 @@ public class CapturePoint
 
         //"Game over"
         this.timeCaptured = System.currentTimeMillis();
+        OfflinePlayer defender = region.getOwner();
+
         if (!this.defended)
         {
-            region.changeOwner(clan, instance);
+            region.changeOwner(player, instance);
             captureProgress = 100;
             region.setCaptureTime(15);
         }
@@ -143,7 +136,7 @@ public class CapturePoint
         region.setHealth(captureProgress);
         region.getRegionManager().saveRegion(region);
 
-        instance.getServer().getPluginManager().callEvent(new CaptureFinishedEvent(clan, owningClan, defended));
+        instance.getServer().getPluginManager().callEvent(new CaptureFinishedEvent(player, defender, defended));
 
         return this.defended;
     }

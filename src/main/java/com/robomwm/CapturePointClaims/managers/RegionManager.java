@@ -22,11 +22,16 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.robomwm.CapturePointClaims.CapturePointClaims;
 import com.robomwm.CapturePointClaims.Region;
+import com.robomwm.grandioseapi.GrandioseAPI;
+import com.robomwm.grandioseapi.player.GrandPlayerManager;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -35,6 +40,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class RegionManager
 {
@@ -42,10 +48,17 @@ public class RegionManager
     private final int REGION_SIZE = 400;
     private YamlConfiguration regionStorage;
     private Map<World, Table<Integer, Integer, Region>> worldCache = new HashMap<>();
+    private GrandPlayerManager grandPlayerManager;
+
+    public GrandPlayerManager getGrandPlayerManager()
+    {
+        return grandPlayerManager;
+    }
 
     public RegionManager(CapturePointClaims plugin)
     {
         instance = plugin;
+        grandPlayerManager = ((GrandioseAPI)plugin.getServer().getPluginManager().getPlugin("GrandioseAPI")).getGrandPlayerManager();
         File storageFile = new File(plugin.getDataFolder(), "regionStorage.data");
         if (!storageFile.exists())
         {
@@ -75,12 +88,12 @@ public class RegionManager
                 continue;
             for (String regionKey : worldSection.getKeys(false))
             {
-                ConfigurationSection regionSection = regionStorage.getConfigurationSection(world.getName()).getConfigurationSection(regionKey);
-                if (regionSection.getString("clanTag") == null || plugin.getClanManager().getClan(regionSection.getString("clanTag")) == null)
-                {
-                    keysToDelete.add(regionKey);
-                    continue;
-                }
+//                ConfigurationSection regionSection = regionStorage.getConfigurationSection(world.getName()).getConfigurationSection(regionKey);
+//                if (regionSection.getString("clanTag") == null || plugin.getClanManager().getClan(regionSection.getString("clanTag")) == null)
+//                {
+//                    keysToDelete.add(regionKey);
+//                    continue;
+//                }
                 //Cache region
                 String[] values = regionKey.split(",");
 
@@ -143,7 +156,23 @@ public class RegionManager
         {
             for (Region region : world.values())
             {
-                if (region.getClan() != null && region.getClan().equals(clan))
+                if (region.getOwner() != null
+                        && instance.getClanManager().getClanPlayer(region.getOwner().getUniqueId()) != null
+                        && instance.getClanManager().getClanPlayer(region.getOwner().getUniqueId()).getClan() == clan)
+                    regionsToReturn.add(region);
+            }
+        }
+        return regionsToReturn;
+    }
+
+    public Set<Region> getRegions(Player player)
+    {
+        Set<Region> regionsToReturn = new HashSet<>();
+        for (Table<Integer, Integer, Region> world : worldCache.values())
+        {
+            for (Region region : world.values())
+            {
+                if (region.getOwner().getPlayer() == player)
                     regionsToReturn.add(region);
             }
         }
@@ -156,7 +185,6 @@ public class RegionManager
             return null;
 
         Region region = new Region(x, z, world, REGION_SIZE, this);
-        worldCache.get(world).put(x, z, region);
 
         ConfigurationSection worldSection = regionStorage.getConfigurationSection(region.getWorld().getName());
         if (worldSection != null)
@@ -164,11 +192,19 @@ public class RegionManager
             ConfigurationSection regionSection = worldSection.getConfigurationSection(region.toString());
             if (regionSection != null)
             {
-                worldCache.get(world).get(x, z).setOwningClanTag(instance.getClanManager().getClan(regionSection.getString("clanTag")));
-                worldCache.get(world).get(x, z).setHealth(regionSection.getInt("health", 100));
-                worldCache.get(world).get(x, z).setCaptureTime(regionSection.getInt("captureTime", 15));
+                if (regionSection.getString("clanTag") != null)
+                {
+                    Clan clan = instance.getClanManager().getClan(regionSection.getString("clanTag"));
+                    OfflinePlayer player = instance.getServer().getOfflinePlayer(clan.getLeaders().get(0).getUniqueId());
+                    region.setOwner(player);
+                }
+                else
+                    region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));
+                region.setHealth(regionSection.getInt("health", 100));
+                region.setCaptureTime(regionSection.getInt("captureTime", 15));
             }
         }
+        worldCache.get(world).put(x, z, region);
         return worldCache.get(world).get(x, z);
     }
 
@@ -183,7 +219,7 @@ public class RegionManager
         if (regionSection == null)
             regionSection = worldSection.createSection(region.toString());
 
-        regionSection.set("clanTag", region.getClan().getTag());
+        regionSection.set("owner", region.getOwner().getUniqueId().toString());
         regionSection.set("health", region.getHealth());
         regionSection.set("captureTime", region.getCaptureTime());
         new BukkitRunnable()
@@ -206,6 +242,32 @@ public class RegionManager
             }
         }.runTaskLater(instance, 1L);
         return true;
+    }
+
+    public boolean isEnemyClaim(Region region, Player player, boolean includeWildernessAsEnemy)
+    {
+        if (region.getOwner() == null)
+            return includeWildernessAsEnemy;
+        if (player.getUniqueId().equals(region.getOwner().getUniqueId()))
+            return false;
+        return isEnemyClan(player, region.getOwner(), includeWildernessAsEnemy);
+    }
+
+    public boolean isEnemyClaim(Location targetLocation, Player player, boolean includeWildernessAsEnemy)
+    {
+        if (!instance.claimWorlds.contains(targetLocation.getWorld()))
+            return false;
+        return isEnemyClaim(getRegion(targetLocation), player, includeWildernessAsEnemy);
+    }
+
+    public boolean isEnemyClan(Player player, OfflinePlayer owner, boolean includeWildernessAsEnemy)
+    {
+        if (owner == null) //Unclaimed
+            return includeWildernessAsEnemy;
+
+        Clan ownerClan = instance.getClanManager().getClanByPlayerUniqueId(owner.getUniqueId());
+        Clan playerClan = instance.getClanManager().getClanByPlayerUniqueId(player.getUniqueId());
+        return ownerClan == null || playerClan != ownerClan && !playerClan.isAlly(ownerClan.getTag());
     }
 
 }

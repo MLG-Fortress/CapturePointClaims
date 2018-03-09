@@ -6,7 +6,7 @@
 
     <groupId>com.robomwm</groupId>
     <artifactId>CapturePointClaims</artifactId>
-    <version>5</version>
+    <version>6.0</version>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -55,6 +55,11 @@
             <artifactId>BetterTPA</artifactId>
             <version>3.7</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MLG-Fortress</groupId>
+            <artifactId>GrandioseAPI</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 

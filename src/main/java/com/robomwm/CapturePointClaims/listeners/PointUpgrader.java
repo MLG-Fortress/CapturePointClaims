@@ -47,7 +47,7 @@ public class PointUpgrader implements Listener
 
         event.setCancelled(true);
 
-        if (instance.isEnemyClaim(region, player, true))
+        if (instance.getRegionManager().isEnemyClaim(region, player, true))
             return;
         if (instance.getCaptureManager().getCapturePoint(region) != null && !instance.getCaptureManager().getCapturePoint(region).isEnded())
             return;

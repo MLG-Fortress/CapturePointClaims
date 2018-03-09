@@ -75,13 +75,13 @@ public class BlockEventListener implements Listener
         if(blockRegion.nearRegionPost(blockLocation, 2))
         {
             event.setCancelled(true);
-            if (instance.isEnemyClaim(blockRegion, player, true))
+            if (instance.getRegionManager().isEnemyClaim(blockRegion, player, true))
                 captureManager.startOrContinueCapture(player, blockRegion); //start/continue claiming process
             else //player's clan already claimed this, do nothing more
                 player.sendMessage(ChatColor.RED + "Your clan already captured this point");
         }
         //Otherwise, just general region claim check stuff
-        else if (instance.isEnemyClaim(blockRegion, player, false))
+        else if (instance.getRegionManager().isEnemyClaim(blockRegion, player, false))
         {
             if (!isTool(player.getInventory().getItemInMainHand().getType()))
             {
@@ -101,7 +101,7 @@ public class BlockEventListener implements Listener
         //if the player is not in managed world, do nothing
         if(!instance.claimWorlds.contains(player.getWorld()))
             return;
-        if (!instance.isEnemyClaim(block.getLocation(), player, false))
+        if (!instance.getRegionManager().isEnemyClaim(block.getLocation(), player, false))
             return;
 
         if (block.getState() instanceof InventoryHolder)
@@ -146,7 +146,7 @@ public class BlockEventListener implements Listener
     void onToolDamage(PlayerItemDamageEvent event)
     {
         Player player = event.getPlayer();
-        if (instance.isEnemyClaim(player.getLocation(), player, false))
+        if (instance.getRegionManager().isEnemyClaim(player.getLocation(), player, false))
             event.setDamage(event.getDamage() * r4nd0m(50, 100));
     }
 
@@ -165,7 +165,7 @@ public class BlockEventListener implements Listener
 
         Region blockRegion = regionManager.getRegion(blockLocation);
 
-        if (instance.isEnemyClaim(blockRegion, player, false))
+        if (instance.getRegionManager().isEnemyClaim(blockRegion, player, false))
         {
             event.setCancelled(true);
             player.sendActionBar(ChatColor.RED + "You must capture the control point to build here!");

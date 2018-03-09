@@ -1,6 +1,7 @@
 package com.robomwm.CapturePointClaims.events;
 
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -21,25 +22,25 @@ public class CaptureFinishedEvent extends Event
         return handlers;
     }
 
-    private Clan attackingClan;
-    private Clan defendingClan;
+    private OfflinePlayer attacker;
+    private OfflinePlayer defender;
     private boolean defended;
 
-    public CaptureFinishedEvent(Clan attackers, Clan defenders, boolean defendersWon)
+    public CaptureFinishedEvent(OfflinePlayer attacker, OfflinePlayer defender, boolean defenderWon)
     {
-        attackingClan = attackers;
-        defendingClan = defenders;
-        defended = defendersWon;
+        this.attacker = attacker;
+        this.defender = defender;
+        defended = defenderWon;
     }
 
-    public Clan getAttackingClan()
+    public OfflinePlayer getAttacker()
     {
-        return attackingClan;
+        return attacker;
     }
 
-    public Clan getDefendingClan()
+    public OfflinePlayer getDefender()
     {
-        return defendingClan;
+        return defender;
     }
 
     public boolean isDefended()

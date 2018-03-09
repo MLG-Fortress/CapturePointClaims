@@ -80,10 +80,10 @@ public class TPPointCommand implements CommandExecutor
         Region region = regionManager.getRegion(world, x, z);
 
         //If world does not contain any points, not owned by any clan, or owned by an enemy clan...
-        if (region == null || instance.isEnemyClan(player, region.getClan(), true))
+        if (region == null || instance.getRegionManager().isEnemyClan(player, region.getOwner(), true))
         {
             errorMessage(player, clanPlayer);
-            sender.sendMessage(ChatColor.RED + "Invalid point or not claimed by your clan.");
+            sender.sendMessage(ChatColor.RED + "Invalid point or not claimed by you/your clan.");
             return false;
         }
 

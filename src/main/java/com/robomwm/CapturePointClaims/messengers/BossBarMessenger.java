@@ -3,7 +3,10 @@ package com.robomwm.CapturePointClaims.messengers;
 import com.robomwm.CapturePointClaims.CapturePoint;
 import com.robomwm.CapturePointClaims.CapturePointClaims;
 import com.robomwm.CapturePointClaims.Region;
+import com.robomwm.grandioseapi.player.GrandPlayer;
+import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -140,6 +143,23 @@ public class BossBarMessenger implements Listener
 
     private String getName(Region region, String verb)
     {
-        return "Point (" + region.getName() + ") " + verb + ChatColor.RESET + " by " + instance.getOwningClanName(region);
+        return "Point (" + region.getName() + ") " + verb + ChatColor.RESET + " by " + getOwningClanName(region);
+    }
+
+    public String getOwningClanName(Region region)
+    {
+        OfflinePlayer owner = region.getOwner();
+        if (owner == null)
+            return "Da Wild";
+
+        GrandPlayer grandOwner = instance.getGrandAPI().getGrandPlayerManager().getGrandPlayer(owner);
+        StringBuilder builder = new StringBuilder();
+
+        Clan clan = instance.getClanManager().getClanByPlayerUniqueId(owner.getUniqueId());
+        if (clan != null)
+            builder.append(clan.getColorTag() + " ");
+        builder.append(grandOwner.getNameColor().toString());
+        builder.append(owner.getName());
+        return builder.toString();
     }
 }
