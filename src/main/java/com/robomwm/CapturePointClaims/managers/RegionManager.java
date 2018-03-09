@@ -200,6 +200,7 @@ public class RegionManager
                     {
                         OfflinePlayer player = instance.getServer().getOfflinePlayer(clan.getLeaders().get(0).getUniqueId());
                         region.setOwner(player);
+                        regionSection.set("owner", player.getUniqueId().toString());
                     }
                     else
                         return region; //Clan does not exist
