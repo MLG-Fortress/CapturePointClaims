@@ -191,9 +191,13 @@ public class RegionManager
             ConfigurationSection regionSection = worldSection.getConfigurationSection(region.toString());
             if (regionSection != null)
             {
+                //If it's empty, delete it
+                if (regionSection.getKeys(false).isEmpty())
+                    worldSection.set(region.toString(), null);
+
                 region.setHealth(regionSection.getInt("health", 100));
                 region.setCaptureTime(regionSection.getInt("captureTime", 15));
-                if (regionSection.getString("clanTag") != null) //old point
+                if (regionSection.getString("clanTag") != null) //TODO: remove converter
                 {
                     Clan clan = instance.getClanManager().getClan(regionSection.getString("clanTag"));
                     if (clan != null)
@@ -202,12 +206,11 @@ public class RegionManager
                         region.setOwner(player);
                         regionSection.set("owner", player.getUniqueId().toString());
                     }
-                    else
-                        return region; //Clan does not exist
                     regionSection.set("clanTag", null);
                 }
-                else
+                if (regionSection.contains("owner"))
                     region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));
+
             }
         }
         worldCache.get(world).put(x, z, region);
