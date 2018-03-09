@@ -1,5 +1,6 @@
 package com.robomwm.CapturePointClaims;
 
+import com.robomwm.CapturePointClaims.listeners.SimpleClansListener;
 import com.robomwm.grandioseapi.GrandioseAPI;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
@@ -66,6 +67,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         new BossBarMessenger(this, captureManager);
         getCommand("tppoint").setExecutor(new TPPointCommand(this, clanManager, regionManager));
         new PointUpgrader(this);
+        new SimpleClansListener(this);
     }
 
     @EventHandler
