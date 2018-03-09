@@ -157,8 +157,7 @@ public class RegionManager
             for (Region region : world.values())
             {
                 if (region.getOwner() != null
-                        && instance.getClanManager().getClanPlayer(region.getOwner().getUniqueId()) != null
-                        && instance.getClanManager().getClanPlayer(region.getOwner().getUniqueId()).getClan() == clan)
+                        && instance.getClanManager().getClanByPlayerUniqueId(region.getOwner().getUniqueId()) == clan)
                     regionsToReturn.add(region);
             }
         }
@@ -197,6 +196,7 @@ public class RegionManager
                     Clan clan = instance.getClanManager().getClan(regionSection.getString("clanTag"));
                     OfflinePlayer player = instance.getServer().getOfflinePlayer(clan.getLeaders().get(0).getUniqueId());
                     region.setOwner(player);
+                    regionSection.set("clanTag", null);
                 }
                 else
                     region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));

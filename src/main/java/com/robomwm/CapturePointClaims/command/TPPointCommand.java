@@ -105,6 +105,8 @@ public class TPPointCommand implements CommandExecutor
             player.sendMessage(clanPlayer.getClan().getName() + "'s points: ");
             player.sendMessage(formattedSet(regionNames(regionManager.getRegions(clanPlayer.getClan())), ChatColor.AQUA));
         }
+        else
+            player.sendMessage(formattedSet(regionNames(regionManager.getRegions(player)), ChatColor.AQUA));
         player.sendMessage(ChatColor.GOLD + "/tppoint <world> <x> <z>");
     }
 
