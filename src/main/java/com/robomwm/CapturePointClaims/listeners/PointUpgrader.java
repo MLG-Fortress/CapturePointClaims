@@ -95,6 +95,7 @@ public class PointUpgrader implements Listener
 
         region.setHealth(diamondBlocks);
         region.setCaptureTime(emeraldBlocks);
+        region.getRegionManager().saveRegion(region);
         event.getPlayer().sendMessage("Point " + region.getWorld().getName() + " " + region.toString() + ":\n  Vulnerability window: " + region.getCaptureTime() + " minutes\n  Health: " + region.getHealth());
     }
 }

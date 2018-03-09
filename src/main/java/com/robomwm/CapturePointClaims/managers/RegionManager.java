@@ -210,7 +210,7 @@ public class RegionManager
                 }
                 if (regionSection.contains("owner"))
                     region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));
-
+                saveRegion(region);
             }
         }
         worldCache.get(world).put(x, z, region);
@@ -228,28 +228,27 @@ public class RegionManager
         if (regionSection == null)
             regionSection = worldSection.createSection(region.toString());
 
-        regionSection.set("owner", region.getOwner().getUniqueId().toString());
-        regionSection.set("health", region.getHealth());
-        regionSection.set("captureTime", region.getCaptureTime());
-        new BukkitRunnable()
+        //Delete region from storage if it's unclaimed
+        if (region.getOwner() == null)
+            worldSection.set(region.toString(), null);
+        else
         {
-            @Override
-            public void run()
+            regionSection.set("owner", region.getOwner().getUniqueId().toString());
+            regionSection.set("health", region.getHealth());
+            regionSection.set("captureTime", region.getCaptureTime());
+        }
+        File storageFile = new File(instance.getDataFolder(), "regionStorage.data");
+        if (regionStorage != null)
+        {
+            try
             {
-                File storageFile = new File(instance.getDataFolder(), "regionStorage.data");
-                if (regionStorage != null)
-                {
-                    try
-                    {
-                        regionStorage.save(storageFile);
-                    }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
+                regionStorage.save(storageFile);
             }
-        }.runTaskLater(instance, 1L);
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
         return true;
     }
 
