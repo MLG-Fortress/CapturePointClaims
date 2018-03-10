@@ -50,12 +50,6 @@ public class TPPointCommand implements CommandExecutor
         Player player = (Player)sender;
         ClanPlayer clanPlayer = clansManager.getClanPlayer(player);
 
-        if (clanPlayer == null)
-        {
-            sender.sendMessage(ChatColor.RED + "You need to be part of a clan to teleport to clan-claimed capture points."); //TODO: instructions to /join
-            return false;
-        }
-
         if (args.length < 3)
         {
             errorMessage(player, clanPlayer);
@@ -99,10 +93,10 @@ public class TPPointCommand implements CommandExecutor
             for (String alliedClanTag : clanPlayer.getClan().getAllies())
             {
                 Clan alliedClan = clansManager.getClan(alliedClanTag);
-                player.sendMessage(alliedClan.getName() + "'s points: ");
+                player.sendMessage(alliedClan.getColorTag() + "'s points: ");
                 player.sendMessage(formattedSet(regionNames(regionManager.getRegions(alliedClan)), ChatColor.GREEN));
             }
-            player.sendMessage(clanPlayer.getClan().getName() + "'s points: ");
+            player.sendMessage(clanPlayer.getClan().getColorTag() + "'s points: ");
             player.sendMessage(formattedSet(regionNames(regionManager.getRegions(clanPlayer.getClan())), ChatColor.AQUA));
         }
         else
@@ -113,7 +107,7 @@ public class TPPointCommand implements CommandExecutor
     private String formattedSet(Set<String> stringSet, ChatColor color)
     {
         int i = 0;
-        StringBuilder formattedString = new StringBuilder();
+        StringBuilder formattedString = new StringBuilder(color.toString());
         for (String string : stringSet)
         {
             if (i > 0)
