@@ -40,7 +40,7 @@ public class CaptureManager
         return pointsBeingCaptured.get(region);
     }
 
-    private CapturePoint startNewCapture(Clan attackingClan, Region region)
+    private CapturePoint startNewCapture(Region region)
     {
         CapturePoint capturePoint = new CapturePoint(region);
         pointsBeingCaptured.put(region, capturePoint);
@@ -64,17 +64,10 @@ public class CaptureManager
     public void startOrContinueCapture(Player player, Region region)
     {
         CapturePoint capturePoint = pointsBeingCaptured.get(region); //If null, no clan is currently capturing
-        Clan clan = clanManager.getClanByPlayerUniqueId(player.getUniqueId());
-
-        if (clan == null)
-        {
-            player.sendMessage(ChatColor.RED + "You need to be part of a clan to capture a point.");
-            return;
-        }
 
         if (capturePoint == null) //Start a capture
         {
-            capturePoint = startNewCapture(clan, region);
+            capturePoint = startNewCapture(region);
 
             if (capturePoint.getOwner() != null) //notify defenders
             {
