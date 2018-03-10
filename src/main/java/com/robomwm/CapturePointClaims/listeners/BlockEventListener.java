@@ -81,14 +81,12 @@ public class BlockEventListener implements Listener
                 player.sendMessage(ChatColor.RED + "You/your clan already captured this point. You can upgrade it though.");
         }
         //Otherwise, just general region claim check stuff
-        else if (instance.getRegionManager().isEnemyClaim(blockRegion, player, false))
+        else if (instance.getRegionManager().isEnemyClaim(blockRegion, player, false)
+                && !isTool(player.getInventory().getItemInMainHand().getType()))
         {
-            if (!isTool(player.getInventory().getItemInMainHand().getType()))
-            {
-                event.setCancelled(true);
-                player.sendActionBar(ChatColor.RED + "Use a tool to break blocks in an enemy's claim.");
-                return;
-            }
+            event.setCancelled(true);
+            player.sendActionBar(ChatColor.RED + "Use a tool to break blocks in an enemy's claim.");
+            return;
         }
     }
 

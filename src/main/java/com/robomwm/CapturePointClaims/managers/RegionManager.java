@@ -171,7 +171,7 @@ public class RegionManager
         {
             for (Region region : world.values())
             {
-                if (region.getOwner().getPlayer() == player)
+                if (region.getOwner() != null && region.getOwner().getPlayer() == player)
                     regionsToReturn.add(region);
             }
         }
@@ -199,7 +199,7 @@ public class RegionManager
                 region.setCaptureTime(regionSection.getInt("captureTime", 15));
                 if (regionSection.contains("owner"))
                     region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));
-                saveRegion(region); //Used for storage upgrade conversion
+                //saveRegion(region); //Used for storage upgrade conversion, uncomment when needed.
             }
         }
         worldCache.get(world).put(x, z, region);
@@ -265,7 +265,7 @@ public class RegionManager
 
         Clan ownerClan = instance.getClanManager().getClanByPlayerUniqueId(owner.getUniqueId());
         Clan playerClan = instance.getClanManager().getClanByPlayerUniqueId(player.getUniqueId());
-        return ownerClan == null || playerClan != ownerClan && !playerClan.isAlly(ownerClan.getTag());
+        return ownerClan == null || playerClan == null || playerClan != ownerClan && !playerClan.isAlly(ownerClan.getTag());
     }
 
 }
