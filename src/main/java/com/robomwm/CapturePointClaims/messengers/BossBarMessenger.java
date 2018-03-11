@@ -88,13 +88,15 @@ public class BossBarMessenger implements Listener
             if (capturePoint == null) //TODO: replace with event listener
             {
                 bar.setTitle(getName(region, "Owned"));
+                bar.setColor(BarColor.BLUE);
+                bar.setStyle(BarStyle.SOLID);
                 continue;
             }
 
             if (capturePoint.isEnded()) //Locked point
             {
-                bar.setStyle(BarStyle.SEGMENTED_12);
-                bar.setColor(BarColor.BLUE);
+                bar.setStyle(BarStyle.SEGMENTED_6);
+                bar.setColor(BarColor.WHITE);
                 bar.setTitle(getName(region, ChatColor.AQUA + "Locked"));
                 bar.setProgress(capturePoint.getExpirationTimeAsPercentage());
                 continue;
@@ -143,7 +145,7 @@ public class BossBarMessenger implements Listener
 
     private String getName(Region region, String verb)
     {
-        return "Point (" + region.getName() + ") " + verb + ChatColor.RESET + " by " + getOwningClanName(region);
+        return "Post (" + region.getName() + ") " + verb + ChatColor.RESET + " by " + getOwningClanName(region);
     }
 
     public String getOwningClanName(Region region)

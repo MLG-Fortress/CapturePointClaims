@@ -78,7 +78,7 @@ public class BlockEventListener implements Listener
             if (instance.getRegionManager().isEnemyClaim(blockRegion, player, true))
                 captureManager.startOrContinueCapture(player, blockRegion); //start/continue claiming process
             else //player's clan already claimed this, do nothing more
-                player.sendMessage(ChatColor.RED + "You/your clan already captured this point. You can upgrade it though.");
+                player.sendMessage(ChatColor.RED + "You/your clan already captured this point. You can upgrade it though; see " + ChatColor.GOLD + "/page post");
         }
         //Otherwise, just general region claim check stuff
         else if (instance.getRegionManager().isEnemyClaim(blockRegion, player, false)

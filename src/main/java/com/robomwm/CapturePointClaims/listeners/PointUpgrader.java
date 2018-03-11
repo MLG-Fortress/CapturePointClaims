@@ -3,6 +3,7 @@ package com.robomwm.CapturePointClaims.listeners;
 import com.robomwm.CapturePointClaims.CapturePointClaims;
 import com.robomwm.CapturePointClaims.Region;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -52,7 +53,7 @@ public class PointUpgrader implements Listener
         if (instance.getCaptureManager().getCapturePoint(region) != null && !instance.getCaptureManager().getCapturePoint(region).isEnded())
             return;
 
-        player.openInventory(instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Deposit upgrades. /help capturepoint"));
+        player.openInventory(instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Deposit upgrades. " + ChatColor.GOLD + "/page post" + ChatColor.RESET + " for help"));
     }
 
     @EventHandler(ignoreCancelled = true)
