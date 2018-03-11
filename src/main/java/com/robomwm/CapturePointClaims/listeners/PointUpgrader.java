@@ -53,7 +53,7 @@ public class PointUpgrader implements Listener
         if (instance.getCaptureManager().getCapturePoint(region) != null && !instance.getCaptureManager().getCapturePoint(region).isEnded())
             return;
 
-        player.openInventory(instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Deposit upgrades. " + ChatColor.GOLD + "/page post" + ChatColor.RESET + " for help"));
+        player.openInventory(instance.getServer().createInventory(new UpgradeInventoryHolder(region), 54, "Deposit upgrades. " + ChatColor.GOLD + "/help post" + ChatColor.RESET + " for help"));
     }
 
     @EventHandler(ignoreCancelled = true)
