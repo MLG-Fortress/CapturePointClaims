@@ -91,17 +91,17 @@ public class CaptureManager
             }
             else
             {
-                player.sendMessage("Point is locked, please wait " + Messenger.formatTime(capturePoint.getExpirationTimeRemaining()));
+                player.sendMessage("Post is locked, please wait " + Messenger.formatTime(capturePoint.getExpirationTimeRemaining()));
             }
         }
         else if (instance.getRegionManager().isEnemyClaim(region, player, true)) //Continue capture
         {
-            player.sendActionBar(ChatColor.AQUA + "Capture point health: " + capturePoint.decrementCaptureProgress(1));
+            player.sendActionBar(ChatColor.DARK_RED + "Post health: " + capturePoint.decrementCaptureProgress(1));
             capturePoint.checkOrEndGame(instance, player);
         }
         else if (!instance.getRegionManager().isEnemyClaim(region, player, true))
         {
-            player.sendMessage("Defend this point until the timer runs out!");
+            player.sendMessage("Defend this post until the timer runs out!");
         }
         else
             instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");

@@ -1,9 +1,11 @@
 package com.robomwm.CapturePointClaims.command;
 
 import com.robomwm.CapturePointClaims.CapturePointClaims;
+import com.robomwm.CapturePointClaims.LazyUtil;
 import com.robomwm.CapturePointClaims.Region;
 import com.robomwm.CapturePointClaims.managers.RegionManager;
 import me.robomwm.BetterTPA.BetterTPA;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
@@ -14,7 +16,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -77,15 +81,14 @@ public class TPPointCommand implements CommandExecutor
         if (region == null || instance.getRegionManager().isEnemyClaim(region, player, true))
         {
             errorMessage(player, clanPlayer);
-            sender.sendMessage(ChatColor.RED + "Invalid point or not claimed by you/your clan.");
+            sender.sendMessage(ChatColor.RED + "Invalid post or not claimed by you/your clan.");
             return false;
         }
 
         betterTPA.teleportPlayer(player, region.getName(), region.getRegionCenter(true).add(2, 0, 2), true, null);
         return true;
     }
-
-    //TODO: make tppoints clickable to teleport
+    
     private void errorMessage(Player player, ClanPlayer clanPlayer)
     {
         if (clanPlayer != null)
@@ -93,15 +96,32 @@ public class TPPointCommand implements CommandExecutor
             for (String alliedClanTag : clanPlayer.getClan().getAllies())
             {
                 Clan alliedClan = clansManager.getClan(alliedClanTag);
-                player.sendMessage(alliedClan.getColorTag() + "'s points: ");
-                player.sendMessage(formattedSet(regionNames(regionManager.getRegions(alliedClan)), ChatColor.GREEN));
+                player.sendMessage(alliedClan.getColorTag() + "'s posts: ");
+                //player.sendMessage(formattedSet(regionNames(regionManager.getRegions(alliedClan)), ChatColor.GREEN));
+                sendClickableStuff(regionNames(regionManager.getRegions(alliedClan)), player);
             }
-            player.sendMessage(clanPlayer.getClan().getColorTag() + "'s points: ");
-            player.sendMessage(formattedSet(regionNames(regionManager.getRegions(clanPlayer.getClan())), ChatColor.AQUA));
+            player.sendMessage(clanPlayer.getClan().getColorTag() + "'s posts: ");
+            //player.sendMessage(formattedSet(regionNames(regionManager.getRegions(clanPlayer.getClan())), ChatColor.AQUA));
+            sendClickableStuff(regionNames(regionManager.getRegions(clanPlayer.getClan())), player);
         }
         else
-            player.sendMessage(formattedSet(regionNames(regionManager.getRegions(player)), ChatColor.AQUA));
-        player.sendMessage(ChatColor.GOLD + "/tppoint <world> <x> <z>");
+            sendClickableStuff(regionNames(regionManager.getRegions(player)), player);
+        player.sendMessage(LazyUtil.getClickableSuggestion("/tppost <world> <x> <z>", "/tppost ", null));
+    }
+
+    private void sendClickableStuff(Set<String> stringSet, Player player)
+    {
+        List<BaseComponent> baseComponents = new ArrayList<>(stringSet.size());
+        for (String string : stringSet)
+        {
+            baseComponents.add(LazyUtil.getClickableCommand(string, "/tppost " + string));
+            if (baseComponents.size() >= 3)
+            {
+                player.sendMessage(baseComponents.toArray(new BaseComponent[baseComponents.size()]));
+                baseComponents.clear();
+            }
+        }
+        player.sendMessage(baseComponents.toArray(new BaseComponent[baseComponents.size()]));
     }
 
     private String formattedSet(Set<String> stringSet, ChatColor color)
