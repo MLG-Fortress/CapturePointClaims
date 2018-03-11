@@ -20,38 +20,6 @@ import java.util.List;
  */
 public class LazyUtil
 {
-    public static BookMeta getBookMeta()
-    {
-        return (BookMeta)(new ItemStack(Material.WRITTEN_BOOK).getItemMeta());
-    }
-
-    public static ItemStack getBook(BookMeta bookMeta)
-    {
-        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-        book.setItemMeta(bookMeta);
-        return book;
-    }
-
-    public static BaseComponent[] buildPage(Object... strings)
-    {
-        List<BaseComponent> baseComponents = new ArrayList<>(strings.length);
-        for (Object object : strings)
-        {
-            if (object instanceof BaseComponent)
-                baseComponents.add((BaseComponent)object);
-            else if (object instanceof String)
-                baseComponents.addAll(Arrays.asList(TextComponent.fromLegacyText((String)object)));
-        }
-        return baseComponents.toArray(new BaseComponent[baseComponents.size()]);
-    }
-
-    public static List<BaseComponent> addLegacyText(String string, List<BaseComponent> baseComponents)
-    {
-        for (BaseComponent baseComponent : TextComponent.fromLegacyText(string))
-            baseComponents.add(baseComponent);
-        return baseComponents;
-    }
-
     public static TextComponent getClickableCommand(String message, String command)
     {
         return getClickableCommand(message, command, command);
@@ -70,7 +38,7 @@ public class LazyUtil
     public static TextComponent getClickableSuggestion(String message, String suggestion, String hover)
     {
         TextComponent textComponent = new TextComponent(message);
-        textComponent.setColor(ChatColor.AQUA);
+        textComponent.setColor(ChatColor.YELLOW);
         textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, suggestion));
         if (hover != null)
             textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));

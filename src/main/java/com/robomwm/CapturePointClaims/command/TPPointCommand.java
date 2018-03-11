@@ -88,7 +88,7 @@ public class TPPointCommand implements CommandExecutor
         betterTPA.teleportPlayer(player, region.getName(), region.getRegionCenter(true).add(2, 0, 2), true, null);
         return true;
     }
-    
+
     private void errorMessage(Player player, ClanPlayer clanPlayer)
     {
         if (clanPlayer != null)
@@ -114,7 +114,7 @@ public class TPPointCommand implements CommandExecutor
         List<BaseComponent> baseComponents = new ArrayList<>(stringSet.size());
         for (String string : stringSet)
         {
-            baseComponents.add(LazyUtil.getClickableCommand(string, "/tppost " + string));
+            baseComponents.add(LazyUtil.getClickableCommand(string + TAB, "/tppost " + string));
             if (baseComponents.size() >= 3)
             {
                 player.sendMessage(baseComponents.toArray(new BaseComponent[baseComponents.size()]));
