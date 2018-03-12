@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
@@ -78,7 +79,7 @@ public class BlockEventListener implements Listener
             if (instance.getRegionManager().isEnemyClaim(blockRegion, player, true))
                 captureManager.startOrContinueCapture(player, blockRegion); //start/continue claiming process
             else //player's clan already claimed this, do nothing more
-                player.sendMessage(ChatColor.RED + "You/your clan already captured this point. You can upgrade it though; see " + ChatColor.GOLD + "/page post");
+                player.sendMessage(ChatColor.RED + "You/your clan already captured this post. You can upgrade it though; see " + ChatColor.GOLD + "/page post");
         }
         //Otherwise, just general region claim check stuff
         else if (instance.getRegionManager().isEnemyClaim(blockRegion, player, false)
@@ -93,6 +94,8 @@ public class BlockEventListener implements Listener
     @EventHandler(ignoreCancelled = true)
     private void onOpenChest(PlayerInteractEvent event)
     {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
 
@@ -103,7 +106,10 @@ public class BlockEventListener implements Listener
             return;
 
         if (block.getState() instanceof InventoryHolder)
+        {
+            player.sendMessage(ChatColor.RED + "Seems like this is locked by the claim post...");
             event.setCancelled(true);
+        }
     }
 
     private boolean isTool(Material material)
@@ -145,7 +151,7 @@ public class BlockEventListener implements Listener
     {
         Player player = event.getPlayer();
         if (instance.getRegionManager().isEnemyClaim(player.getLocation(), player, false))
-            event.setDamage(event.getDamage() * r4nd0m(50, 100));
+            event.setDamage(event.getDamage() * r4nd0m(2, 10));
     }
 
     public int r4nd0m(int min, int max) {
@@ -166,7 +172,7 @@ public class BlockEventListener implements Listener
         if (instance.getRegionManager().isEnemyClaim(blockRegion, player, false))
         {
             event.setCancelled(true);
-            player.sendActionBar(ChatColor.RED + "You must capture the control point to build here!");
+            player.sendActionBar(ChatColor.RED + "You must capture the claim post to build here!");
             return;
         }
 
