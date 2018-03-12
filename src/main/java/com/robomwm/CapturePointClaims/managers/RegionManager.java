@@ -178,6 +178,16 @@ public class RegionManager
         return regionsToReturn;
     }
 
+    public Set<Region> getRegions()
+    {
+        Set<Region> regions = new HashSet<>();
+        for (World world : worldCache.keySet())
+        {
+            regions.addAll(worldCache.get(world).values());
+        }
+        return regions;
+    }
+
     private Region loadRegion(World world, int x, int z)
     {
         if (!worldCache.containsKey(world))

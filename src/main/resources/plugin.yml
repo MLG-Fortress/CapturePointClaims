@@ -9,6 +9,7 @@ depend:
 - SimpleClans
 softdepend:
 - Multiverse-Core
+- dynmap
 commands:
   tppoint:
     aliases: [tpppoint, tpclaim, tppost, cp, tpcp, claimpoint, claimpoints, capturepoints, cpaturepiont]

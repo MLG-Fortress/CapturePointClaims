@@ -24,6 +24,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>dynmap-repo</id>
+            <url>http://repo.mikeprimm.com/</url>
+        </repository>
     </repositories>
     <build>
         <finalName>${project.name}</finalName>
@@ -60,6 +64,11 @@
             <groupId>com.github.MLG-Fortress</groupId>
             <artifactId>GrandioseAPI</artifactId>
             <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>us.dynmap</groupId>
+            <artifactId>dynmap-api</artifactId>
+            <version>2.6-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
