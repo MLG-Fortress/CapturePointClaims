@@ -1,26 +1,23 @@
 package com.robomwm.CapturePointClaims;
 
+import com.robomwm.CapturePointClaims.command.TPPointCommand;
+import com.robomwm.CapturePointClaims.listeners.BlockEventListener;
+import com.robomwm.CapturePointClaims.listeners.PointUpgrader;
 import com.robomwm.CapturePointClaims.listeners.SimpleClansListener;
+import com.robomwm.CapturePointClaims.managers.CaptureManager;
+import com.robomwm.CapturePointClaims.managers.RegionManager;
+import com.robomwm.CapturePointClaims.messengers.BossBarMessenger;
 import com.robomwm.grandioseapi.GrandioseAPI;
-import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
-import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.robomwm.CapturePointClaims.command.TPPointCommand;
-import com.robomwm.CapturePointClaims.listeners.BlockEventListener;
-import com.robomwm.CapturePointClaims.listeners.PointUpgrader;
-import com.robomwm.CapturePointClaims.managers.CaptureManager;
-import com.robomwm.CapturePointClaims.managers.RegionManager;
-import com.robomwm.CapturePointClaims.messengers.BossBarMessenger;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -68,6 +65,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         getCommand("tppoint").setExecutor(new TPPointCommand(this, clanManager, regionManager));
         new PointUpgrader(this);
         new SimpleClansListener(this);
+        new DynmapHook(this);
     }
 
     @EventHandler
