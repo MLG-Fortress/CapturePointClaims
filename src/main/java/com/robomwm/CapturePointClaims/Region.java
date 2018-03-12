@@ -365,8 +365,10 @@ public class Region
                 Sign sign = (Sign)block1.getState();
 
                 sign.setLine(0, world.getName() + " " + regionX + " " + regionZ);
+                if (owner != null)
+                    sign.setLine(1, owner.getName());
                 sign.setLine(2, "Break to capture");
-                sign.setLine(3, "this point");
+                sign.setLine(3, "this post");
 
                 sign.update();
             }

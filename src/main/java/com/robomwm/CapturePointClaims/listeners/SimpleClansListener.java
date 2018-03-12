@@ -69,23 +69,24 @@ public class SimpleClansListener implements Listener
         {
             case "home":
                 //player.sendMessage("Use /tppoint");
-
+                if (clan.getHomeLocation() == null)
+                    return false;
                 if (instance.getRegionManager().getRegion(clan.getHomeLocation()) == null
                         || instance.getRegionManager().isEnemyClaim(clan.getHomeLocation(), player, true))
                 {
-                    player.sendMessage("Your clan's /home doesn't show up on the radar! Perhaps try setting a new one in a claimed area?");
+                    player.sendMessage(ChatColor.RED + "We can't seem to get a lock on your clan's old /home! Perhaps try setting a new one in a claimed area?");
                     return true;
                 }
                 return false;
             case "sethome":
-                if (instance.getRegionManager().getRegion(clan.getHomeLocation()) == null)
+                if (instance.getRegionManager().getRegion(player.getLocation()) == null)
                 {
                     player.sendMessage(ChatColor.GRAY + "*All you hear is static as you vainly attempt to register this location as your clan's new home...*");
                     return true;
                 }
                 if (instance.getRegionManager().isEnemyClaim(player.getLocation(), player, true))
                 {
-                    player.sendMessage("We can't register this location as your clan's new home until you claim its capture point!");
+                    player.sendMessage(ChatColor.RED + "We can't register this location as your clan's new home until you capture its post!");
                     return true;
                 }
         }
