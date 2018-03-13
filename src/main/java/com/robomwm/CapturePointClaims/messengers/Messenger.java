@@ -1,10 +1,13 @@
 package com.robomwm.CapturePointClaims.messengers;
 
+import com.robomwm.CapturePointClaims.CapturePointClaims;
+import com.robomwm.CapturePointClaims.LazyUtil;
 import com.robomwm.CapturePointClaims.Region;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 
 import javax.annotation.Nullable;
 
@@ -19,11 +22,11 @@ public class Messenger {
      * @param clan    Clan to send message to
      * @param message the message
      */
-    private static void chatMessageToClan(Clan clan, String message)
+    private static void chatMessageToClan(Clan clan, String message, String command)
     {
         message = clan.getColorTag() + ": " + message;
         for (ClanPlayer clanPlayer : clan.getOnlineMembers()) {
-            clanPlayer.toPlayer().sendMessage(message);
+            clanPlayer.toPlayer().sendMessage(LazyUtil.getClickableCommand(message, command));
         }
     }
 
@@ -112,18 +115,39 @@ public class Messenger {
     }
 
     /**
-     * Alerts members of attacking and defending clans of an attack.
+     * Alerts members of defending clans of an attack.
      * @param defendingClan
      */
     public static void alertMembersOfAttack(@Nullable Clan defendingClan, Region region)
     {
         if (defendingClan != null)
         {
-            String defendingClanTag = defendingClan.getTag();
-            chatMessageToClan(defendingClan, "Our capture point " + region.getName() + " is under attack!"
-            + "\nHelp defend! " + ChatColor.GOLD + "/tppoint " + region.getName());
+            chatMessageToClan(defendingClan, "Help defend! /tppost " + region.getName(), "/tppost " + region.getName());
+            defendingClan.addBb("Post " + region.getName(), "is under attack!", false);
+        }
+        else if (region.getOwner() != null)
+        {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "umail text " +
+                    region.getOwner().getName() + " Post " + region.getName() + " is under attack!");
         }
 
         //chatMessageToClan(attackingClan, "We are attacking capture point " + region.getName() + " which is owned by " + defendingClanTag);
+    }
+
+
+    public static void mailPlayerOrClan(CapturePointClaims plugin, OfflinePlayer player, String message)
+    {
+        if (player == null)
+            return;
+        Clan clan = plugin.getClanManager().getClanByPlayerUniqueId(player.getUniqueId());
+        if (clan == null)
+        {
+            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "umail text " + player.getName() + " " + message);
+            return;
+        }
+
+        clan.addBb(clan.getColorTag(), message);
+        for (String allyString : clan.getAllies())
+            plugin.getClanManager().getClan(allyString).addBb(clan.getColorTag(), message);
     }
 }

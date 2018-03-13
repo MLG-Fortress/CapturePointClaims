@@ -106,7 +106,7 @@ public class TPPointCommand implements CommandExecutor
         }
         else
             sendClickableStuff(regionNames(regionManager.getRegions(player)), player);
-        player.sendMessage(LazyUtil.getClickableSuggestion("/tppost <world> <x> <z>", "/tppost ", null));
+        player.sendMessage(LazyUtil.getClickableSuggestion("Click a location or type /tppost <world> <x> <z>", "/tppost ", null));
     }
 
     private void sendClickableStuff(Set<String> stringSet, Player player)

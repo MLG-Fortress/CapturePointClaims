@@ -154,7 +154,7 @@ public class Region
      * @param player
      * @param instance
      */
-    public void changeOwner(OfflinePlayer player, CapturePointClaims instance)
+    public void changeOwner(OfflinePlayer player, JavaPlugin instance)
     {
         this.setOwner(player);
         this.AddRegionPost(instance);

@@ -52,8 +52,8 @@ public class CaptureManager
                     this.cancel();
                 else
                 {
-                    capturePoint.setTicksToEndGame(20);
-                    capturePoint.checkOrEndGame(instance, null);
+                    capturePoint.tick(20);
+                    checkOrEndGame(capturePoint, null);
                 }
             }
         }.runTaskTimer(instance, 0L, 20L);
@@ -97,7 +97,7 @@ public class CaptureManager
         else if (instance.getRegionManager().isEnemyClaim(region, player, true)) //Continue capture
         {
             player.sendActionBar(ChatColor.DARK_RED + "Post health: " + capturePoint.decrementCaptureProgress(1));
-            capturePoint.checkOrEndGame(instance, player);
+            checkOrEndGame(capturePoint, player);
         }
         else if (!instance.getRegionManager().isEnemyClaim(region, player, true))
         {
@@ -105,6 +105,18 @@ public class CaptureManager
         }
         else
             instance.getLogger().severe("Bad thing happened in startOrContinueCapture method");
+    }
+
+    private void checkOrEndGame(CapturePoint point, Player attacker)
+    {
+        Boolean captured = point.checkOrEndGame(instance, attacker);
+        if (captured == null)
+            return;
+        if (!captured)
+            return;
+
+        Messenger.mailPlayerOrClan(instance, attacker, "Successfully captured " + point.getRegion().getName());
+        Messenger.mailPlayerOrClan(instance, point.getDefender(), point.getRegion().getName() + " was captured by " + attacker.getName());
     }
 }
 

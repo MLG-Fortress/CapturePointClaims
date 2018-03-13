@@ -103,7 +103,7 @@ public class PointUpgrader implements Listener
 
 class UpgradeInventoryHolder implements InventoryHolder
 {
-    Region region;
+    private Region region;
 
     UpgradeInventoryHolder(Region region)
     {

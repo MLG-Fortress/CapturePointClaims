@@ -97,7 +97,7 @@ public class BossBarMessenger implements Listener
             {
                 bar.setStyle(BarStyle.SEGMENTED_6);
                 bar.setColor(BarColor.WHITE);
-                bar.setTitle(getName(region, ChatColor.AQUA + "Locked"));
+                bar.setTitle(getName(region, ChatColor.GRAY + "Locked"));
                 bar.setProgress(capturePoint.getExpirationTimeAsPercentage());
                 continue;
             }
@@ -145,7 +145,7 @@ public class BossBarMessenger implements Listener
 
     private String getName(Region region, String verb)
     {
-        return "Post (" + region.getName() + ") " + verb + ChatColor.RESET + " by " + getOwningClanName(region);
+        return region.getName() + " " + verb + ChatColor.RESET + " by " + getOwningClanName(region);
     }
 
     public String getOwningClanName(Region region)

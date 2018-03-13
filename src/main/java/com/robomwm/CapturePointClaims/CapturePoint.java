@@ -24,12 +24,19 @@ public class CapturePoint
     //Determines who won
     private boolean defended = true;
     private Region region;
+    private OfflinePlayer defender; //store defender in case of capture
 
     //Capturing a new point
     public CapturePoint(Region region)
     {
         this.region = region;
         this.captureProgress = region.getHealth();
+        this.defender = region.getOwner();
+    }
+
+    public OfflinePlayer getDefender()
+    {
+        return defender;
     }
 
     public OfflinePlayer getOwner()
@@ -96,7 +103,7 @@ public class CapturePoint
     }
 
 
-    public void setTicksToEndGame(int ticksToTick)
+    public void tick(int ticksToTick)
     {
         if (isEnded())
             return;
@@ -126,7 +133,7 @@ public class CapturePoint
         this.timeCaptured = System.currentTimeMillis();
         OfflinePlayer defender = region.getOwner();
 
-        if (!this.defended)
+        if (!this.defended && player != null)
         {
             region.changeOwner(player, instance);
             captureProgress = 100;
@@ -136,7 +143,7 @@ public class CapturePoint
         region.setHealth(captureProgress);
         region.getRegionManager().saveRegion(region);
 
-        instance.getServer().getPluginManager().callEvent(new CaptureFinishedEvent(player, defender, defended));
+        instance.getServer().getPluginManager().callEvent(new CaptureFinishedEvent(this, player));
 
         return this.defended;
     }
