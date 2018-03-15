@@ -205,6 +205,8 @@ public class RegionManager
                 region.setHealth(regionSection.getInt("health", 100));
                 region.addFuel(regionSection.getInt("fuel"));
                 region.setArrows(regionSection.getInt("arrows"));
+                region.setArrows(regionSection.getInt("golems"));
+                region.setArrows(regionSection.getInt("zerg"));
                 if (regionSection.contains("owner"))
                     region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));
                 //saveRegion(region); //Used for storage upgrade conversion, uncomment when needed.
