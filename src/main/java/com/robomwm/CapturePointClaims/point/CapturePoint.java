@@ -1,5 +1,7 @@
-package com.robomwm.CapturePointClaims;
+package com.robomwm.CapturePointClaims.point;
 
+import com.robomwm.CapturePointClaims.CapturePointClaims;
+import com.robomwm.CapturePointClaims.region.Region;
 import com.robomwm.CapturePointClaims.events.CaptureFinishedEvent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -12,13 +14,13 @@ public class CapturePoint
      * Contains information about a point in the process of being captured
      * Automatically manages and performs end-game (time runs out or point being captured)
      */
-    private final long LOCK_TIME = TimeUnit.MINUTES.toMillis(30L); //point locks for 30 minutes
-    private final long LOCK_TIME_SECONDS = TimeUnit.MINUTES.toMillis(30L) / 1000L;
+    private long LOCK_TIME; //point locks for 30 minutes
+    private long LOCK_TIME_SECONDS;
 
     //captureProgress (decrements to 0)
     private int captureProgress;
     //Maximum amount of time to capture point, in ticks
-    private int ticksToEndGame = 12000; //10 minutes
+    private int ticksToEndGame = 24000; //20 minutes
     //Used to determine end game, and when point should be unlocked
     private Long timeCaptured = 0L;
     //Determines who won
@@ -32,16 +34,13 @@ public class CapturePoint
         this.region = region;
         this.captureProgress = region.getHealth();
         this.defender = region.getOwner();
+        this.LOCK_TIME_SECONDS = TimeUnit.SECONDS.toMillis(region.consumeFuel());
+        this.LOCK_TIME = TimeUnit.MINUTES.toMillis(TimeUnit.SECONDS.toMinutes(LOCK_TIME_SECONDS));
     }
 
     public OfflinePlayer getDefender()
     {
         return defender;
-    }
-
-    public OfflinePlayer getOwner()
-    {
-        return region.getOwner();
     }
 
     public boolean isEnded()
@@ -137,11 +136,14 @@ public class CapturePoint
         {
             region.changeOwner(player, instance);
             captureProgress = 100;
-            region.setCaptureTime(15);
+            LOCK_TIME = 0;
+            LOCK_TIME_SECONDS = 0;
         }
 
         region.setHealth(captureProgress);
         region.getRegionManager().saveRegion(region);
+
+
 
         instance.getServer().getPluginManager().callEvent(new CaptureFinishedEvent(this, player));
 

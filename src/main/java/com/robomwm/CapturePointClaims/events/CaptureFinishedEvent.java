@@ -1,6 +1,6 @@
 package com.robomwm.CapturePointClaims.events;
 
-import com.robomwm.CapturePointClaims.CapturePoint;
+import com.robomwm.CapturePointClaims.point.CapturePoint;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

@@ -2,8 +2,8 @@ package com.robomwm.CapturePointClaims.command;
 
 import com.robomwm.CapturePointClaims.CapturePointClaims;
 import com.robomwm.CapturePointClaims.LazyUtil;
-import com.robomwm.CapturePointClaims.Region;
-import com.robomwm.CapturePointClaims.managers.RegionManager;
+import com.robomwm.CapturePointClaims.region.Region;
+import com.robomwm.CapturePointClaims.region.RegionManager;
 import me.robomwm.BetterTPA.BetterTPA;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;

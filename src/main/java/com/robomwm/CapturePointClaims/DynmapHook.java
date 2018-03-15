@@ -1,6 +1,7 @@
 package com.robomwm.CapturePointClaims;
 
 import com.robomwm.CapturePointClaims.events.CaptureFinishedEvent;
+import com.robomwm.CapturePointClaims.region.Region;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

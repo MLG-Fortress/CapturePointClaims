@@ -1,7 +1,7 @@
 package com.robomwm.CapturePointClaims.listeners;
 
 import com.robomwm.CapturePointClaims.CapturePointClaims;
-import com.robomwm.CapturePointClaims.Region;
+import com.robomwm.CapturePointClaims.region.Region;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -63,41 +63,41 @@ public class PointUpgrader implements Listener
             return;
         Region region = ((UpgradeInventoryHolder)event.getInventory().getHolder()).getRegion();
 
-        int diamondBlocks = region.getCaptureTime();
-        int emeraldBlocks = region.getHealth();
-
         for (ItemStack itemStack : event.getInventory())
         {
             if (itemStack == null)
                 continue;
+
             switch (itemStack.getType())
             {
-                case DIAMOND_BLOCK:
-                    if (diamondBlocks > 5)
-                    {
-                        int amount = itemStack.getAmount();
-                        if (diamondBlocks - amount < 5)
-                        {
-                            amount = diamondBlocks - 5;
-                            itemStack.setAmount(itemStack.getAmount() - amount);
-                            event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), itemStack);
-                        }
-                        diamondBlocks -= amount;
-                        break;
-                    }
+                case REDSTONE_BLOCK:
+                    region.addFuel(itemStack.getAmount());
                     break;
                 case EMERALD_BLOCK:
-                    emeraldBlocks += itemStack.getAmount();
+                    region.addHealth(itemStack.getAmount());
                     break;
-                    default:
-                        event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), itemStack);
+                case PRISMARINE:
+                    region.addFatigue(itemStack.getAmount());
+                    break;
+                case IRON_BLOCK:
+                    region.addGolem(itemStack.getAmount());
+                    break;
+                case GOLD_BLOCK:
+                    region.addZerg(itemStack.getAmount());
+                    break;
+                default:
+                    event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), itemStack);
             }
         }
 
-        region.setHealth(diamondBlocks);
-        region.setCaptureTime(emeraldBlocks);
         region.getRegionManager().saveRegion(region);
-        event.getPlayer().sendMessage("Point " + region.getWorld().getName() + " " + region.toString() + ":\n  Vulnerability window: " + region.getCaptureTime() + " minutes\n  Health: " + region.getHealth());
+        event.getPlayer().sendMessage("Post " + region.getName() + " :\n" +
+                "  Health: " + region.getHealth() +
+                "\n  Fuel: " + region.getFuel() +
+                "\n  Fatigue: " + region.getFatigue() +
+                "\n  Sentry ammo: " + region.getArrows() +
+                "\n  Golems recruited: " + region.getGolems() / 3 +
+                "\n  Zerg nest size: " + region.getZerg());
     }
 }
 

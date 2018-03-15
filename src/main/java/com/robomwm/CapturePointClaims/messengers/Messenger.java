@@ -2,10 +2,11 @@ package com.robomwm.CapturePointClaims.messengers;
 
 import com.robomwm.CapturePointClaims.CapturePointClaims;
 import com.robomwm.CapturePointClaims.LazyUtil;
-import com.robomwm.CapturePointClaims.Region;
+import com.robomwm.CapturePointClaims.region.Region;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
@@ -123,7 +124,6 @@ public class Messenger {
         if (defendingClan != null)
         {
             chatMessageToClan(defendingClan, "Help defend! /tppost " + region.getName(), "/tppost " + region.getName());
-            defendingClan.addBb("Post " + region.getName(), "is under attack!", false);
         }
         else if (region.getOwner() != null)
         {
@@ -146,8 +146,8 @@ public class Messenger {
             return;
         }
 
-        clan.addBb(clan.getColorTag(), message);
+        clan.addBb(clan.getColorTag(), message, false);
         for (String allyString : clan.getAllies())
-            plugin.getClanManager().getClan(allyString).addBb(clan.getColorTag(), message);
+            plugin.getClanManager().getClan(allyString).addBb("", clan.getColorTag() + ChatColor.RESET + " " + message, false);
     }
 }

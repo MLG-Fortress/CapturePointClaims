@@ -1,16 +1,16 @@
-package com.robomwm.CapturePointClaims.managers;
+package com.robomwm.CapturePointClaims.point;
 
-import com.robomwm.CapturePointClaims.CapturePoint;
 import com.robomwm.CapturePointClaims.CapturePointClaims;
-import com.robomwm.CapturePointClaims.Region;
+import com.robomwm.CapturePointClaims.region.Region;
+import com.robomwm.CapturePointClaims.region.RegionManager;
 import com.robomwm.CapturePointClaims.messengers.Messenger;
-import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by robom on 12/20/2016.
@@ -69,16 +69,8 @@ public class CaptureManager
         {
             capturePoint = startNewCapture(region);
 
-            if (capturePoint.getOwner() != null) //notify defenders
-            {
-                Clan defendingClan = clanManager.getClanByPlayerUniqueId(capturePoint.getOwner().getUniqueId());
-                if (defendingClan != null)
-                    Messenger.alertMembersOfAttack(defendingClan, region);
-                //TODO: mail owner
-            }
-
-            //TODO: Fire event
-            //TODO: Broadcast globally (small chat message)
+            //notify defenders
+            Messenger.mailPlayerOrClan(instance, region.getOwner(), region.getName() + " is under attack!");
         }
 
         else if (capturePoint.isEnded()) //Point was already captured/defended before

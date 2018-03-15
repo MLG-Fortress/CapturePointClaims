@@ -1,4 +1,4 @@
-package com.robomwm.CapturePointClaims;
+package com.robomwm.CapturePointClaims.region;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -12,7 +12,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.robomwm.CapturePointClaims.managers.RegionManager;
 
 public class Region
 {
@@ -22,8 +21,70 @@ public class Region
     private OfflinePlayer owner;
     private int REGION_SIZE;
     private int health = 50;
-    private int captureTime = 15;
+    private int fuel;
+    private int arrows;
+    private int fatigue;
+    private int golems;
+    private int zerg;
     private RegionManager regionManager;
+
+    public int getGolems()
+    {
+        return golems;
+    }
+
+    public void setGolems(int golems)
+    {
+        this.golems = golems;
+    }
+
+    public void addGolem(int golemsToAdd)
+    {
+        this.golems += golemsToAdd;
+    }
+
+    public void setZerg(int zerg)
+    {
+        this.zerg = zerg;
+    }
+
+    public int getZerg()
+    {
+        return zerg;
+    }
+
+    public void addZerg(int zergToAdd)
+    {
+        this.zerg += zergToAdd;
+    }
+
+    public int consumeFuel()
+    {
+        if (fuel <= 0 && owner == null)
+            return 0;
+        this.fuel -= fuel / 10;
+        if (fuel < 9)
+            this.fuel = 9;
+        return this.fuel;
+    }
+
+    public boolean consumeFatigue()
+    {
+        if (fatigue <= 0)
+            return false;
+        this.fatigue--;
+        return true;
+    }
+
+    public void addFatigue(int fatigue)
+    {
+        this.fatigue += fatigue;
+    }
+
+    public int getFatigue()
+    {
+        return fatigue;
+    }
 
     public String getName()
     {
@@ -110,14 +171,29 @@ public class Region
         this.health = health;
     }
 
-    public int getCaptureTime()
+    public void addHealth(int health)
     {
-        return captureTime;
+        this.health += health;
     }
 
-    public void setCaptureTime(int captureTime)
+    public int getFuel()
     {
-        this.captureTime = captureTime;
+        return fuel;
+    }
+
+    public void addFuel(int fuel)
+    {
+        this.fuel += fuel;
+    }
+
+    public void setArrows(int arrows)
+    {
+        this.arrows = arrows;
+    }
+
+    public int getArrows()
+    {
+        return arrows;
     }
 
     private byte getPlayerColorValue()
@@ -157,6 +233,12 @@ public class Region
     public void changeOwner(OfflinePlayer player, JavaPlugin instance)
     {
         this.setOwner(player);
+        health = 100;
+        fuel = 30;
+        fatigue = 0;
+        arrows = 0;
+        golems = 0;
+        zerg = 0;
         this.AddRegionPost(instance);
     }
 

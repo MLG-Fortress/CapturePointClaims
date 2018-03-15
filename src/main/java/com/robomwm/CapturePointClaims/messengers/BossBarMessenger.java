@@ -1,8 +1,8 @@
 package com.robomwm.CapturePointClaims.messengers;
 
-import com.robomwm.CapturePointClaims.CapturePoint;
+import com.robomwm.CapturePointClaims.point.CapturePoint;
 import com.robomwm.CapturePointClaims.CapturePointClaims;
-import com.robomwm.CapturePointClaims.Region;
+import com.robomwm.CapturePointClaims.region.Region;
 import com.robomwm.grandioseapi.player.GrandPlayer;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.ChatColor;
@@ -16,7 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import com.robomwm.CapturePointClaims.managers.CaptureManager;
+import com.robomwm.CapturePointClaims.point.CaptureManager;
 
 import java.util.HashMap;
 import java.util.HashSet;

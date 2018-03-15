@@ -1,4 +1,4 @@
-package com.robomwm.CapturePointClaims.managers;
+package com.robomwm.CapturePointClaims.region;
 
 /*
     PopulationDensity Server Plugin for Minecraft
@@ -21,18 +21,15 @@ package com.robomwm.CapturePointClaims.managers;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.robomwm.CapturePointClaims.CapturePointClaims;
-import com.robomwm.CapturePointClaims.Region;
 import com.robomwm.grandioseapi.GrandioseAPI;
 import com.robomwm.grandioseapi.player.GrandPlayerManager;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
-import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -206,7 +203,8 @@ public class RegionManager
                     worldSection.set(region.toString(), null);
 
                 region.setHealth(regionSection.getInt("health", 100));
-                region.setCaptureTime(regionSection.getInt("captureTime", 15));
+                region.addFuel(regionSection.getInt("fuel"));
+                region.setArrows(regionSection.getInt("arrows"));
                 if (regionSection.contains("owner"))
                     region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));
                 //saveRegion(region); //Used for storage upgrade conversion, uncomment when needed.
@@ -232,10 +230,16 @@ public class RegionManager
             worldSection.set(region.toString(), null);
         else
         {
-            regionSection.set("clanColor", null); //TODO: delete
+            //old values we no longer use
+            regionSection.set("clanColor", null);
+            regionSection.set("captureTime", null);
+            //stuff we do use
             regionSection.set("owner", region.getOwner().getUniqueId().toString());
             regionSection.set("health", region.getHealth());
-            regionSection.set("captureTime", region.getCaptureTime());
+            regionSection.set("fuel", region.getFuel());
+            regionSection.set("arrows", region.getArrows());
+            regionSection.set("golems", region.getGolems());
+            regionSection.set("zerg", region.getZerg());
         }
         File storageFile = new File(instance.getDataFolder(), "regionStorage.data");
         if (regionStorage != null)

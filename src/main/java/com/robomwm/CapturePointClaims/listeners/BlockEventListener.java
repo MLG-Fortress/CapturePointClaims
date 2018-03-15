@@ -1,8 +1,8 @@
 package com.robomwm.CapturePointClaims.listeners;
 
 import com.robomwm.CapturePointClaims.CapturePointClaims;
-import com.robomwm.CapturePointClaims.Region;
-import com.robomwm.CapturePointClaims.managers.RegionManager;
+import com.robomwm.CapturePointClaims.region.Region;
+import com.robomwm.CapturePointClaims.region.RegionManager;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,7 +22,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.InventoryHolder;
-import com.robomwm.CapturePointClaims.managers.CaptureManager;
+import com.robomwm.CapturePointClaims.point.CaptureManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;

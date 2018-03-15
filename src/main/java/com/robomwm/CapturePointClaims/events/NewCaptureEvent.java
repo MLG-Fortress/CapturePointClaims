@@ -1,6 +1,6 @@
 package com.robomwm.CapturePointClaims.events;
 
-import com.robomwm.CapturePointClaims.managers.RegionManager;
+import com.robomwm.CapturePointClaims.region.RegionManager;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
