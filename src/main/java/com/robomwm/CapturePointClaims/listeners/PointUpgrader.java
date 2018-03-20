@@ -79,6 +79,9 @@ public class PointUpgrader implements Listener
                 case PRISMARINE:
                     region.addFatigue(itemStack.getAmount());
                     break;
+                case ARROW:
+                    region.setArrows(itemStack.getAmount());
+                    break;
                 case IRON_BLOCK:
                     region.addGolem(itemStack.getAmount());
                     break;

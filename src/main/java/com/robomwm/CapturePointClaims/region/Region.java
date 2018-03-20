@@ -191,6 +191,19 @@ public class Region
         this.arrows = arrows;
     }
 
+    public void addArrows(int arrowsToAdd)
+    {
+        this.arrows += arrowsToAdd;
+    }
+
+    public boolean consumeArrow()
+    {
+        if (arrows <= 0)
+            return false;
+        this.arrows--;
+        return true;
+    }
+
     public int getArrows()
     {
         return arrows;
