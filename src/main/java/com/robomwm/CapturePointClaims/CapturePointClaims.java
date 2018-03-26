@@ -63,7 +63,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         captureManager = new CaptureManager(this, clanManager, regionManager);
         getServer().getPluginManager().registerEvents(new BlockEventListener(this, captureManager, clanManager, regionManager), this);
         new BossBarMessenger(this, captureManager);
-        getCommand("tppoint").setExecutor(new TPPointCommand(this, clanManager, regionManager));
+        getCommand("tppost").setExecutor(new TPPointCommand(this, clanManager, regionManager));
         new PointUpgrader(this);
         new SimpleClansListener(this);
         new DynmapHook(this);
