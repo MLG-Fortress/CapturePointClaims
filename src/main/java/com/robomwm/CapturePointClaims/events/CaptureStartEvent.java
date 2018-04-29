@@ -1,13 +1,13 @@
 package com.robomwm.CapturePointClaims.events;
 
-import com.robomwm.CapturePointClaims.region.RegionManager;
+import com.robomwm.CapturePointClaims.point.CapturePoint;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
  * Created by RoboMWM on 1/21/2017.
  */
-public class NewCaptureEvent extends Event
+public class CaptureStartEvent extends Event
 {
     // Custom Event Requirements
     private static final HandlerList handlers = new HandlerList();
@@ -19,10 +19,15 @@ public class NewCaptureEvent extends Event
         return handlers;
     }
 
-    private RegionManager region;
+    private CapturePoint point;
 
-    public NewCaptureEvent(RegionManager region)
+    public CaptureStartEvent(CapturePoint point)
     {
+        this.point = point;
+    }
 
+    public CapturePoint getPoint()
+    {
+        return point;
     }
 }

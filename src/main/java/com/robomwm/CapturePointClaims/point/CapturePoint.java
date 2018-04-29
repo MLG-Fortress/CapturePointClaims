@@ -43,6 +43,11 @@ public class CapturePoint
         return defender;
     }
 
+    public boolean isDefended()
+    {
+        return defended;
+    }
+
     public boolean isEnded()
     {
         return this.timeCaptured > 0L;
@@ -117,7 +122,7 @@ public class CapturePoint
         return this.captureProgress;
     }
 
-    public Boolean checkOrEndGame(CapturePointClaims instance, Player player)
+    Boolean checkOrEndGame(CapturePointClaims instance, Player player)
     {
         if (this.isEnded())
             return this.defended;

@@ -1,6 +1,8 @@
 package com.robomwm.CapturePointClaims.point;
 
 import com.robomwm.CapturePointClaims.CapturePointClaims;
+import com.robomwm.CapturePointClaims.events.CaptureFinishedEvent;
+import com.robomwm.CapturePointClaims.events.CaptureStartEvent;
 import com.robomwm.CapturePointClaims.region.Region;
 import com.robomwm.CapturePointClaims.region.RegionManager;
 import com.robomwm.CapturePointClaims.messengers.Messenger;
@@ -57,6 +59,7 @@ public class CaptureManager
                 }
             }
         }.runTaskTimer(instance, 0L, 20L);
+        instance.getServer().getPluginManager().callEvent(new CaptureStartEvent(capturePoint));
         return capturePoint;
     }
 
@@ -67,7 +70,7 @@ public class CaptureManager
 
         if (capturePoint == null) //Start a capture
         {
-            capturePoint = startNewCapture(region);
+            startNewCapture(region);
 
             //notify defenders
             Messenger.mailPlayerOrClan(instance, region.getOwner(), region.getName() + " is under attack!");
@@ -109,6 +112,7 @@ public class CaptureManager
 
         Messenger.mailPlayerOrClan(instance, attacker, "Successfully captured " + point.getRegion().getName());
         Messenger.mailPlayerOrClan(instance, point.getDefender(), point.getRegion().getName() + " was captured by " + attacker.getName());
+        instance.getServer().getPluginManager().callEvent(new CaptureFinishedEvent(point, attacker));
     }
 }
 
