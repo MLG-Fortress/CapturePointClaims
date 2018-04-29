@@ -5,6 +5,7 @@ import com.robomwm.CapturePointClaims.events.CaptureStartEvent;
 import com.robomwm.CapturePointClaims.point.CapturePoint;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -84,7 +85,10 @@ public class Turrets implements Listener
                         return;
                     }
                 }
-                corner.getWorld().spawnArrow(corner, vector, 2, 0).setGravity(false);
+                Arrow arrow = turretLocation.getWorld().spawnArrow(corner, vector, 2, 0);
+                arrow.setGravity(false);
+                arrow.setKnockbackStrength(10);
+                arrow.spigot().setDamage(0.5D);
             }
 
             private Player getClosestPlayer(Location location)
