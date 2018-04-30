@@ -80,7 +80,7 @@ public class PointUpgrader implements Listener
                     region.addFatigue(itemStack.getAmount());
                     break;
                 case ARROW:
-                    region.setArrows(itemStack.getAmount());
+                    region.addArrows(itemStack.getAmount());
                     break;
                 case IRON_BLOCK:
                     region.addGolem(itemStack.getAmount());

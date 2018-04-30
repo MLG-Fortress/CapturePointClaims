@@ -40,8 +40,8 @@ public class Turrets implements Listener
             private final int DISTANCE = 32;
             final CapturePoint point = event.getPoint();
             final Location center = point.getRegion().getRegionCenter(true);
-            final Location corner = center.clone().add(2, 5, 2);
-            final Location otherCorner = center.clone().add(-2, 5, -2);
+            final Location corner = center.clone().add(2, 3, 2);
+            final Location otherCorner = center.clone().add(-2, 3, -2);
             Player target;
 
             @Override
@@ -74,7 +74,7 @@ public class Turrets implements Listener
                     return;
                 }
 
-                Iterator<Block> blocks = new BlockIterator(corner.getWorld(), corner.toVector(), vector, 0, length);
+                Iterator<Block> blocks = new BlockIterator(corner.getWorld(), turretLocation.toVector(), vector, 0, length);
                 blocks.next();
                 blocks.next();
                 while (blocks.hasNext())
@@ -86,7 +86,7 @@ public class Turrets implements Listener
                         return;
                     }
                 }
-                Arrow arrow = turretLocation.getWorld().spawnArrow(corner, vector, 2, 0);
+                Arrow arrow = turretLocation.getWorld().spawnArrow(turretLocation, vector, 2, 0);
                 arrow.setGravity(false);
                 arrow.setKnockbackStrength(10);
                 arrow.spigot().setDamage(0.5D);
