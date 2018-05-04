@@ -118,7 +118,6 @@ public class RegionManager
     {
         if (!worldCache.containsKey(location.getWorld()))
             return null;
-        //keeping all regions the same size and arranging them in a strict grid makes this calculation supa-fast! //ses da bigscary
         int x = location.getBlockX() / REGION_SIZE;
         if(location.getX() < 0) x--;
 

@@ -137,7 +137,7 @@ public class Region
 
         Region coords = (Region)coordinatesToCompare;
 
-        return this.regionX == coords.regionX && this.regionZ == coords.regionZ;
+        return this.world == coords.world && this.regionX == coords.regionX && this.regionZ == coords.regionZ;
     }
 
     @Override
