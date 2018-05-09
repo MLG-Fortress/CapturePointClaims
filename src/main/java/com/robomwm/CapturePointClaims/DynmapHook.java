@@ -52,9 +52,9 @@ public class DynmapHook implements Listener
     //Does the dynmap stuff ahahahaaa yea idk what to name it so I used generic "stuff" for the first time in my life xd
     private void doStuff()
     {
-        MarkerSet markerSet = dynmapAPI.getMarkerAPI().getMarkerSet("claimposts");
+        MarkerSet markerSet = dynmapAPI.getMarkerAPI().getMarkerSet("Claim Posts");
         if (markerSet == null)
-            markerSet = dynmapAPI.getMarkerAPI().createMarkerSet("claimposts", "claimposts", null, false);
+            markerSet = dynmapAPI.getMarkerAPI().createMarkerSet("Claim Posts", "Claim Posts", null, false);
         markerSet.getAreaMarkers().clear();
         for (Region region : plugin.getRegionManager().getRegions())
         {
@@ -72,9 +72,9 @@ public class DynmapHook implements Listener
             double[] z = new double[4];
 
             x[0] = topLeftCorner.getBlockX(); z[0] = topLeftCorner.getBlockZ(); //Top left corner
-            x[1] = topLeftCorner.getBlockX(); z[1] = bottomRightCorner.getBlockZ(); //bottom left corner
-            x[2] = bottomRightCorner.getBlockX(); z[2] = topLeftCorner.getBlockZ(); //top right corner
-            x[3] = bottomRightCorner.getBlockX(); z[3] = bottomRightCorner.getBlockZ(); //bottom right corner
+            x[1] = bottomRightCorner.getBlockX(); z[1] = topLeftCorner.getBlockZ(); //top right corner
+            x[2] = bottomRightCorner.getBlockX(); z[2] = bottomRightCorner.getBlockZ(); //bottom right corner
+            x[3] = topLeftCorner.getBlockX(); z[3] = bottomRightCorner.getBlockZ(); //bottom left corner
 
             markerSet.createAreaMarker(region.getName(), region.getName() + " owned by " + region.getOwner().getName(), false, center.getWorld().getName(), x, z, false);
         }
