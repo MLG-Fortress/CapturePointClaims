@@ -73,8 +73,8 @@ public class DynmapHook implements Listener
 
             x[0] = topLeftCorner.getBlockX(); z[0] = topLeftCorner.getBlockZ(); //Top left corner
             x[1] = topLeftCorner.getBlockX(); z[1] = bottomRightCorner.getBlockZ(); //bottom left corner
-            x[1] = bottomRightCorner.getBlockX(); z[1] = topLeftCorner.getBlockZ(); //top right corner
-            x[1] = bottomRightCorner.getBlockX(); z[1] = bottomRightCorner.getBlockZ(); //bottom right corner
+            x[2] = bottomRightCorner.getBlockX(); z[2] = topLeftCorner.getBlockZ(); //top right corner
+            x[3] = bottomRightCorner.getBlockX(); z[3] = bottomRightCorner.getBlockZ(); //bottom right corner
 
             markerSet.createAreaMarker(region.getName(), region.getName() + " owned by " + region.getOwner().getName(), false, center.getWorld().getName(), x, z, false);
         }
