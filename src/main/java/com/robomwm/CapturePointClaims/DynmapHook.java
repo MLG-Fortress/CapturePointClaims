@@ -2,11 +2,13 @@ package com.robomwm.CapturePointClaims;
 
 import com.robomwm.CapturePointClaims.events.CaptureFinishedEvent;
 import com.robomwm.CapturePointClaims.region.Region;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.dynmap.DynmapAPI;
+import org.dynmap.markers.AreaMarker;
 import org.dynmap.markers.MarkerSet;
 
 /**
@@ -76,7 +78,54 @@ public class DynmapHook implements Listener
             x[2] = bottomRightCorner.getBlockX(); z[2] = bottomRightCorner.getBlockZ(); //bottom right corner
             x[3] = topLeftCorner.getBlockX(); z[3] = bottomRightCorner.getBlockZ(); //bottom left corner
 
-            markerSet.createAreaMarker(region.getName(), region.getName() + " owned by " + region.getOwner().getName(), false, center.getWorld().getName(), x, z, false);
+            AreaMarker marker = markerSet.createAreaMarker(region.getName(), region.getName() + " owned by " + region.getOwner().getName(), false, center.getWorld().getName(), x, z, false);
+            int color = colorConverter(plugin.getGrandAPI().getGrandPlayerManager().getGrandPlayer(region.getOwner()).getNameColor());
+            marker.setFillStyle(0.1D, color);
+            marker.setLineStyle(1, 0.9D, color);
+        }
+    }
+
+    //hex codes as listed here: http://www.planetminecraft.com/blog/minecraft-color-codes-2906205/Feel
+    private int colorConverter(ChatColor color)
+    {
+        if (color == null)
+            color = ChatColor.WHITE;
+        switch (color)
+        {
+            case BLACK:
+                return 0;
+            case DARK_BLUE:
+                return 170;
+            case DARK_GREEN:
+                return 43520;
+            case DARK_AQUA:
+                return 43690;
+            case DARK_RED:
+                return 11141120;
+            case DARK_PURPLE:
+                return 11141290;
+            case GOLD:
+                return 16755200;
+            case GRAY:
+                return 11184810;
+            case DARK_GRAY:
+                return 5592405;
+            case BLUE:
+                return 5592575;
+            case GREEN:
+                return 5635925;
+            case AQUA:
+                return 5636095;
+            case RED:
+                return 16733525;
+            case LIGHT_PURPLE:
+                return 16733695;
+            case YELLOW:
+                return 16777045;
+            case WHITE:
+                return 166777215;
+            default:
+                return 0;
         }
     }
 }
