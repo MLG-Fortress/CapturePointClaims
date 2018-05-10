@@ -2,8 +2,10 @@ package com.robomwm.CapturePointClaims;
 
 import com.robomwm.CapturePointClaims.events.CaptureFinishedEvent;
 import com.robomwm.CapturePointClaims.region.Region;
+import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -78,11 +80,26 @@ public class DynmapHook implements Listener
             x[2] = bottomRightCorner.getBlockX(); z[2] = bottomRightCorner.getBlockZ(); //bottom right corner
             x[3] = topLeftCorner.getBlockX(); z[3] = bottomRightCorner.getBlockZ(); //bottom left corner
 
-            AreaMarker marker = markerSet.createAreaMarker(region.getName(), region.getName() + " owned by " + region.getOwner().getName(), false, center.getWorld().getName(), x, z, false);
-            int color = colorConverter(plugin.getGrandAPI().getGrandPlayerManager().getGrandPlayer(region.getOwner()).getNameColor());
-            marker.setFillStyle(0.1D, color);
-            marker.setLineStyle(1, 0.9D, color);
+            Clan clan = plugin.getClanManager().getClanByPlayerUniqueId(region.getOwner().getUniqueId());
+            AreaMarker marker;
+            if (clan != null)
+                marker = markerSet.createAreaMarker(region.getName(), region.getName() + " owned by " +
+                    clan.getTag() + " " + region.getOwner().getName(), false, center.getWorld().getName(), x, z, false);
+            else
+                marker = markerSet.createAreaMarker(region.getName(), region.getName() + " owned by " +
+                    region.getOwner().getName(), false, center.getWorld().getName(), x, z, false);
+            int color = colorConverter(getColorClanOrPlayer(region.getOwner()));
+            marker.setFillStyle(0.2D, color);
+            marker.setLineStyle(10, 0.9D, color);
         }
+    }
+
+    private ChatColor getColorClanOrPlayer(OfflinePlayer player)
+    {
+        Clan clan = plugin.getClanManager().getClanByPlayerUniqueId(player.getUniqueId());
+        if (clan == null)
+            return plugin.getGrandAPI().getGrandPlayerManager().getGrandPlayer(player).getNameColor();
+        return ChatColor.getByChar(clan.getColorTag().substring(1));
     }
 
     //hex codes as listed here: http://www.planetminecraft.com/blog/minecraft-color-codes-2906205/Feel
