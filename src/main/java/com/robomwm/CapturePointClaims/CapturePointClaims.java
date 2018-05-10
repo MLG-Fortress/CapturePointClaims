@@ -58,6 +58,7 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         this.clanManager = sc.getClanManager();
         claimWorlds.add(getServer().getWorld("world"));
         claimWorlds.add(getServer().getWorld("cityworld"));
+        claimWorlds.add(getServer().getWorld("cityworld_nether"));
         this.regionManager = new RegionManager(this);
 
         getServer().getPluginManager().registerEvents(this, this);
