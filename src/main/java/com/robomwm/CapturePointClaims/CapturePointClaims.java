@@ -74,9 +74,6 @@ public class CapturePointClaims extends JavaPlugin implements Listener
     @EventHandler
     void onChunkLoad(ChunkLoadEvent event)
     {
-        //Worldborder fill/dynmap rendering/other plugins loading chunks for some mysterious reason
-        if (getServer().getOnlinePlayers().size() == 0)
-            return;
         World world = event.getWorld();
         if (!claimWorlds.contains(world))
             return;
