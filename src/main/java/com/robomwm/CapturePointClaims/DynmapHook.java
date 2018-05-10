@@ -84,13 +84,13 @@ public class DynmapHook implements Listener
             AreaMarker marker;
             if (clan != null)
                 marker = markerSet.createAreaMarker(region.getName(), region.getName() + " owned by " +
-                    clan.getTag() + " " + region.getOwner().getName(), false, center.getWorld().getName(), x, z, false);
+                    clan.getTag().toUpperCase() + " " + region.getOwner().getName(), false, center.getWorld().getName(), x, z, false);
             else
                 marker = markerSet.createAreaMarker(region.getName(), region.getName() + " owned by " +
                     region.getOwner().getName(), false, center.getWorld().getName(), x, z, false);
             int color = colorConverter(getColorClanOrPlayer(region.getOwner()));
             marker.setFillStyle(0.2D, color);
-            marker.setLineStyle(10, 0.9D, color);
+            marker.setLineStyle(2, 0.9D, color);
         }
     }
 
