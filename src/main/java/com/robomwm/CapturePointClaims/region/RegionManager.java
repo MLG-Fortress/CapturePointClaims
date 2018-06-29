@@ -203,9 +203,6 @@ public class RegionManager
 
                 region.setHealth(regionSection.getInt("health", 100));
                 region.addFuel(regionSection.getInt("fuel"));
-                region.setArrows(regionSection.getInt("arrows"));
-                region.setGolems(regionSection.getInt("golems"));
-                region.setZerg(regionSection.getInt("zerg"));
                 if (regionSection.contains("owner"))
                     region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));
                 //saveRegion(region); //Used for storage upgrade conversion, uncomment when needed.
@@ -238,9 +235,6 @@ public class RegionManager
             regionSection.set("owner", region.getOwner().getUniqueId().toString());
             regionSection.set("health", region.getHealth());
             regionSection.set("fuel", region.getFuel());
-            regionSection.set("arrows", region.getArrows());
-            regionSection.set("golems", region.getGolems());
-            regionSection.set("zerg", region.getZerg());
         }
         File storageFile = new File(instance.getDataFolder(), "regionStorage.data");
         if (regionStorage != null)

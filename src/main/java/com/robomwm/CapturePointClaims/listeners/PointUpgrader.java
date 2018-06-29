@@ -76,18 +76,6 @@ public class PointUpgrader implements Listener
                 case EMERALD_BLOCK:
                     region.addHealth(itemStack.getAmount());
                     break;
-                case PRISMARINE:
-                    region.addFatigue(itemStack.getAmount());
-                    break;
-                case ARROW:
-                    region.addArrows(itemStack.getAmount());
-                    break;
-                case IRON_BLOCK:
-                    region.addGolem(itemStack.getAmount());
-                    break;
-                case GOLD_BLOCK:
-                    region.addZerg(itemStack.getAmount());
-                    break;
                 default:
                     event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), itemStack);
             }
@@ -96,11 +84,7 @@ public class PointUpgrader implements Listener
         region.getRegionManager().saveRegion(region);
         event.getPlayer().sendMessage("Post " + region.getName() + " :\n" +
                 "  Health: " + region.getHealth() +
-                "\n  Fuel: " + region.getFuel() +
-                "\n  Fatigue: " + region.getFatigue() +
-                "\n  Sentry ammo: " + region.getArrows() +
-                "\n  Golems recruited: " + region.getGolems() / 3 +
-                "\n  Zerg nest size: " + region.getZerg());
+                "\n  Fuel: " + region.getFuel());
     }
 }
 

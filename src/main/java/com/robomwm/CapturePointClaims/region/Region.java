@@ -22,41 +22,7 @@ public class Region
     private int REGION_SIZE;
     private int health = 50;
     private int fuel;
-    private int arrows;
-    private int fatigue;
-    private int golems;
-    private int zerg;
     private RegionManager regionManager;
-
-    public int getGolems()
-    {
-        return golems;
-    }
-
-    public void setGolems(int golems)
-    {
-        this.golems = golems;
-    }
-
-    public void addGolem(int golemsToAdd)
-    {
-        this.golems += golemsToAdd;
-    }
-
-    public void setZerg(int zerg)
-    {
-        this.zerg = zerg;
-    }
-
-    public int getZerg()
-    {
-        return zerg;
-    }
-
-    public void addZerg(int zergToAdd)
-    {
-        this.zerg += zergToAdd;
-    }
 
     public int consumeFuel()
     {
@@ -66,24 +32,6 @@ public class Region
         if (fuel < 9)
             this.fuel = 9;
         return this.fuel;
-    }
-
-    public boolean consumeFatigue()
-    {
-        if (fatigue <= 0)
-            return false;
-        this.fatigue--;
-        return true;
-    }
-
-    public void addFatigue(int fatigue)
-    {
-        this.fatigue += fatigue;
-    }
-
-    public int getFatigue()
-    {
-        return fatigue;
     }
 
     public String getName()
@@ -186,29 +134,6 @@ public class Region
         this.fuel += fuel;
     }
 
-    public void setArrows(int arrows)
-    {
-        this.arrows = arrows;
-    }
-
-    public void addArrows(int arrowsToAdd)
-    {
-        this.arrows += arrowsToAdd;
-    }
-
-    public boolean consumeArrow()
-    {
-        if (arrows <= 0)
-            return false;
-        this.arrows--;
-        return true;
-    }
-
-    public int getArrows()
-    {
-        return arrows;
-    }
-
     private byte getPlayerColorValue()
     {
         if (owner == null)
@@ -248,10 +173,6 @@ public class Region
         this.setOwner(player);
         health = 100;
         fuel = 30;
-        fatigue = 0;
-        arrows = 0;
-        golems = 0;
-        zerg = 0;
         this.AddRegionPost(instance);
     }
 
