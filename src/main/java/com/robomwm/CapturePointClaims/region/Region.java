@@ -274,11 +274,9 @@ public class Region
         {
             y += 1;
         }
-
-        //if y value is under sea level, correct it to sea level (no posts should be that difficult to find)
-        if(y < 62)
+        else if(blockType == Material.AIR) //void, don't build
         {
-            y = 62;
+            return;
         }
 
         //clear signs from the area, this ensures signs don't drop as items
