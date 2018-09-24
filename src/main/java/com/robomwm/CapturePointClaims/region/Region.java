@@ -35,16 +35,6 @@ public class Region
         return timeCaptured;
     }
 
-    public int consumeFuel()
-    {
-        if (fuel <= 0 && owner == null)
-            return 0;
-        this.fuel -= fuel / 10;
-        if (fuel < 9)
-            this.fuel = 9;
-        return this.fuel;
-    }
-
     public String getName()
     {
         return getWorld().getName() + " " + regionX + " " + regionZ;
@@ -143,6 +133,13 @@ public class Region
     public void addFuel(int fuel)
     {
         this.fuel += fuel;
+        if (fuel < 0)
+            this.fuel = 0;
+    }
+
+    public void setFuel(int fuel)
+    {
+        this.fuel = fuel;
     }
 
     private byte getPlayerColorValue()

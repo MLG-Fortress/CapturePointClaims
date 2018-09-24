@@ -224,6 +224,7 @@ public class RegionManager
                 region.addFuel(regionSection.getInt("fuel"));
                 if (regionSection.contains("owner"))
                     region.setOwner(instance.getServer().getOfflinePlayer(UUID.fromString(regionSection.getString("owner"))));
+                region.setTimeCaptured(regionSection.getLong("timeCaptured", System.currentTimeMillis()));
                 //saveRegion(region); //Used for storage upgrade conversion, uncomment when needed.
             }
         }
@@ -254,6 +255,7 @@ public class RegionManager
             regionSection.set("owner", region.getOwner().getUniqueId().toString());
             regionSection.set("health", region.getHealth());
             regionSection.set("fuel", region.getFuel());
+            regionSection.set("timeCaptured", region.getTimeCaptured());
         }
 
         return true;

@@ -8,19 +8,18 @@ import org.bukkit.entity.Player;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Contains information about a point in the process of being captured
+ * Automatically manages and performs end-game (time runs out or point being captured)
+ */
 public class CapturePoint
 {
-    /**
-     * Contains information about a point in the process of being captured
-     * Automatically manages and performs end-game (time runs out or point being captured)
-     */
-    private long LOCK_TIME; //point locks for 30 minutes
-    private long LOCK_TIME_SECONDS;
-
+    //If successfully defended, how long the post prevents future captures from occurring
+    private long lockoutTime;
     //captureProgress (decrements to 0)
     private int captureProgress;
     //Maximum amount of time to capture point, in ticks
-    private int ticksToEndGame = 24000; //20 minutes
+    private int ticksToEndGame = 18000; //15 minutes
     //Used to determine end game, and when point should be unlocked
     private Long timeCaptured = 0L;
     //Determines who won
@@ -34,8 +33,28 @@ public class CapturePoint
         this.region = region;
         this.captureProgress = region.getHealth();
         this.defender = region.getOwner();
-        this.LOCK_TIME_SECONDS = TimeUnit.SECONDS.toMillis(region.consumeFuel());
-        this.LOCK_TIME = TimeUnit.MINUTES.toMillis(TimeUnit.SECONDS.toMinutes(LOCK_TIME_SECONDS));
+
+        //set capture time based on amount of fuel
+        ticksToEndGame -= Math.min(region.getFuel(), 12000);
+        //consume fuel
+        region.addFuel(-12000);
+
+        if (defender == null)
+        {
+            lockoutTime = TimeUnit.MINUTES.toMillis(30);
+            return;
+        }
+
+        //set lockout time (used to prevent successive capture attempts if point is successfully defended)
+
+        final long ninetyDaysInMilliseconds = TimeUnit.DAYS.toMillis(90);
+        
+        //Get time since capture
+        long time = Math.min(ninetyDaysInMilliseconds, System.currentTimeMillis() - region.getTimeCaptured());
+        //Divide by 90 days (max time) to get percentage
+        time = time / ninetyDaysInMilliseconds;
+        //Multiply by max lockout time (3 days)
+        time = time * TimeUnit.HOURS.toMillis(72);
     }
 
     public OfflinePlayer getDefender()
@@ -85,25 +104,25 @@ public class CapturePoint
     }
 
     /**
-     * @return Seconds remaining
+     * @return Time remaining until lockout expires, in seconds
      */
     public Long getExpirationTimeRemaining()
     {
         if (!isEnded())
             return null;
-        //return (((this.getTimeCaptured() + TimeUnit.DAYS.toMillis(1L)) - System.currentTimeMillis()) / 1000); //1 day
-        return (((this.getTimeCaptured() + LOCK_TIME) - System.currentTimeMillis()) / 1000);
+        return TimeUnit.MILLISECONDS.toSeconds((this.getTimeCaptured() + lockoutTime) - System.currentTimeMillis());
     }
 
     /**
-     * @return 0.0 - 1.0, increasing to 1.0
+     * @return 0.0 - 1.0, decreasing to 0
      * TODO: add checks????
      */
     public Double getExpirationTimeAsPercentage()
     {
         if (!isEnded())
             return null;
-        return (LOCK_TIME_SECONDS - Double.valueOf(getExpirationTimeRemaining())) / LOCK_TIME_SECONDS;
+        final double timeRemainingInMilliseconds = (this.getTimeCaptured() + lockoutTime) - System.currentTimeMillis();
+        return timeRemainingInMilliseconds / lockoutTime;
     }
 
 
@@ -135,24 +154,20 @@ public class CapturePoint
 
         //"Game over"
         this.timeCaptured = System.currentTimeMillis();
-        OfflinePlayer defender = region.getOwner();
 
         if (!this.defended && player != null)
         {
             region.changeOwner(player, instance);
+            region.setTimeCaptured(System.currentTimeMillis());
             captureProgress = 100;
-            LOCK_TIME = 0;
-            LOCK_TIME_SECONDS = 0;
+            lockoutTime = 0;
         }
 
         region.setHealth(captureProgress);
         region.getRegionManager().saveRegion(region);
 
-
-
         instance.getServer().getPluginManager().callEvent(new CaptureFinishedEvent(this, player));
 
         return this.defended;
     }
-
 }

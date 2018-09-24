@@ -101,6 +101,7 @@ public class BossBarMessenger implements Listener
                 bar.setProgress(capturePoint.getExpirationTimeAsPercentage());
                 continue;
             }
+
             bar.setStyle(BarStyle.SEGMENTED_20);
             bar.setColor(BarColor.RED);
             bar.setProgress(capturePoint.getCaptureProgress());
