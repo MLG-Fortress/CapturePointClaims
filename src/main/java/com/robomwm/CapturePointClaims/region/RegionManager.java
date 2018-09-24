@@ -28,8 +28,10 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,12 +40,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class RegionManager
 {
     private CapturePointClaims instance;
     private final int REGION_SIZE = 400;
     private YamlConfiguration regionStorage;
+    private BlockingQueue<String> saveQueue = new LinkedBlockingQueue<>();
     private Map<World, Table<Integer, Integer, Region>> worldCache = new HashMap<>();
     private GrandPlayerManager grandPlayerManager;
 
@@ -65,7 +70,7 @@ public class RegionManager
             }
             catch (IOException e)
             {
-                plugin.getLogger().severe("Could not create regionStorage.data! Since I'm lazy, there currently is no \"in memory\" option. Will now disable along with a nice stack trace for you to bother me with:");
+                plugin.getLogger().severe("Could not create regionStorage.data!");
                 e.printStackTrace();
                 return;
             }
@@ -85,12 +90,6 @@ public class RegionManager
                 continue;
             for (String regionKey : worldSection.getKeys(false))
             {
-//                ConfigurationSection regionSection = regionStorage.getConfigurationSection(world.getName()).getConfigurationSection(regionKey);
-//                if (regionSection.getString("clanTag") == null || plugin.getClanManager().getClan(regionSection.getString("clanTag")) == null)
-//                {
-//                    keysToDelete.add(regionKey);
-//                    continue;
-//                }
                 //Cache region
                 String[] values = regionKey.split(",");
 
@@ -110,6 +109,26 @@ public class RegionManager
                 worldSection.set(deleteKey, null);
             }
         }
+        new BukkitRunnable()
+        {
+            @Override
+            public void run()
+            {
+                while (true)
+                {
+                    YamlConfiguration configuration = new YamlConfiguration();
+                    try
+                    {
+                        configuration.loadFromString(saveQueue.take());
+                        configuration.save(storageFile);
+                    }
+                    catch (InvalidConfigurationException | InterruptedException | IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.runTaskAsynchronously(plugin);
     }
 
     //given a location, returns the coordinates of the region containing that location
@@ -236,18 +255,7 @@ public class RegionManager
             regionSection.set("health", region.getHealth());
             regionSection.set("fuel", region.getFuel());
         }
-        File storageFile = new File(instance.getDataFolder(), "regionStorage.data");
-        if (regionStorage != null)
-        {
-            try
-            {
-                regionStorage.save(storageFile);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
+
         return true;
     }
 
@@ -275,6 +283,11 @@ public class RegionManager
         Clan ownerClan = instance.getClanManager().getClanByPlayerUniqueId(owner.getUniqueId());
         Clan playerClan = instance.getClanManager().getClanByPlayerUniqueId(player.getUniqueId());
         return ownerClan == null || playerClan == null || playerClan != ownerClan && !playerClan.isAlly(ownerClan.getTag());
+    }
+
+    private void saveFile()
+    {
+        saveQueue.offer(regionStorage.saveToString());
     }
 
 }

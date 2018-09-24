@@ -22,7 +22,18 @@ public class Region
     private int REGION_SIZE;
     private int health = 50;
     private int fuel;
+    private long timeCaptured;
     private RegionManager regionManager;
+
+    public void setTimeCaptured(long timeCaptured)
+    {
+        this.timeCaptured = timeCaptured;
+    }
+
+    public long getTimeCaptured()
+    {
+        return timeCaptured;
+    }
 
     public int consumeFuel()
     {
