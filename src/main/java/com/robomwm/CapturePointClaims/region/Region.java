@@ -2,14 +2,15 @@ package com.robomwm.CapturePointClaims.region;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.type.WallSign;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -142,33 +143,34 @@ public class Region
         this.fuel = fuel;
     }
 
-    private byte getPlayerColorValue()
+    private Material getStainedGlassColor()
     {
         if (owner == null)
-            return DyeColor.WHITE.getWoolData();
+            return Material.WHITE_STAINED_GLASS;
 
         ChatColor chatColor = regionManager.getGrandPlayerManager().getGrandPlayer(owner).getNameColor();
-        DyeColor dyeColor = DyeColor.WHITE;
 
         switch (chatColor) //TODO: unfinished
         {
             case LIGHT_PURPLE:
+                return Material.MAGENTA_STAINED_GLASS;
             case DARK_PURPLE:
-                dyeColor = DyeColor.PURPLE;
-                break;
+                return Material.PURPLE_STAINED_GLASS;
+            case YELLOW:
+                return Material.YELLOW_STAINED_GLASS;
             case GOLD:
-                dyeColor = DyeColor.YELLOW;
-                break;
+                return Material.ORANGE_STAINED_GLASS;
             case DARK_GREEN:
+                return Material.GREEN_STAINED_GLASS;
             case GREEN:
-                dyeColor = DyeColor.GREEN;
-                break;
+                return Material.LIME_STAINED_GLASS;
             case AQUA:
-                dyeColor = DyeColor.CYAN;
-                break;
+                return Material.LIGHT_BLUE_STAINED_GLASS;
+            case BLUE:
+                return Material.BLUE_STAINED_GLASS;
         }
 
-        return dyeColor.getWoolData();
+        return Material.BROWN_STAINED_GLASS;
     }
 
     /**
@@ -234,7 +236,6 @@ public class Region
     }
 
     //actually edits the world to create a region post at the center of the specified region
-    @SuppressWarnings("deprecation")
     public void AddRegionPost(JavaPlugin instance)
     {
         //find the center
@@ -244,7 +245,7 @@ public class Region
         int y;
 
         //make sure data is loaded for that area, because we're about to request data about specific blocks there
-        if (!GuaranteeChunkLoaded(new Location(world, x, 5, z)))
+        if (!(new Location(world, x, 5, z)).getChunk().isLoaded())
             return;
 
         //sink lower until we find something solid
@@ -261,16 +262,16 @@ public class Region
         }
         while(	y > 0 && (
                 blockType == Material.AIR 		||
-                        blockType == Material.LEAVES 	||
-                        blockType == Material.LEAVES_2  ||
-                        blockType == Material.LONG_GRASS||
-                        blockType == Material.LOG       ||
-                        blockType == Material.LOG_2     ||
+                        Tag.LEAVES.isTagged(blockType)	||
+                        blockType == Material.GRASS     ||
+                        blockType == Material.TALL_GRASS||
+                        Tag.LOGS.isTagged(blockType)    ||
                         blockType == Material.SNOW 		||
-                        blockType == Material.VINE
+                        blockType == Material.VINE      ||
+                        blockType.getHardness() == 0f
         ));
 
-        if(blockType == Material.SIGN_POST)
+        if(blockType == Material.SIGN)
         {
             y -= 4;
         }
@@ -296,7 +297,7 @@ public class Region
                 for(int y1 = y + 1; y1 <= y + 5; y1++)
                 {
                     Block block = world.getBlockAt(x1, y1, z1);
-                    if(block.getType() == Material.SIGN_POST || block.getType() == Material.SIGN || block.getType() == Material.WALL_SIGN)
+                    if(block.getType() == Material.SIGN || block.getType() == Material.WALL_SIGN)
                         block.setType(Material.AIR);
                 }
             }
@@ -330,8 +331,7 @@ public class Region
         //build top block
         world.getBlockAt(x, y + 3, z).setType(Material.BARRIER);
         Block glass = world.getBlockAt(x, y + 2, z);
-        glass.setType(Material.STAINED_GLASS);
-        glass.setData(getPlayerColorValue());
+        glass.setType(getStainedGlassColor());
 
         //build outer platform
         for(int x1 = x - 2; x1 <= x + 2; x1++)
@@ -379,13 +379,13 @@ public class Region
 
                 Block block1 = world.getBlockAt(x, finalY + 3, z - 1);
 
-                org.bukkit.material.Sign signData = new org.bukkit.material.Sign(Material.WALL_SIGN);
-                signData.setFacingDirection(BlockFace.NORTH);
+                block1.setType(Material.WALL_SIGN);
 
-                block1.setTypeIdAndData(Material.WALL_SIGN.getId(), signData.getData(), false);
+                WallSign signBlockData = (WallSign)block1.getBlockData();
+                signBlockData.setFacing(BlockFace.NORTH);
+                block1.setBlockData(signBlockData);
 
                 Sign sign = (Sign)block1.getState();
-
                 sign.setLine(0, world.getName() + " " + regionX + " " + regionZ);
                 if (owner != null)
                     sign.setLine(1, owner.getName());

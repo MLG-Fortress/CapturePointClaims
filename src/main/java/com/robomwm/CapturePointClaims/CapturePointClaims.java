@@ -4,11 +4,10 @@ import com.robomwm.CapturePointClaims.command.TPPointCommand;
 import com.robomwm.CapturePointClaims.listeners.BlockEventListener;
 import com.robomwm.CapturePointClaims.listeners.PointUpgrader;
 import com.robomwm.CapturePointClaims.listeners.SimpleClansListener;
+import com.robomwm.CapturePointClaims.messengers.BossBarMessenger;
 import com.robomwm.CapturePointClaims.point.CaptureManager;
 import com.robomwm.CapturePointClaims.region.Region;
 import com.robomwm.CapturePointClaims.region.RegionManager;
-import com.robomwm.CapturePointClaims.messengers.BossBarMessenger;
-import com.robomwm.CapturePointClaims.upgrades.Turrets;
 import com.robomwm.grandioseapi.GrandioseAPI;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
@@ -71,11 +70,10 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         new PointUpgrader(this);
         new SimpleClansListener(this);
         new DynmapHook(this);
-        new Turrets(this);
     }
 
     @EventHandler
-    void onChunkLoad(ChunkLoadEvent event)
+    private void onChunkLoad(ChunkLoadEvent event)
     {
         World world = event.getWorld();
         if (!claimWorlds.contains(world))
@@ -99,7 +97,8 @@ public class CapturePointClaims extends JavaPlugin implements Listener
             {
                 public void run()
                 {
-                    region.AddRegionPost(instance);
+                    if (chunk.isLoaded())
+                        region.AddRegionPost(instance);
                 }
             }.runTaskLater(this, 200L);
         }

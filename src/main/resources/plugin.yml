@@ -3,6 +3,7 @@ version: ${project.version}
 #website:
 author: RoboMWM
 main: com.robomwm.CapturePointClaims.CapturePointClaims
+api-version: 1.13
 depend:
 - GrandioseAPI
 - BetterTPA

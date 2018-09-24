@@ -27,8 +27,11 @@ public class DynmapHook implements Listener
         this.plugin = plugin;
 
         dynmapAPI = (DynmapAPI)plugin.getServer().getPluginManager().getPlugin("dynmap");
-        if (dynmapAPI == null)
+        if (dynmapAPI == null || !plugin.getServer().getPluginManager().isPluginEnabled("dynmap"))
+        {
+            plugin.getLogger().info("Dynmap not installed or enabled.");
             return;
+        }
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         new BukkitRunnable()
         {

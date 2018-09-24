@@ -73,6 +73,9 @@ public class PointUpgrader implements Listener
                 case REDSTONE_BLOCK:
                     region.addFuel(itemStack.getAmount());
                     break;
+                case DIAMOND_BLOCK:
+                    region.addFuel(itemStack.getAmount() * 20);
+                    break;
                 case EMERALD_BLOCK:
                     region.addHealth(itemStack.getAmount());
                     break;
