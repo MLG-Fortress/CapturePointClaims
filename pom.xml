@@ -17,10 +17,6 @@
             <url>https://repo.destroystokyo.com/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>remote-repos</id>
-            <url>http://104.236.246.108:8081/artifactory/remote-repos</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -49,12 +45,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.sacredlabyrinth.phaed.simpleclans</groupId>
-            <artifactId>SimpleClans</artifactId>
-            <version>2.7.2</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.MLG-Fortress</groupId>
             <artifactId>BetterTPA</artifactId>
             <version>3.7</version>
@@ -69,6 +59,11 @@
             <groupId>us.dynmap</groupId>
             <artifactId>dynmap-api</artifactId>
             <version>2.6-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MLG-Fortress</groupId>
+            <artifactId>SimpleClans</artifactId>
+            <version>253bebd6a3</version>
         </dependency>
     </dependencies>
 
