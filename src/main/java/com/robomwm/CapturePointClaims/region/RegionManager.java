@@ -46,7 +46,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class RegionManager
 {
     private CapturePointClaims instance;
-    private final int REGION_SIZE = 400;
+    private final int REGION_SIZE = 800;
     private YamlConfiguration regionStorage;
     private BlockingQueue<String> saveQueue = new LinkedBlockingQueue<>();
     private Map<World, Table<Integer, Integer, Region>> worldCache = new HashMap<>();

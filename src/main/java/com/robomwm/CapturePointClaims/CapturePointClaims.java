@@ -59,6 +59,9 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         claimWorlds.add(getServer().getWorld("world"));
         claimWorlds.add(getServer().getWorld("cityworld"));
         claimWorlds.add(getServer().getWorld("cityworld_nether"));
+        claimWorlds.add(getServer().getWorld("space"));
+        claimWorlds.add(getServer().getWorld("planetoid"));
+        claimWorlds.remove(null);
 
         this.regionManager = new RegionManager(this);
 
