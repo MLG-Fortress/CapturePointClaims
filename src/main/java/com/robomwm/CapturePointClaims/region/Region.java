@@ -268,14 +268,15 @@ public class Region
                         Tag.LOGS.isTagged(blockType)    ||
                         blockType == Material.SNOW 		||
                         blockType == Material.VINE      ||
+                        blockType == Material.BARRIER   ||
                         blockType.getHardness() == 0f
         ));
 
-        if(blockType == Material.SIGN)
+        if(blockType.name().contains("GLASS"))
         {
-            y -= 4;
+            y -= 2;
         }
-        else if(blockType == Material.BEACON || blockType == Material.BARRIER || blockType.name().contains("GLASS"))
+        else if(blockType == Material.BEACON)
         {
             y -= 1;
         }
