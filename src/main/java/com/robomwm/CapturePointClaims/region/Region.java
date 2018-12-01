@@ -275,7 +275,7 @@ public class Region
         {
             y -= 4;
         }
-        else if(blockType == Material.BEACON || blockType == Material.BARRIER)
+        else if(blockType == Material.BEACON || blockType == Material.BARRIER || blockType.name().contains("GLASS"))
         {
             y -= 1;
         }
@@ -298,7 +298,7 @@ public class Region
                 {
                     Block block = world.getBlockAt(x1, y1, z1);
                     if(block.getType() == Material.SIGN || block.getType() == Material.WALL_SIGN)
-                        block.setType(Material.AIR);
+                        block.setType(Material.AIR, false);
                 }
             }
         }
@@ -311,7 +311,7 @@ public class Region
                 for(int y1 = y + 1; y1 < y + 5; y1++)
                 {
                     Block block = world.getBlockAt(x1, y1, z1);
-                    if(block.getType() != Material.AIR) block.setType(Material.AIR);
+                    if(block.getType() != Material.AIR) block.setType(Material.AIR, false);
                 }
             }
         }
@@ -324,21 +324,21 @@ public class Region
         {
             Block block = world.getBlockAt(x, highestBlockY, z);
             if(block.getType() != Material.BARRIER)
-                block.setType(Material.BARRIER);
+                block.setType(Material.BARRIER, false);
             highestBlockY--;
         }
 
         //build top block
-        world.getBlockAt(x, y + 3, z).setType(Material.BARRIER);
+        world.getBlockAt(x, y + 3, z).setType(Material.BARRIER, false);
         Block glass = world.getBlockAt(x, y + 2, z);
-        glass.setType(getStainedGlassColor());
+        glass.setType(getStainedGlassColor(), false);
 
         //build outer platform
         for(int x1 = x - 2; x1 <= x + 2; x1++)
         {
             for(int z1 = z - 2; z1 <= z + 2; z1++)
             {
-                world.getBlockAt(x1, y, z1).setType(Material.COMMAND_BLOCK);
+                world.getBlockAt(x1, y, z1).setType(Material.COMMAND_BLOCK, false);
             }
         }
 
@@ -347,14 +347,14 @@ public class Region
         {
             for(int z1 = z - 1; z1 <= z + 1; z1++)
             {
-                world.getBlockAt(x1, y, z1).setType(Material.EMERALD_BLOCK);
+                world.getBlockAt(x1, y, z1).setType(Material.EMERALD_BLOCK, false);
             }
         }
 
         //build lower center blocks
         int y1 = y;
-        world.getBlockAt(x, y1, z).setType(Material.EMERALD_BLOCK);
-        world.getBlockAt(x, ++y1, z).setType(Material.BEACON);
+        world.getBlockAt(x, y1, z).setType(Material.EMERALD_BLOCK, false);
+        world.getBlockAt(x, ++y1, z).setType(Material.BEACON, false);
 
         //build a sign on top with region name (or wilderness if no name)
 //        String regionName = region.getClan();
@@ -379,7 +379,7 @@ public class Region
 
                 Block block1 = world.getBlockAt(x, finalY + 3, z - 1);
 
-                block1.setType(Material.WALL_SIGN);
+                block1.setType(Material.WALL_SIGN, false);
 
                 WallSign signBlockData = (WallSign)block1.getBlockData();
                 signBlockData.setFacing(BlockFace.NORTH);
