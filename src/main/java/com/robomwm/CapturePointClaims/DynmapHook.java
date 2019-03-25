@@ -68,8 +68,8 @@ public class DynmapHook implements Listener
             if (region.getOwner() == null)
                 continue;
             Location center = region.getRegionCenter(false);
-            Location topLeftCorner = new Location(center.getWorld(), center.getX() - 200, 0,center.getZ() - 200);
-            Location bottomRightCorner = new Location(center.getWorld(), center.getX() + 200, 0,center.getZ() + 200);
+            Location topLeftCorner = new Location(center.getWorld(), center.getX() - 400, 0,center.getZ() - 400);
+            Location bottomRightCorner = new Location(center.getWorld(), center.getX() + 400, 0,center.getZ() + 400);
 
             //I have no idea about this part of the API, javadocs are quite sparse about it.
             //I thought I had to specify every single number in the range according to javadoc... so yea, I'll look at
