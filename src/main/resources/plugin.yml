@@ -13,4 +13,4 @@ softdepend:
 - dynmap
 commands:
   tppost:
-    aliases: [tpppoint, tpclaim, tppoint, tpppost, cp, tpcp, claimpoint, claimpoints, capturepoints, cpaturepiont]
+    aliases: [tpppoint, tpclaim, tppoint, tpppost, cp, tpcp, claimpoint, claimpoints, capturepoints, cpaturepiont, capturepoint]

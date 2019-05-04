@@ -12,6 +12,7 @@ import com.robomwm.grandioseapi.GrandioseAPI;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.Chunk;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -56,12 +57,13 @@ public class CapturePointClaims extends JavaPlugin implements Listener
         SimpleClans sc = (SimpleClans) getServer().getPluginManager().getPlugin("SimpleClans");
         this.clanManager = sc.getClanManager();
 
-        claimWorlds.add(getServer().getWorld("world"));
-        claimWorlds.add(getServer().getWorld("cityworld"));
-        claimWorlds.add(getServer().getWorld("cityworld_nether"));
-        claimWorlds.add(getServer().getWorld("space"));
-        claimWorlds.add(getServer().getWorld("planetoid"));
-        claimWorlds.remove(null);
+        for (World world : getServer().getWorlds())
+        {
+            if (world.getPVP()
+                && world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE)
+                && world.getWorldBorder().getSize() >= 20000)
+                claimWorlds.add(world);
+        }
 
         this.regionManager = new RegionManager(this);
 
