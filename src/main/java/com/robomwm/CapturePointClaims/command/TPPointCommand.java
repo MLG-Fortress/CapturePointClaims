@@ -71,7 +71,7 @@ public class TPPointCommand implements CommandExecutor
         }
         catch (Exception e)
         {
-            sender.sendMessage();
+            sender.sendMessage(ChatColor.RED + "Invalid arguments.");
             return false;
         }
 

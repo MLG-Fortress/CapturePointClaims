@@ -263,7 +263,7 @@ public class Region
         while(	y > 0 && (
                 blockType == Material.AIR 		||
                         Tag.LEAVES.isTagged(blockType)	||
-                        blockType == Material.GRASS     ||
+                        blockType == Material.GRASS_BLOCK     ||
                         blockType == Material.TALL_GRASS||
                         Tag.LOGS.isTagged(blockType)    ||
                         blockType == Material.SNOW 		||
@@ -298,7 +298,7 @@ public class Region
                 for(int y1 = y + 1; y1 <= y + 5; y1++)
                 {
                     Block block = world.getBlockAt(x1, y1, z1);
-                    if(block.getType() == Material.SIGN || block.getType() == Material.WALL_SIGN)
+                    if(block.getType() == Material.OAK_SIGN || block.getType() == Material.OAK_WALL_SIGN)
                         block.setType(Material.AIR, false);
                 }
             }
@@ -380,7 +380,7 @@ public class Region
 
                 Block block1 = world.getBlockAt(x, finalY + 3, z - 1);
 
-                block1.setType(Material.WALL_SIGN, false);
+                block1.setType(Material.OAK_WALL_SIGN, false);
 
                 WallSign signBlockData = (WallSign)block1.getBlockData();
                 signBlockData.setFacing(BlockFace.NORTH);
