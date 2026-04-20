@@ -59,6 +59,12 @@ public class CapturePointClaims extends JavaPlugin implements Listener
 
         for (World world : getServer().getWorlds())
         {
+            if (world == null)
+            {
+                getLogger().warning("Encountered a null world while building claim worlds. Skipping.");
+                continue;
+            }
+
             if (world.getPVP()
                 && world.getGameRuleValue(GameRule.DO_DAYLIGHT_CYCLE)
                 && world.getWorldBorder().getSize() >= 20000)
