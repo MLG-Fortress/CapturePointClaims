@@ -8,7 +8,6 @@ import com.robomwm.CapturePointClaims.messengers.BossBarMessenger;
 import com.robomwm.CapturePointClaims.point.CaptureManager;
 import com.robomwm.CapturePointClaims.region.Region;
 import com.robomwm.CapturePointClaims.region.RegionManager;
-import com.robomwm.grandioseapi.GrandioseAPI;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 import net.sacredlabyrinth.phaed.simpleclans.managers.ClanManager;
 import org.bukkit.Chunk;
@@ -45,10 +44,6 @@ public class CapturePointClaims extends JavaPlugin implements Listener
     public CaptureManager getCaptureManager()
     {
         return captureManager;
-    }
-    public GrandioseAPI getGrandAPI()
-    {
-        return (GrandioseAPI)getServer().getPluginManager().getPlugin("GrandioseAPI");
     }
 
     public void onEnable()

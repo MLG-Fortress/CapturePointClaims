@@ -101,7 +101,7 @@ public class DynmapHook implements Listener
     {
         Clan clan = plugin.getClanManager().getClanByPlayerUniqueId(player.getUniqueId());
         if (clan == null)
-            return plugin.getGrandAPI().getGrandPlayerManager().getGrandPlayer(player).getNameColor();
+            return PlayerColorUtil.getNameColor(player);
         return ChatColor.getByChar(clan.getColorTag().substring(1));
     }
 

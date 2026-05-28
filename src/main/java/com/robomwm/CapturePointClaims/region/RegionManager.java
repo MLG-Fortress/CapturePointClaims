@@ -21,8 +21,6 @@ package com.robomwm.CapturePointClaims.region;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.robomwm.CapturePointClaims.CapturePointClaims;
-import com.robomwm.grandioseapi.GrandioseAPI;
-import com.robomwm.grandioseapi.player.GrandPlayerManager;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -50,17 +48,10 @@ public class RegionManager
     private YamlConfiguration regionStorage;
     private BlockingQueue<String> saveQueue = new LinkedBlockingQueue<>();
     private Map<World, Table<Integer, Integer, Region>> worldCache = new HashMap<>();
-    private GrandPlayerManager grandPlayerManager;
-
-    public GrandPlayerManager getGrandPlayerManager()
-    {
-        return grandPlayerManager;
-    }
 
     public RegionManager(CapturePointClaims plugin)
     {
         instance = plugin;
-        grandPlayerManager = ((GrandioseAPI)plugin.getServer().getPluginManager().getPlugin("GrandioseAPI")).getGrandPlayerManager();
         File storageFile = new File(plugin.getDataFolder(), "regionStorage.data");
         if (!storageFile.exists())
         {
@@ -293,4 +284,3 @@ public class RegionManager
     }
 
 }
-

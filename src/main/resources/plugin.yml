@@ -5,10 +5,10 @@ author: RoboMWM
 main: com.robomwm.CapturePointClaims.CapturePointClaims
 api-version: 1.13
 depend:
-- GrandioseAPI
 - BetterTPA
 - SimpleClans
 softdepend:
+- MountainDewritoes
 - Multiverse-Core
 - dynmap
 commands:

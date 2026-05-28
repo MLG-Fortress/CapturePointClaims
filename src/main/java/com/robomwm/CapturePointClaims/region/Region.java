@@ -1,5 +1,6 @@
 package com.robomwm.CapturePointClaims.region;
 
+import com.robomwm.CapturePointClaims.PlayerColorUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -148,7 +149,7 @@ public class Region
         if (owner == null)
             return Material.WHITE_STAINED_GLASS;
 
-        ChatColor chatColor = regionManager.getGrandPlayerManager().getGrandPlayer(owner).getNameColor();
+        ChatColor chatColor = PlayerColorUtil.getNameColor(owner);
 
         switch (chatColor) //TODO: unfinished
         {

@@ -57,11 +57,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.MLG-Fortress</groupId>
-            <artifactId>GrandioseAPI</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>us.dynmap</groupId>
             <artifactId>dynmap-api</artifactId>
             <version>3.0-SNAPSHOT</version>
